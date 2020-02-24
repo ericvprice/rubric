@@ -128,38 +128,36 @@ namespace RulesEngine
             }
         }
 
-        public void Apply(TIn input, TOut output) => Apply(input, output, new EngineContext(Logger));
-
-        private void Apply(TIn input, TOut output, IEngineContext context)
+        public void Apply(TIn input, TOut output, IEngineContext context = null)
         {
+            var ctx = context ?? new EngineContext(Logger);
             foreach (var set in _preprocessingRules)
                 foreach (var rule in set)
-                    ApplyPreRule(context, rule, input);
+                    ApplyPreRule(ctx, rule, input);
             foreach (var set in _rules)
                 foreach (var rule in set)
-                    ApplyRule(context, rule, input, output);
+                    ApplyRule(ctx, rule, input, output);
             foreach (var set in _postprocessingRules)
                 foreach (var rule in set)
-                    ApplyPostRule(context, rule, output);
+                    ApplyPostRule(ctx, rule, output);
         }
 
 
-        public void Apply(IEnumerable<TIn> inputs, TOut output) => Apply(inputs, output, new EngineContext(Logger));
-
-        private void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context)
+        public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
         {
+            var ctx = context ?? new EngineContext(Logger);
             foreach (var input in inputs)
             {
                 foreach (var set in _preprocessingRules)
                     foreach (var rule in set)
-                        ApplyPreRule(context, rule, input);
+                        ApplyPreRule(ctx, rule, input);
                 foreach (var set in _rules)
                     foreach (var rule in set)
-                        ApplyRule(context, rule, input, output);
+                        ApplyRule(ctx, rule, input, output);
             }
             foreach (var set in _postprocessingRules)
                 foreach (var rule in set)
-                    ApplyPostRule(context, rule, output);
+                    ApplyPostRule(ctx, rule, output);
         }
 
         public IEnumerable<IPreRule<TIn>> PreRules

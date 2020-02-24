@@ -20,14 +20,16 @@ namespace RulesEngine
         /// </summary>
         /// <param name="input">The input object.</param>
         /// <param name="output">The output object.</param>
-        void Apply(TIn input, TOut output);
+        /// <param name="context">An optional injected context.</param>
+        void Apply(TIn input, TOut output, IEngineContext context = null);
 
         /// <summary>
         ///     Serially apply the given inputs to the output object.
         /// </summary>
         /// <param name="inputs">The input objects.</param>
         /// <param name="output">The output object.</param>
-        void Apply(IEnumerable<TIn> inputs, TOut output);
+        /// <param name="context">An optional injected context.</param>
+        void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null);
 
     }
 

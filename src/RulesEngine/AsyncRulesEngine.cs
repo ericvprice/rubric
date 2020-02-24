@@ -215,12 +215,12 @@ namespace RulesEngine
             }
         }
 
-        public Task ApplyAsync(TIn input, TOut output)
+        public Task ApplyAsync(TIn input, TOut output, IEngineContext context = null)
         {
-            var context = new EngineContext(Logger);
+            var ctx = context ?? new EngineContext(Logger);
             return ProcessInParallel
-                ? ApplyParallel(context, input, output)
-                : ApplySerial(context, input, output);
+                ? ApplyParallel(ctx, input, output)
+                : ApplySerial(ctx, input, output);
         }
 
         private async Task ApplySerial(IEngineContext context, TIn input, TOut output)
@@ -252,12 +252,12 @@ namespace RulesEngine
                 ).ConfigureAwait(false);
         }
 
-        public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output)
+        public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
         {
-            var context = new EngineContext(Logger);
+            var ctx = context ?? new EngineContext(Logger);
             return ProcessInParallel
-                ? ApplyManyAsyncParallel(inputs, output, context)
-                : ApplyManyAsyncSerial(inputs, output, context);
+                ? ApplyManyAsyncParallel(inputs, output, ctx)
+                : ApplyManyAsyncSerial(inputs, output, ctx);
         }
 
         private async Task ApplyManyAsyncSerial(IEnumerable<TIn> inputs, TOut output, IEngineContext context)
