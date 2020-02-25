@@ -7,10 +7,10 @@ namespace RulesEngine.Builder
 {
     internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
     {
-        private readonly EngineBuilder<TIn, TOut> _parentBuilder;
-        private readonly string _name;
-        private readonly List<string> _provides;
         private readonly List<string> _deps;
+        private readonly string _name;
+        private readonly EngineBuilder<TIn, TOut> _parentBuilder;
+        private readonly List<string> _provides;
         private Action<IEngineContext, TIn> _action;
         private Func<IEngineContext, TIn, bool> _predicate;
 
@@ -18,7 +18,7 @@ namespace RulesEngine.Builder
         {
             _parentBuilder = engineBuilder;
             _name = IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
-            _provides = new List<string>{ name };
+            _provides = new List<string> { name };
             _deps = new List<string>();
         }
 

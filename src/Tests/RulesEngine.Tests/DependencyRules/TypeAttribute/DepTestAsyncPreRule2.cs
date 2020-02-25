@@ -1,5 +1,5 @@
-using RulesEngine.Dependency;
 using System.Threading.Tasks;
+using RulesEngine.Dependency;
 using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
@@ -7,9 +7,8 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
     [DependsOn(typeof(DepTestAsyncPreRule))]
     public class DepTestAsyncPreRule2 : AsyncPreRule<TestInput>
     {
-        private readonly bool _shouldApply;
-
         private readonly bool _flagValue;
+        private readonly bool _shouldApply;
 
         public DepTestAsyncPreRule2(bool shouldApply, bool flagValue = true)
         {

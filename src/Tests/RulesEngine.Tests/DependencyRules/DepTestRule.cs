@@ -1,5 +1,5 @@
-﻿using RulesEngine.Rules;
-using RulesEngine.Dependency;
+﻿using RulesEngine.Dependency;
+using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.DependencyRules
 {
@@ -21,7 +21,7 @@ namespace RulesEngine.Tests.DependencyRules
         public override void Apply(IEngineContext context, TestInput input, TestOutput output)
             => input.InputFlag = output.TestFlag = _flagValue;
 
-        public override bool DoesApply(IEngineContext context, TestInput input, TestOutput output) 
-            => _expected; 
+        public override bool DoesApply(IEngineContext context, TestInput input, TestOutput output)
+            => _expected;
     }
 }

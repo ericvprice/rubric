@@ -1,5 +1,5 @@
-﻿using RulesEngine.Rules;
-using RulesEngine.Dependency;
+﻿using RulesEngine.Dependency;
+using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
@@ -41,5 +41,4 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
         public override bool DoesApply(IEngineContext context, TestInput input, TestOutput output)
             => _expected;
     }
-
 }

@@ -5,7 +5,6 @@ using static System.String;
 
 namespace RulesEngine.Rules
 {
-
     /// <summary>
     ///     A runtime-constructed processing rule.
     /// </summary>
@@ -13,10 +12,9 @@ namespace RulesEngine.Rules
     /// <typeparam name="TOut">The engine output type.</typeparam>
     public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
     {
+        private readonly Action<IEngineContext, TIn, TOut> _action;
 
         private readonly Func<IEngineContext, TIn, TOut, bool> _predicate;
-
-        private readonly Action<IEngineContext, TIn, TOut> _action;
 
         public LambdaRule(
             string name,
@@ -26,7 +24,9 @@ namespace RulesEngine.Rules
             IEnumerable<string> provides = null
         )
         {
-            Name = IsNullOrWhiteSpace(name) ? throw new ArgumentException("Name is required and must be nonempty.", nameof(name)) : name;
+            Name = IsNullOrWhiteSpace(name)
+                ? throw new ArgumentException("Name is required and must be nonempty.", nameof(name))
+                : name;
             _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
             _action = action ?? throw new ArgumentNullException(nameof(action));
             Dependencies = dependencies?.ToArray() ?? new string[0];

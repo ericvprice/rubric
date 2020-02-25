@@ -4,16 +4,31 @@ using RulesEngine.Rules;
 
 namespace RulesEngine
 {
-    public interface IRulesEngine<in TIn, in TOut>
+    /// <summary>
+    ///     Basic interface for rule engines.
+    /// </summary>
+    public interface IRulesEngine
     {
+        ILogger Logger { get; }
 
+        bool IsAsync { get; }
+
+        bool IsParallel { get; }
+    }
+
+    /// <summary>
+    ///     A rule engine.
+    /// </summary>
+    /// <typeparam name="TIn">The input type.</typeparam>
+    /// <typeparam name="TOut">The output type.</typeparam>
+    public interface IRulesEngine<in TIn, in TOut> : IRulesEngine
+    {
         IEnumerable<IPreRule<TIn>> PreRules { get; }
 
         IEnumerable<IRule<TIn, TOut>> Rules { get; }
 
         IEnumerable<IPostRule<TOut>> PostRules { get; }
 
-        ILogger Logger { get; }
 
         /// <summary>
         ///     Apply the given input to the output object.
@@ -30,7 +45,5 @@ namespace RulesEngine
         /// <param name="output">The output object.</param>
         /// <param name="context">An optional injected context.</param>
         void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null);
-
     }
-
 }

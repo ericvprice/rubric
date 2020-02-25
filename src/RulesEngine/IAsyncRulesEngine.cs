@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using RulesEngine.Rules.Async;
 
 namespace RulesEngine
 {
-
-    public interface IAsyncRulesEngine<in TIn, in TOut>
+    public interface IAsyncRulesEngine<in TIn, in TOut> : IRulesEngine
     {
-
         /// <summary>
         ///     The preprocessing rules for this engine.
         /// </summary>
@@ -23,10 +20,6 @@ namespace RulesEngine
         ///     The postprocessing rules for this engine.
         /// </summary>
         IEnumerable<IAsyncPostRule<TOut>> PostRules { get; }
-
-        bool ProcessInParallel { get; set; }
-
-        ILogger Logger { get; }
 
         /// <summary>
         ///     Apply the given input to the output object.
@@ -43,7 +36,5 @@ namespace RulesEngine
         /// <param name="output">The output object.</param>
         /// <param name="context">An optional injected context.</param>
         Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null);
-
     }
-
 }

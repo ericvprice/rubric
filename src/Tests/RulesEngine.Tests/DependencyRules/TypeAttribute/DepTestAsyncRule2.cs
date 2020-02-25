@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using RulesEngine.Dependency;
 using RulesEngine.Rules.Async;
-using System.Threading.Tasks;
 
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {

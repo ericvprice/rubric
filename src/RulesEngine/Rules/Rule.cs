@@ -2,7 +2,6 @@
 
 namespace RulesEngine.Rules
 {
-
     /// <summary>
     ///     Abstract rule suitable for extension using attributes
     ///     for declarative dependencies.
@@ -11,15 +10,13 @@ namespace RulesEngine.Rules
     /// <typeparam name="TOut">The output type.</typeparam>
     public abstract class Rule<TIn, TOut> : BaseDependency, IRule<TIn, TOut>
     {
-
         /// <inheritdoc />
         public override string Name => GetType().FullName;
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract void Apply(IEngineContext context, TIn input, TOut output);
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract bool DoesApply(IEngineContext context, TIn input, TOut output);
-
     }
 }

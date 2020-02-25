@@ -4,7 +4,5 @@
     ///     Convenience naming for clarity.
     /// </summary>
     /// <typeparam name="TIn">The input type.</typeparam>
-    public abstract class PreRule<TIn> : PrePostRule<TIn>, IPreRule<TIn>
-    { 
-    }
+    public abstract class PreRule<TIn> : PrePostRule<TIn>, IPreRule<TIn> { }
 }

@@ -8,11 +8,11 @@ namespace RulesEngine.Builder
 {
     internal class AsyncRuleBuilder<TIn, TOut> : IAsyncRuleBuilder<TIn, TOut>
     {
+        private readonly List<string> _deps;
+        private readonly string _name;
 
         private readonly AsyncEngineBuilder<TIn, TOut> _parentBuilder;
-        private readonly string _name;
         private readonly List<string> _provides;
-        private readonly List<string> _deps;
         private Func<IEngineContext, TIn, TOut, Task> _action;
         private Func<IEngineContext, TIn, TOut, Task<bool>> _predicate;
 
@@ -27,7 +27,8 @@ namespace RulesEngine.Builder
 
         public IAsyncEngineBuilder<TIn, TOut> EndRule()
         {
-            _parentBuilder.AsyncRuleset.AddAsyncRule(new LambdaAsyncRule<TIn, TOut>(_name, _predicate, _action, _deps, _provides));
+            _parentBuilder.AsyncRuleset.AddAsyncRule(
+                new LambdaAsyncRule<TIn, TOut>(_name, _predicate, _action, _deps, _provides));
             return _parentBuilder;
         }
 

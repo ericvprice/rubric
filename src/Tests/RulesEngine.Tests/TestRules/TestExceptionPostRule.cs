@@ -9,12 +9,13 @@ namespace RulesEngine.Tests.TestRules
 
         public bool OnDoesApply { get; }
 
-        public override void Apply(IEngineContext context, TestOutput obj) {
+        public override void Apply(IEngineContext context, TestOutput obj)
+        {
             obj.TestFlag = true;
             throw new Exception();
         }
-        
-        public override bool DoesApply(IEngineContext context, TestOutput obj) 
+
+        public override bool DoesApply(IEngineContext context, TestOutput obj)
             => OnDoesApply ? throw new Exception() : true;
     }
 }

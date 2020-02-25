@@ -4,11 +4,15 @@ namespace RulesEngine
 {
     public interface IEngineContext
     {
-
         /// <summary>
         ///     Get/set arbitrary values by name
         /// </summary>
         object this[string name] { get; set; }
+
+        /// <summary>
+        ///     Engine logger.
+        /// </summary>
+        ILogger Logger { get; }
 
         /// <summary>
         ///     Check if an arbitrary value exists by name;
@@ -26,11 +30,6 @@ namespace RulesEngine
         /// <param name="name">The name of the value.</param>
         /// <typeparam name="T">The type to cast to.</typeparam>
         T Get<T>(string name);
-
-        /// <summary>
-        ///     Engine logger.
-        /// </summary>
-        ILogger Logger { get; }
 
         EngineContext Clone();
     }

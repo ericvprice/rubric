@@ -10,13 +10,11 @@ namespace RulesEngine.Rules
     public class LambdaPostRule<TOut> : LambdaPrePostRule<TOut>, IPostRule<TOut>
     {
         public LambdaPostRule(
-            string name, 
-            Func<IEngineContext, TOut, bool> predicate, 
-            Action<IEngineContext, TOut> action, 
-            IEnumerable<string> dependencies = null, 
+            string name,
+            Func<IEngineContext, TOut, bool> predicate,
+            Action<IEngineContext, TOut> action,
+            IEnumerable<string> dependencies = null,
             IEnumerable<string> provides = null
-        ) : base(name, predicate, action, dependencies, provides)
-        {
-        }
+        ) : base(name, predicate, action, dependencies, provides) { }
     }
 }

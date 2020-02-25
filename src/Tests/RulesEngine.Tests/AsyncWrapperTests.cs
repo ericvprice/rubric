@@ -4,9 +4,21 @@ using Xunit;
 
 namespace RulesEngine.Tests
 {
-
     public class AsyncWrapperTests
     {
+        [Fact]
+        public async void PostWrapper()
+        {
+            var sync = new TestPostRule(true);
+            var async = new AsyncPrePostRuleWrapper<TestOutput>(sync);
+            var testOutput = new TestOutput();
+            Assert.Equal(sync.Dependencies, async.Dependencies);
+            Assert.Equal(sync.Provides, async.Provides);
+            Assert.StartsWith(sync.Name, async.Name);
+            Assert.Equal(sync.DoesApply(null, testOutput), await async.DoesApply(null, testOutput));
+            await async.Apply(null, testOutput);
+            Assert.True(testOutput.TestFlag);
+        }
 
         [Fact]
         public async void PreWrapper()
@@ -23,20 +35,6 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
-        public async void PostWrapper()
-        {
-            var sync = new TestPostRule(true);
-            var async = new AsyncPrePostRuleWrapper<TestOutput>(sync);
-            var testOutput = new TestOutput();
-            Assert.Equal(sync.Dependencies, async.Dependencies);
-            Assert.Equal(sync.Provides, async.Provides);
-            Assert.StartsWith(sync.Name, async.Name);
-            Assert.Equal(sync.DoesApply(null, testOutput), await async.DoesApply(null, testOutput));
-            await async.Apply(null, testOutput);
-            Assert.True(testOutput.TestFlag);
-        }
-
-        [Fact]
         public async void Wrapper()
         {
             var sync = new TestRule(true);
@@ -46,11 +44,11 @@ namespace RulesEngine.Tests
             Assert.Equal(sync.Dependencies, async.Dependencies);
             Assert.Equal(sync.Provides, async.Provides);
             Assert.StartsWith(sync.Name, async.Name);
-            Assert.Equal(sync.DoesApply(null, testInput, testOutput), await async.DoesApply(null, testInput, testOutput));
+            Assert.Equal(sync.DoesApply(null, testInput, testOutput),
+                         await async.DoesApply(null, testInput, testOutput));
             await async.Apply(null, testInput, testOutput);
             Assert.True(testOutput.TestFlag);
             Assert.True(testInput.InputFlag);
         }
     }
-
 }

@@ -7,11 +7,11 @@ namespace RulesEngine.Builder
 {
     internal class RuleBuilder<TIn, TOut> : IRuleBuilder<TIn, TOut>
     {
+        private readonly List<string> _deps;
+        private readonly string _name;
 
         private readonly EngineBuilder<TIn, TOut> _parentBuilder;
-        private readonly string _name;
         private readonly List<string> _provides;
-        private readonly List<string> _deps;
         private Action<IEngineContext, TIn, TOut> _action;
         private Func<IEngineContext, TIn, TOut, bool> _predicate;
 

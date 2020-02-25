@@ -2,7 +2,6 @@ using RulesEngine.Dependency;
 
 namespace RulesEngine.Rules
 {
-
     /// <summary>
     ///     An engine processing rule.
     /// </summary>
@@ -10,7 +9,6 @@ namespace RulesEngine.Rules
     /// <typeparam name="TOut">The output type.</typeparam>
     public interface IRule<in TIn, in TOut> : IDependency
     {
-
         /// <summary>
         ///     Determine whether this rule applies in the given context on the given input and output.
         /// </summary>
@@ -27,7 +25,5 @@ namespace RulesEngine.Rules
         /// <param name="input">The input object.</param>
         /// <param name="output">The output object.</param>
         void Apply(IEngineContext context, TIn input, TOut output);
-
     }
-
 }

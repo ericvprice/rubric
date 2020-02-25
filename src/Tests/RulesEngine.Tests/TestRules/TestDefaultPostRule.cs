@@ -8,6 +8,5 @@ namespace RulesEngine.Tests.TestRules
 
         public override void Apply(IEngineContext context, TestOutput obj)
             => obj.TestFlag = true;
-
     }
 }

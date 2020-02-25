@@ -4,7 +4,6 @@ namespace RulesEngine.Dependency
 {
     public interface IDependency
     {
-
         /// <summary>
         ///     Get the dependencies for this dependency.
         /// </summary>

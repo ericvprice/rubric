@@ -4,10 +4,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace RulesEngine
 {
-
     public class EngineContext : IEngineContext
     {
-
         private readonly Dictionary<string, object> _stash = new Dictionary<string, object>();
 
         public EngineContext(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
@@ -22,7 +20,7 @@ namespace RulesEngine
 
         public bool ContainsKey(string name) => _stash.ContainsKey(name);
 
-        public T Get<T>(string name) => (T)_stash[name];
+        public T Get<T>(string name) => (T) _stash[name];
 
         public void Remove(string name) => _stash.Remove(name);
 
@@ -34,5 +32,4 @@ namespace RulesEngine
             return toReturn;
         }
     }
-
 }

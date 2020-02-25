@@ -1,19 +1,17 @@
-﻿using System.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RulesEngine.Rules.Async
 {
-
     /// <summary>
     ///     A constructed rule utilizing lambdas for the predicate and action.
     /// </summary>
     /// <typeparam name="T">The input/output type.</typeparam>
     public class LambdaAsyncPrePostRule<T> : IAsyncPrePostRule<T>
     {
-        private readonly Func<IEngineContext, T, Task<bool>> _predicate;
-
         private readonly Func<IEngineContext, T, Task> _body;
+        private readonly Func<IEngineContext, T, Task<bool>> _predicate;
 
         /// <summary>
         ///     Default constructor.
@@ -29,7 +27,8 @@ namespace RulesEngine.Rules.Async
             Func<IEngineContext, T, Task> body,
             IEnumerable<string> dependencies,
             IEnumerable<string> provides
-        ) {
+        )
+        {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
             _body = body ?? throw new ArgumentNullException(nameof(body));

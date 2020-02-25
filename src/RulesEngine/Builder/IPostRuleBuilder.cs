@@ -4,7 +4,6 @@ namespace RulesEngine.Builder
 {
     public interface IPostRuleBuilder<TIn, TOut>
     {
-
         IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, bool> predicate);
 
         IPostRuleBuilder<TIn, TOut> WithAction(Action<IEngineContext, TOut> action);
@@ -16,6 +15,5 @@ namespace RulesEngine.Builder
         IPostRuleBuilder<TIn, TOut> ThatProvides(string provides);
 
         IEngineBuilder<TIn, TOut> EndRule();
-
     }
 }

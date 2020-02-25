@@ -5,7 +5,6 @@ namespace RulesEngine.Builder
 {
     public interface IAsyncEngineBuilder<TIn, TOut>
     {
-
         IAsyncEngineBuilder<TIn, TOut> WithPreRule(IPreRule<TIn> rule);
 
         IAsyncEngineBuilder<TIn, TOut> WithRule(IRule<TIn, TOut> rule);
@@ -24,8 +23,8 @@ namespace RulesEngine.Builder
 
         IAsyncEngineBuilder<TIn, TOut> WithPostRule(IAsyncPostRule<TOut> rule);
 
+        IAsyncEngineBuilder<TIn, TOut> AsParallel();
+
         IAsyncRulesEngine<TIn, TOut> Build();
-
     }
-
 }

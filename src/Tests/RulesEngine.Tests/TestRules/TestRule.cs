@@ -17,7 +17,7 @@ namespace RulesEngine.Tests.TestRules
         public override void Apply(IEngineContext context, TestInput input, TestOutput output)
             => input.InputFlag = output.TestFlag = _flagValue;
 
-        public override bool DoesApply(IEngineContext context, TestInput input, TestOutput output) 
-            => _expected; 
+        public override bool DoesApply(IEngineContext context, TestInput input, TestOutput output)
+            => _expected;
     }
 }

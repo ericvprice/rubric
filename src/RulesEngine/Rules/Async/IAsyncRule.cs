@@ -3,7 +3,6 @@ using RulesEngine.Dependency;
 
 namespace RulesEngine.Rules.Async
 {
-
     /// <summary>
     ///     An asynchronous engine processing rule.
     /// </summary>
@@ -29,7 +28,5 @@ namespace RulesEngine.Rules.Async
         /// <param name="output">The output object.</param>
         /// <returns>An awaitable task.</returns>
         Task Apply(IEngineContext context, TIn input, TOut output);
-
     }
-
 }

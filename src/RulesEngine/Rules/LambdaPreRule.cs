@@ -15,9 +15,6 @@ namespace RulesEngine.Rules
             Action<IEngineContext, TIn> action,
             IEnumerable<string> dependencies = null,
             IEnumerable<string> provides = null
-        ) : base(name, predicate, action, dependencies, provides)
-        {
-
-        }
+        ) : base(name, predicate, action, dependencies, provides) { }
     }
 }

@@ -4,7 +4,6 @@ namespace RulesEngine.Builder
 {
     public interface IRuleBuilder<TIn, TOut>
     {
-
         IRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, TOut, bool> predicate);
 
         IRuleBuilder<TIn, TOut> WithAction(Action<IEngineContext, TIn, TOut> action);

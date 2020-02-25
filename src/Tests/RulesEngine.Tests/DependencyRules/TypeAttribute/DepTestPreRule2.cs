@@ -6,9 +6,8 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
     [DependsOn(typeof(DepTestPreRule))]
     public class DepTestPreRule2 : PreRule<TestInput>
     {
-        private readonly bool _shouldApply;
-
         private readonly bool _flagValue;
+        private readonly bool _shouldApply;
 
         public DepTestPreRule2(bool shouldApply, bool flagValue = true)
         {
@@ -20,5 +19,4 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 
         public override bool DoesApply(IEngineContext context, TestInput obj) => _shouldApply;
     }
-
 }

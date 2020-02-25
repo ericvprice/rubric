@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 namespace RulesEngine.Rules.Async
 {
-
     /// <summary>
     ///     Asynchronous wrapper for a synchronous rule.
     /// </summary>
@@ -27,7 +26,8 @@ namespace RulesEngine.Rules.Async
         }
 
         /// <inheritdoc />
-        public Task<bool> DoesApply(IEngineContext context, TIn input, TOut output) => Task.FromResult(_syncRule.DoesApply(context, input, output));
+        public Task<bool> DoesApply(IEngineContext context, TIn input, TOut output)
+            =>  Task.FromResult(_syncRule.DoesApply(context, input, output));
 
         /// <inheritdoc />
         public string Name => _syncRule.Name + " (wrapped async)";

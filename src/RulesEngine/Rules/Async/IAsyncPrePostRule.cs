@@ -23,6 +23,5 @@ namespace RulesEngine.Rules.Async
         /// <param name="context">The execution context.</param>
         /// <param name="obj">The input or output object to evaluate.</param>
         Task Apply(IEngineContext context, T obj);
-
     }
 }

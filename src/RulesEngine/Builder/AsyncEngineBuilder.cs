@@ -9,12 +9,14 @@ namespace RulesEngine.Builder
     {
         private readonly ILogger _logger;
 
+        private bool _isParallel;
+
         public AsyncEngineBuilder(ILogger logger = null) => _logger = logger ?? NullLogger.Instance;
 
         internal AsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new AsyncRuleset<TIn, TOut>();
 
         public IAsyncRulesEngine<TIn, TOut> Build()
-            => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, _logger);
+            => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, _logger) { IsParallel = _isParallel };
 
         public IAsyncPostRuleBuilder<TIn, TOut> WithPostRule(string name)
             => new AsyncPostRuleBuilder<TIn, TOut>(this, name);
@@ -58,6 +60,12 @@ namespace RulesEngine.Builder
         public IAsyncEngineBuilder<TIn, TOut> WithRule(IRule<TIn, TOut> rule)
         {
             AsyncRuleset.AddAsyncRule(rule.WrapAsync());
+            return this;
+        }
+
+        public IAsyncEngineBuilder<TIn, TOut> AsParallel()
+        {
+            _isParallel = true;
             return this;
         }
     }

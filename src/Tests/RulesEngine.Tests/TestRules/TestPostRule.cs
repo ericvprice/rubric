@@ -6,10 +6,7 @@ namespace RulesEngine.Tests.TestRules
     {
         private readonly bool _shouldApply;
 
-        public TestPostRule(bool shouldApply)
-        {
-            _shouldApply = shouldApply;
-        }
+        public TestPostRule(bool shouldApply) => _shouldApply = shouldApply;
 
         public override void Apply(IEngineContext context, TestOutput obj) => obj.TestFlag = true;
 

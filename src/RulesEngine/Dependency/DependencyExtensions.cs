@@ -6,20 +6,19 @@ using MoreLinq;
 
 namespace RulesEngine.Dependency
 {
-
     /// <summary>
     ///     Determine whether this object has any other dependencies.
     /// </summary>
     public static class DependencyExtensions
     {
-
         /// <summary>
         ///     Given a list of objects marked with dependency attributes, organize into list of lists, where each successive list
         ///     has mutually independent objects that are dependent on the objects in the previous lists.
         /// </summary>
         /// <typeparam name="T">The generic object type.</typeparam>
         /// <exception cref="ArgumentNullException">dependencies is null</exception>
-        public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies) where T : class, IDependency
+        public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies)
+            where T : class, IDependency
         {
             //Preconditions
             if (dependencies == null) throw new ArgumentNullException();
@@ -31,7 +30,8 @@ namespace RulesEngine.Dependency
 
             while (unresolved.Any())
             {
-                var (newResolved, newUnresolved) = unresolved.Partition(d => depMap[d].All(a => resolvedDeps.Contains(a)));
+                var (newResolved, newUnresolved) =
+                    unresolved.Partition(d => depMap[d].All(a => resolvedDeps.Contains(a)));
                 newResolved = newResolved.ToArray();
                 newUnresolved = newUnresolved.ToArray();
                 if (!newResolved.Any())
@@ -40,16 +40,21 @@ namespace RulesEngine.Dependency
                     foreach (var r in unresolved)
                     {
                         var notFound = depMap[r].Where(dep => !resolvedDeps.Contains(dep)).ToArray();
-                        var (circular, nonCircular) = notFound.Partition(n => unresolved.Any(u => u.Provides.Contains(n)));
+                        var (circular, nonCircular) =
+                            notFound.Partition(n => unresolved.Any(u => u.Provides.Contains(n)));
                         circular = circular.ToArray();
                         nonCircular = nonCircular.ToArray();
                         if (nonCircular.Any())
-                            sb.AppendLine($"Rule {typeof(T).FullName} has unsatisfied dependencies {string.Join(", ", nonCircular.Select(t => t))}.");
+                            sb.AppendLine(
+                                $"Rule {typeof(T).FullName} has unsatisfied dependencies {string.Join(", ", nonCircular.Select(t => t))}.");
                         else if (circular.Any())
-                            sb.AppendLine($"Rule {typeof(T).FullName} has circular dependencies {string.Join(", ", circular.Select(t => t))}.");
+                            sb.AppendLine(
+                                $"Rule {typeof(T).FullName} has circular dependencies {string.Join(", ", circular.Select(t => t))}.");
                     }
+
                     throw new DependencyException(sb.ToString());
                 }
+
                 resolvedDeps.AddRange(newResolved.Select(_ => _.Provides).SelectMany(_ => _));
                 unresolved = newUnresolved.ToArray();
                 yield return newResolved.ToArray();

@@ -1,5 +1,5 @@
-﻿using RulesEngine.Rules;
-using RulesEngine.Dependency;
+﻿using RulesEngine.Dependency;
+using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.DependencyRules
 {
@@ -10,9 +10,7 @@ namespace RulesEngine.Tests.DependencyRules
     {
         private readonly bool _shouldApply;
 
-        public DepTestPostRule(bool shouldApply) {
-            _shouldApply = shouldApply;
-        }
+        public DepTestPostRule(bool shouldApply) => _shouldApply = shouldApply;
 
         public override void Apply(IEngineContext context, TestOutput obj) => obj.TestFlag = true;
 

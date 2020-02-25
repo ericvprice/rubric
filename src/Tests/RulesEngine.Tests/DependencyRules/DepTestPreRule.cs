@@ -3,15 +3,13 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.DependencyRules
 {
-
     [DependsOn("dep1")]
     [DependsOn("dep2")]
     [Provides("dep3")]
     public class DepTestPreRule : PreRule<TestInput>
     {
-        private readonly bool _shouldApply;
-
         private readonly bool _flagValue;
+        private readonly bool _shouldApply;
 
         public DepTestPreRule(bool shouldApply, bool flagValue = true)
         {
@@ -23,5 +21,4 @@ namespace RulesEngine.Tests.DependencyRules
 
         public override bool DoesApply(IEngineContext context, TestInput obj) => _shouldApply;
     }
-
 }

@@ -2,25 +2,28 @@ using System;
 using System.Collections.Generic;
 using RulesEngine.Rules;
 using static System.String;
+
 namespace RulesEngine.Builder
 {
     internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
     {
+        private readonly List<string> _deps;
         private readonly EngineBuilder<TIn, TOut> _parentBuilder;
         private readonly List<string> _provides;
-        private readonly List<string> _deps;
         private Action<IEngineContext, TOut> _action;
         private Func<IEngineContext, TOut, bool> _predicate;
-
-        public string Name { get; }
 
         internal PostRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
         {
             _parentBuilder = engineBuilder;
-            Name = IsNullOrWhiteSpace(name) ? throw new ArgumentException("String cannot be null or empty.", nameof(name)) : name;
+            Name = IsNullOrWhiteSpace(name)
+                ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
+                : name;
             _provides = new List<string> { name };
             _deps = new List<string>();
         }
+
+        public string Name { get; }
 
 
         public IEngineBuilder<TIn, TOut> EndRule()
@@ -31,7 +34,8 @@ namespace RulesEngine.Builder
 
         public IPostRuleBuilder<TIn, TOut> ThatProvides(string provides)
         {
-            if (IsNullOrWhiteSpace(provides)) throw new ArgumentException("String cannot be null or empty.", nameof(provides));
+            if (IsNullOrWhiteSpace(provides))
+                throw new ArgumentException("String cannot be null or empty.", nameof(provides));
             _provides.Add(provides);
             return this;
         }

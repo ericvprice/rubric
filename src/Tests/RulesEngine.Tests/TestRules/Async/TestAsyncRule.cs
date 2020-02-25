@@ -1,16 +1,13 @@
-using RulesEngine.Rules.Async;
 using System.Threading.Tasks;
+using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.TestRules.Async
 {
     public class TestAsyncRule : AsyncRule<TestInput, TestOutput>
     {
-
         private readonly bool _shouldApply;
 
-        public TestAsyncRule(bool shouldApply) {
-            _shouldApply = shouldApply;
-        }
+        public TestAsyncRule(bool shouldApply) => _shouldApply = shouldApply;
 
         public override Task Apply(IEngineContext context, TestInput input, TestOutput output)
         {

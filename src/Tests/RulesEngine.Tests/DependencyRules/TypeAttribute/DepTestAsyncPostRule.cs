@@ -1,5 +1,5 @@
-using RulesEngine.Rules.Async;
 using System.Threading.Tasks;
+using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
@@ -7,10 +7,7 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
     {
         private readonly bool _shouldApply;
 
-        public DepTestAsyncPostRule(bool shouldApply)
-        {
-            _shouldApply = shouldApply;
-        }
+        public DepTestAsyncPostRule(bool shouldApply) => _shouldApply = shouldApply;
 
         public override Task Apply(IEngineContext context, TestOutput obj)
         {

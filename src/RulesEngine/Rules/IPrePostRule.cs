@@ -22,6 +22,5 @@ namespace RulesEngine.Rules
         /// <param name="context">The execution context.</param>
         /// <param name="obj">The input/output object to evaluate.</param>
         void Apply(IEngineContext context, T obj);
-
     }
 }

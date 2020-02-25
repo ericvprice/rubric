@@ -37,6 +37,5 @@ namespace RulesEngine.Rules.Async
 
         /// <inheritdoc />
         public IEnumerable<string> Provides => _syncRule.Provides;
-
     }
 }

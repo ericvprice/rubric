@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RulesEngine.Rules.Async
 {
@@ -14,10 +14,8 @@ namespace RulesEngine.Rules.Async
             string name,
             Func<IEngineContext, TOut, Task<bool>> predicate,
             Func<IEngineContext, TOut, Task> body,
-            IEnumerable<string> dependencies= null,
+            IEnumerable<string> dependencies = null,
             IEnumerable<string> provides = null
-        ) : base(name, predicate, body, dependencies, provides)
-        {
-        }
+        ) : base(name, predicate, body, dependencies, provides) { }
     }
 }

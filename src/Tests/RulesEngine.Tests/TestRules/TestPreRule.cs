@@ -2,14 +2,13 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
 {
-
     public class TestPreRule : PreRule<TestInput>
     {
-        private readonly bool _shouldApply;
-        
         private readonly bool _flagValue;
+        private readonly bool _shouldApply;
 
-        public TestPreRule(bool shouldApply, bool flagValue = true) {
+        public TestPreRule(bool shouldApply, bool flagValue = true)
+        {
             _flagValue = flagValue;
             _shouldApply = shouldApply;
         }

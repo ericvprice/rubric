@@ -12,5 +12,4 @@ namespace RulesEngine.Rules.Async
         /// <inheritdoc />
         public override Task<bool> DoesApply(IEngineContext context, TIn input, TOut output) => Task.FromResult(true);
     }
-
 }

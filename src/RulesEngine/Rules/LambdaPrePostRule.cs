@@ -6,9 +6,8 @@ namespace RulesEngine.Rules
 {
     public class LambdaPrePostRule<T> : IPrePostRule<T>
     {
-        private readonly Func<IEngineContext, T, bool> _predicate;
-
         private readonly Action<IEngineContext, T> _action;
+        private readonly Func<IEngineContext, T, bool> _predicate;
 
         public LambdaPrePostRule(
             string name,
@@ -37,6 +36,5 @@ namespace RulesEngine.Rules
 
         public bool DoesApply(IEngineContext context, T obj)
             => _predicate(context, obj);
-
     }
 }

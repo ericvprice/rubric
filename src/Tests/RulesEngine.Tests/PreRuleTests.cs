@@ -1,16 +1,14 @@
 ﻿using System;
-using Xunit;
-using RulesEngine.Rules;
 using System.Linq;
+using RulesEngine.Rules;
 using RulesEngine.Tests.DependencyRules;
 using RulesEngine.Tests.TestRules;
+using Xunit;
 
 namespace RulesEngine.Tests
 {
-
     public class PreRuleTests
     {
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -18,25 +16,6 @@ namespace RulesEngine.Tests
         {
             var rule = new TestPreRule(expected);
             Assert.Equal(expected, rule.DoesApply(null, null));
-        }
-
-        [Fact]
-        public void LambdaConstructorException()
-        {
-            Assert.Throws<ArgumentNullException>(() => new LambdaPreRule<TestInput>("test", null, (c, i) => { }));
-            Assert.Throws<ArgumentNullException>(() => new LambdaPreRule<TestInput>("test", (c, i) => true, null));
-            Assert.Throws<ArgumentNullException>(() => new LambdaPreRule<TestInput>(null, (c, i) => true, (c, i) => { }));
-        }
-
-        [Fact]
-        public void LambdaConstructor()
-        {
-            var rule = new LambdaPreRule<TestInput>("test", (c, i) => true, (c, i) => { }, new[] { "dep1", "dep2" }, new[] { "prv1", "prv2" });
-            Assert.Equal("test", rule.Name);
-            Assert.Contains("dep1", rule.Dependencies);
-            Assert.Contains("dep2", rule.Dependencies);
-            Assert.Contains("prv1", rule.Provides);
-            Assert.Contains("prv2", rule.Provides);
         }
 
         [Theory]
@@ -63,6 +42,27 @@ namespace RulesEngine.Tests
             Assert.Contains("dep1", dependencies);
             Assert.Contains("dep2", dependencies);
             Assert.Equal(2, dependencies.Count);
+        }
+
+        [Fact]
+        public void LambdaConstructor()
+        {
+            var rule = new LambdaPreRule<TestInput>("test", (c, i) => true, (c, i) => { }, new[] { "dep1", "dep2" },
+                                                    new[] { "prv1", "prv2" });
+            Assert.Equal("test", rule.Name);
+            Assert.Contains("dep1", rule.Dependencies);
+            Assert.Contains("dep2", rule.Dependencies);
+            Assert.Contains("prv1", rule.Provides);
+            Assert.Contains("prv2", rule.Provides);
+        }
+
+        [Fact]
+        public void LambdaConstructorException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new LambdaPreRule<TestInput>("test", null, (c, i) => { }));
+            Assert.Throws<ArgumentNullException>(() => new LambdaPreRule<TestInput>("test", (c, i) => true, null));
+            Assert.Throws<ArgumentNullException>(
+                () => new LambdaPreRule<TestInput>(null, (c, i) => true, (c, i) => { }));
         }
 
         [Fact]

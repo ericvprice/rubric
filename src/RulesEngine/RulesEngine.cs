@@ -8,13 +8,11 @@ using RulesEngine.Rules;
 
 namespace RulesEngine
 {
-
     public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
     {
+        private readonly IPostRule<TOut>[][] _postprocessingRules;
 
         private readonly IPreRule<TIn>[][] _preprocessingRules;
-
-        private readonly IPostRule<TOut>[][] _postprocessingRules;
 
         private readonly IRule<TIn, TOut>[][] _rules;
 
@@ -37,21 +35,70 @@ namespace RulesEngine
         {
             _preprocessingRules =
                 (preprocessingRules ?? Enumerable.Empty<IPreRule<TIn>>())
-                    .ResolveDependencies()
-                    .Select(e => e.ToArray())
-                    .ToArray();
+                .ResolveDependencies()
+                .Select(e => e.ToArray())
+                .ToArray();
             _postprocessingRules =
-                    (postprocessingRules ?? Enumerable.Empty<IPostRule<TOut>>())
-                        .ResolveDependencies()
-                        .Select(e => e.ToArray())
-                        .ToArray();
+                (postprocessingRules ?? Enumerable.Empty<IPostRule<TOut>>())
+                .ResolveDependencies()
+                .Select(e => e.ToArray())
+                .ToArray();
             _rules =
-                    (rules ?? Enumerable.Empty<IRule<TIn, TOut>>())
-                        .ResolveDependencies()
-                        .Select(e => e.ToArray())
-                        .ToArray();
+                (rules ?? Enumerable.Empty<IRule<TIn, TOut>>())
+                .ResolveDependencies()
+                .Select(e => e.ToArray())
+                .ToArray();
             Logger = logger ?? NullLogger.Instance;
         }
+
+        public void Apply(TIn input, TOut output, IEngineContext context = null)
+        {
+            var ctx = context ?? new EngineContext(Logger);
+            SetupContext(ctx);
+            foreach (var set in _preprocessingRules)
+                foreach (var rule in set)
+                    ApplyPreRule(ctx, rule, input);
+            foreach (var set in _rules)
+                foreach (var rule in set)
+                    ApplyRule(ctx, rule, input, output);
+            foreach (var set in _postprocessingRules)
+                foreach (var rule in set)
+                    ApplyPostRule(ctx, rule, output);
+        }
+
+
+        public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
+        {
+            var ctx = context ?? new EngineContext(Logger);
+            foreach (var input in inputs)
+            {
+                foreach (var set in _preprocessingRules)
+                    foreach (var rule in set)
+                        ApplyPreRule(ctx, rule, input);
+                foreach (var set in _rules)
+                    foreach (var rule in set)
+                        ApplyRule(ctx, rule, input, output);
+            }
+
+            foreach (var set in _postprocessingRules)
+                foreach (var rule in set)
+                    ApplyPostRule(ctx, rule, output);
+        }
+
+        public IEnumerable<IPreRule<TIn>> PreRules
+            => _preprocessingRules.SelectMany(_ => _);
+
+        public IEnumerable<IRule<TIn, TOut>> Rules
+            => _rules.SelectMany(_ => _);
+
+        public IEnumerable<IPostRule<TOut>> PostRules
+            => _postprocessingRules.SelectMany(_ => _);
+
+        public ILogger Logger { get; }
+
+        public bool IsAsync => false;
+
+        public bool IsParallel => false;
 
         private void ApplyPostRule(IEngineContext context, IPostRule<TOut> rule, TOut output)
         {
@@ -128,49 +175,6 @@ namespace RulesEngine
             }
         }
 
-        public void Apply(TIn input, TOut output, IEngineContext context = null)
-        {
-            var ctx = context ?? new EngineContext(Logger);
-            foreach (var set in _preprocessingRules)
-                foreach (var rule in set)
-                    ApplyPreRule(ctx, rule, input);
-            foreach (var set in _rules)
-                foreach (var rule in set)
-                    ApplyRule(ctx, rule, input, output);
-            foreach (var set in _postprocessingRules)
-                foreach (var rule in set)
-                    ApplyPostRule(ctx, rule, output);
-        }
-
-
-        public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
-        {
-            var ctx = context ?? new EngineContext(Logger);
-            foreach (var input in inputs)
-            {
-                foreach (var set in _preprocessingRules)
-                    foreach (var rule in set)
-                        ApplyPreRule(ctx, rule, input);
-                foreach (var set in _rules)
-                    foreach (var rule in set)
-                        ApplyRule(ctx, rule, input, output);
-            }
-            foreach (var set in _postprocessingRules)
-                foreach (var rule in set)
-                    ApplyPostRule(ctx, rule, output);
-        }
-
-        public IEnumerable<IPreRule<TIn>> PreRules
-            => _preprocessingRules.SelectMany(_ => _);
-
-        public IEnumerable<IRule<TIn, TOut>> Rules
-            => _rules.SelectMany(_ => _);
-
-        public IEnumerable<IPostRule<TOut>> PostRules
-            => _postprocessingRules.SelectMany(_ => _);
-
-        public ILogger Logger { get; }
-
+        private void SetupContext(IEngineContext ctx) => ctx[EngineConextExtensions.ENGINE_KEY] = this;
     }
-
 }

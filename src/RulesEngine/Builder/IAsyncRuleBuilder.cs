@@ -5,7 +5,6 @@ namespace RulesEngine.Builder
 {
     public interface IAsyncRuleBuilder<TIn, TOut>
     {
-
         IAsyncRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, TOut, Task<bool>> predicate);
 
         IAsyncRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TIn, TOut, Task> action);

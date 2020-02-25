@@ -4,15 +4,13 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Builder
 {
-
     internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
     {
+        internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
         internal Ruleset<TIn, TOut> Ruleset { get; } = new Ruleset<TIn, TOut>();
 
         internal ILogger Logger { get; }
-
-        internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
         public IPostRuleBuilder<TIn, TOut> WithPostRule(string name)
             => new PostRuleBuilder<TIn, TOut>(this, name);
@@ -42,16 +40,14 @@ namespace RulesEngine.Builder
         }
 
         public IRulesEngine<TIn, TOut> Build() => new RulesEngine<TIn, TOut>(Ruleset, Logger);
-
     }
 
     public static class EngineBuilder
     {
+        public static IEngineBuilder<TIn, TOut> ForInputAndOutput<TIn, TOut>(ILogger logger = null)
+            => new EngineBuilder<TIn, TOut>(logger);
 
-        public static IEngineBuilder<TIn, TOut> ForInputAndOutput<TIn, TOut>(ILogger logger = null) => new EngineBuilder<TIn, TOut>(logger);
-
-        public static IAsyncEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null) => new AsyncEngineBuilder<TIn, TOut>(logger);
-
+        public static IAsyncEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
+            => new AsyncEngineBuilder<TIn, TOut>(logger);
     }
-
 }

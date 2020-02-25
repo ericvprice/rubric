@@ -1,62 +1,13 @@
-using RulesEngine.Rules;
-using Xunit;
-using RulesEngine.Tests.TestRules;
-using RulesEngine.Builder;
 using System.Linq;
+using RulesEngine.Builder;
+using RulesEngine.Rules;
+using RulesEngine.Tests.TestRules;
+using Xunit;
 
 namespace RulesEngine.Tests
 {
-
     public class EngineTests
     {
-
-        [Fact]
-        public void Constructor()
-        {
-            var logger = new TestLogger();
-            var ruleSet = new Ruleset<TestInput, TestOutput>();
-            var engine = new RulesEngine<TestInput, TestOutput>(ruleSet, logger);
-            Assert.Equal(logger, engine.Logger);
-        }
-
-        [Fact]
-        public void ConstructorNullLogger()
-        {
-            var ruleSet = new Ruleset<TestInput, TestOutput>();
-            var engine = new RulesEngine<TestInput, TestOutput>(ruleSet);
-            Assert.NotNull(engine.Logger);
-        }
-
-        [Fact]
-        public void PreApplies()
-        {
-            var rule = new TestDefaultPreRule();
-            var input = new TestInput();
-            var output = new TestOutput();
-            var engine = new RulesEngine<TestInput, TestOutput>(
-                new IPreRule<TestInput>[] { rule },
-                null,
-                null
-            );
-            engine.Apply(input, output);
-            Assert.True(input.InputFlag);
-        }
-
-        [Fact]
-        public void PostApplies()
-        {
-            var rule = new TestDefaultPostRule();
-            var input = new TestInput();
-            var output = new TestOutput();
-            var engine = new RulesEngine<TestInput, TestOutput>(
-                null,
-                null,
-                new IPostRule<TestOutput>[] { rule }
-            );
-            engine.Apply(input, output);
-            Assert.True(output.TestFlag);
-        }
-
         [Fact]
         public void Applies()
         {
@@ -71,52 +22,6 @@ namespace RulesEngine.Tests
             engine.Apply(input, output);
             Assert.True(input.InputFlag);
             Assert.True(output.TestFlag);
-        }
-
-        [Fact]
-        public void PreNotApplies()
-        {
-            var rule = new TestPreRule(false);
-            var input = new TestInput();
-            var output = new TestOutput();
-            var engine = new RulesEngine<TestInput, TestOutput>(
-                new IPreRule<TestInput>[] { rule },
-                null,
-                null
-            );
-            engine.Apply(input, output);
-            Assert.False(input.InputFlag);
-        }
-
-        [Fact]
-        public void PostNotApplies()
-        {
-            var rule = new TestPostRule(false);
-            var input = new TestInput();
-            var output = new TestOutput();
-            var engine = new RulesEngine<TestInput, TestOutput>(
-                null,
-                null,
-                new IPostRule<TestOutput>[] { rule }
-            );
-            engine.Apply(input, output);
-            Assert.False(output.TestFlag);
-        }
-
-        [Fact]
-        public void NotApplies()
-        {
-            var rule = new TestRule(false);
-            var input = new TestInput();
-            var output = new TestOutput();
-            var engine = new RulesEngine<TestInput, TestOutput>(
-                null,
-                new IRule<TestInput, TestOutput>[] { rule },
-                null
-            );
-            engine.Apply(input, output);
-            Assert.False(input.InputFlag);
-            Assert.False(output.TestFlag);
         }
 
         [Fact]
@@ -152,63 +57,36 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
-        public void PreDoesApplyException()
+        public void ApplyException()
         {
-            var testPreRule = new TestExceptionPreRule(true);
-            var engine = new RulesEngine<TestInput, TestOutput>(new PreRule<TestInput>[] { testPreRule }, null, null);
+            var rule = new TestExceptionRule(false);
+            var engine = new RulesEngine<TestInput, TestOutput>(null, new Rule<TestInput, TestOutput>[] { rule }, null);
             var input = new TestInput();
             var output = new TestOutput();
             var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
-            Assert.Equal(testPreRule, exception.Rule);
+            Assert.Equal(rule, exception.Rule);
             Assert.Equal(input, exception.Input);
-            Assert.Null(exception.Output);
-            Assert.NotNull(exception.Context);
-            Assert.False(input.InputFlag);
-        }
-
-        [Fact]
-        public void PreApplyException()
-        {
-            var testPreRule = new TestExceptionPreRule(false);
-            var engine = new RulesEngine<TestInput, TestOutput>(new PreRule<TestInput>[] { testPreRule }, null, null);
-            var input = new TestInput();
-            var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
-            Assert.Equal(testPreRule, exception.Rule);
-            Assert.Equal(input, exception.Input);
-            Assert.Null(exception.Output);
+            Assert.Equal(output, exception.Output);
             Assert.NotNull(exception.Context);
             Assert.True(input.InputFlag);
-        }
-
-        [Fact]
-        public void PostDoesApplyException()
-        {
-            var testPostRule = new TestExceptionPostRule(true);
-            var engine = new RulesEngine<TestInput, TestOutput>(null, null, new PostRule<TestOutput>[] { testPostRule });
-            var input = new TestInput();
-            var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
-            Assert.Equal(testPostRule, exception.Rule);
-            Assert.Null(exception.Input);
-            Assert.Equal(output, exception.Output);
-            Assert.NotNull(exception.Context);
-            Assert.False(output.TestFlag);
-        }
-
-        [Fact]
-        public void PostApplyException()
-        {
-            var testPostRule = new TestExceptionPostRule(false);
-            var engine = new RulesEngine<TestInput, TestOutput>(null, null, new PostRule<TestOutput>[] { testPostRule });
-            var input = new TestInput();
-            var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
-            Assert.Equal(testPostRule, exception.Rule);
-            Assert.Null(exception.Input);
-            Assert.Equal(output, exception.Output);
-            Assert.NotNull(exception.Context);
             Assert.True(output.TestFlag);
+        }
+
+        [Fact]
+        public void Constructor()
+        {
+            var logger = new TestLogger();
+            var ruleSet = new Ruleset<TestInput, TestOutput>();
+            var engine = new RulesEngine<TestInput, TestOutput>(ruleSet, logger);
+            Assert.Equal(logger, engine.Logger);
+        }
+
+        [Fact]
+        public void ConstructorNullLogger()
+        {
+            var ruleSet = new Ruleset<TestInput, TestOutput>();
+            var engine = new RulesEngine<TestInput, TestOutput>(ruleSet);
+            Assert.NotNull(engine.Logger);
         }
 
         [Fact]
@@ -228,38 +106,26 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
-        public void ApplyException()
-        {
-            var rule = new TestExceptionRule(false);
-            var engine = new RulesEngine<TestInput, TestOutput>(null, new Rule<TestInput, TestOutput>[] { rule }, null);
-            var input = new TestInput();
-            var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
-            Assert.Equal(rule, exception.Rule);
-            Assert.Equal(input, exception.Input);
-            Assert.Equal(output, exception.Output);
-            Assert.NotNull(exception.Context);
-            Assert.True(input.InputFlag);
-            Assert.True(output.TestFlag);
-        }
-
-        [Fact]
         public void FullRun()
         {
             var engine = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                                       .WithPreRule("test")
-                                          .WithPredicate((c, i) => true)
-                                          .WithAction((c, i) => i.Items.Add("pre"))
-                                          .EndRule()
-                                       .WithRule("test")
-                                           .WithPredicate((c, i, o) => true)
-                                           .WithAction((c, i, o) => { i.Items.Add("rule"); o.Outputs.Add("rule"); })
-                                           .EndRule()
-                                       .WithPostRule("test")
-                                           .WithPredicate((c, o) => true)
-                                           .WithAction((c, o) => o.Outputs.Add("postrule"))
-                                           .EndRule()
-                                       .Build();
+                                      .WithPredicate((c, i) => true)
+                                      .WithAction((c, i) => i.Items.Add("pre"))
+                                      .EndRule()
+                                      .WithRule("test")
+                                      .WithPredicate((c, i, o) => true)
+                                      .WithAction((c, i, o) =>
+                                      {
+                                          i.Items.Add("rule");
+                                          o.Outputs.Add("rule");
+                                      })
+                                      .EndRule()
+                                      .WithPostRule("test")
+                                      .WithPredicate((c, o) => true)
+                                      .WithAction((c, o) => o.Outputs.Add("postrule"))
+                                      .EndRule()
+                                      .Build();
             var input1 = new TestInput();
             var input2 = new TestInput();
             var output = new TestOutput();
@@ -273,7 +139,144 @@ namespace RulesEngine.Tests
             Assert.Equal(3, output.Outputs.Count);
             Assert.Equal(2, output.Outputs.Count(o => o == "rule"));
             Assert.Single(output.Outputs.Where(o => o == "postrule"));
+        }
 
+        [Fact]
+        public void NotApplies()
+        {
+            var rule = new TestRule(false);
+            var input = new TestInput();
+            var output = new TestOutput();
+            var engine = new RulesEngine<TestInput, TestOutput>(
+                null,
+                new IRule<TestInput, TestOutput>[] { rule },
+                null
+            );
+            engine.Apply(input, output);
+            Assert.False(input.InputFlag);
+            Assert.False(output.TestFlag);
+        }
+
+        [Fact]
+        public void PostApplies()
+        {
+            var rule = new TestDefaultPostRule();
+            var input = new TestInput();
+            var output = new TestOutput();
+            var engine = new RulesEngine<TestInput, TestOutput>(
+                null,
+                null,
+                new IPostRule<TestOutput>[] { rule }
+            );
+            engine.Apply(input, output);
+            Assert.True(output.TestFlag);
+        }
+
+        [Fact]
+        public void PostApplyException()
+        {
+            var testPostRule = new TestExceptionPostRule(false);
+            var engine =
+                new RulesEngine<TestInput, TestOutput>(null, null, new PostRule<TestOutput>[] { testPostRule });
+            var input = new TestInput();
+            var output = new TestOutput();
+            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            Assert.Equal(testPostRule, exception.Rule);
+            Assert.Null(exception.Input);
+            Assert.Equal(output, exception.Output);
+            Assert.NotNull(exception.Context);
+            Assert.True(output.TestFlag);
+        }
+
+        [Fact]
+        public void PostDoesApplyException()
+        {
+            var testPostRule = new TestExceptionPostRule(true);
+            var engine =
+                new RulesEngine<TestInput, TestOutput>(null, null, new PostRule<TestOutput>[] { testPostRule });
+            var input = new TestInput();
+            var output = new TestOutput();
+            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            Assert.Equal(testPostRule, exception.Rule);
+            Assert.Null(exception.Input);
+            Assert.Equal(output, exception.Output);
+            Assert.NotNull(exception.Context);
+            Assert.False(output.TestFlag);
+        }
+
+        [Fact]
+        public void PostNotApplies()
+        {
+            var rule = new TestPostRule(false);
+            var input = new TestInput();
+            var output = new TestOutput();
+            var engine = new RulesEngine<TestInput, TestOutput>(
+                null,
+                null,
+                new IPostRule<TestOutput>[] { rule }
+            );
+            engine.Apply(input, output);
+            Assert.False(output.TestFlag);
+        }
+
+        [Fact]
+        public void PreApplies()
+        {
+            var rule = new TestDefaultPreRule();
+            var input = new TestInput();
+            var output = new TestOutput();
+            var engine = new RulesEngine<TestInput, TestOutput>(
+                new IPreRule<TestInput>[] { rule },
+                null,
+                null
+            );
+            engine.Apply(input, output);
+            Assert.True(input.InputFlag);
+        }
+
+        [Fact]
+        public void PreApplyException()
+        {
+            var testPreRule = new TestExceptionPreRule(false);
+            var engine = new RulesEngine<TestInput, TestOutput>(new PreRule<TestInput>[] { testPreRule }, null, null);
+            var input = new TestInput();
+            var output = new TestOutput();
+            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            Assert.Equal(testPreRule, exception.Rule);
+            Assert.Equal(input, exception.Input);
+            Assert.Null(exception.Output);
+            Assert.NotNull(exception.Context);
+            Assert.True(input.InputFlag);
+        }
+
+        [Fact]
+        public void PreDoesApplyException()
+        {
+            var testPreRule = new TestExceptionPreRule(true);
+            var engine = new RulesEngine<TestInput, TestOutput>(new PreRule<TestInput>[] { testPreRule }, null, null);
+            var input = new TestInput();
+            var output = new TestOutput();
+            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            Assert.Equal(testPreRule, exception.Rule);
+            Assert.Equal(input, exception.Input);
+            Assert.Null(exception.Output);
+            Assert.NotNull(exception.Context);
+            Assert.False(input.InputFlag);
+        }
+
+        [Fact]
+        public void PreNotApplies()
+        {
+            var rule = new TestPreRule(false);
+            var input = new TestInput();
+            var output = new TestOutput();
+            var engine = new RulesEngine<TestInput, TestOutput>(
+                new IPreRule<TestInput>[] { rule },
+                null,
+                null
+            );
+            engine.Apply(input, output);
+            Assert.False(input.InputFlag);
         }
     }
 }
