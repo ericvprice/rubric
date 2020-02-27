@@ -1,16 +1,10 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace RulesEngine
 {
     public class EngineContext : IEngineContext
     {
         private readonly Dictionary<string, object> _stash = new Dictionary<string, object>();
-
-        public EngineContext(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
-
-        public ILogger Logger { get; }
 
         public object this[string name]
         {
@@ -26,7 +20,7 @@ namespace RulesEngine
 
         public EngineContext Clone()
         {
-            var toReturn = new EngineContext(Logger);
+            var toReturn = new EngineContext();
             foreach (var name in _stash.Keys)
                 toReturn._stash[name] = _stash[name];
             return toReturn;

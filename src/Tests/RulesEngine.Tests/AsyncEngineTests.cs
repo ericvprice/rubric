@@ -64,8 +64,9 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new AsyncRuleset<TestInput, TestOutput>();
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, logger);
             Assert.Equal(logger, engine.Logger);
+            Assert.False(engine.IsParallel);
         }
 
         [Fact]
@@ -77,11 +78,19 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
+        public void ConstructorParallel()
+        {
+            var ruleSet = new AsyncRuleset<TestInput, TestOutput>();
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, true);
+            Assert.True(engine.IsParallel);
+        }
+
+        [Fact]
         public void ConstructorWithEmptySyncRuleset()
         {
             var logger = new TestLogger();
             var ruleSet = new Ruleset<TestInput, TestOutput>();
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, logger);
             Assert.Equal(logger, engine.Logger);
         }
 
@@ -93,7 +102,7 @@ namespace RulesEngine.Tests
             ruleSet.AddPreRule(new TestPreRule(true));
             ruleSet.AddPostRule(new TestPostRule(true));
             ruleSet.AddRule(new TestRule(true));
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, logger);
             Assert.NotEmpty(engine.PreRules);
             Assert.NotEmpty(engine.Rules);
             Assert.NotEmpty(engine.PostRules);

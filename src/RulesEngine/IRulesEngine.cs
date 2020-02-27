@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using RulesEngine.Rules;
@@ -9,11 +10,30 @@ namespace RulesEngine
     /// </summary>
     public interface IRulesEngine
     {
+        /// <summary>
+        ///     Logger instance.
+        /// </summary>
         ILogger Logger { get; }
 
+        /// <summary>
+        ///     Whether this engine is async.
+        /// </summary>
         bool IsAsync { get; }
 
+        /// <summary>
+        ///     Whether this engine is executing rules in parallel.
+        /// </summary>
         bool IsParallel { get; }
+
+        /// <summary>
+        ///     The input type for this engine.
+        /// </summary>
+        Type InputType { get; }
+
+        /// <summary>
+        ///     The output type for this engine.
+        /// </summary>
+        Type OutputType { get; }
     }
 
     /// <summary>
@@ -45,5 +65,6 @@ namespace RulesEngine
         /// <param name="output">The output object.</param>
         /// <param name="context">An optional injected context.</param>
         void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null);
+
     }
 }

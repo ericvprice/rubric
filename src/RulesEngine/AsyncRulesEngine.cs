@@ -31,9 +31,11 @@ namespace RulesEngine
         ///     Convenience ruleset constructor.
         /// </summary>
         /// <param name="ruleSet">Collection of synchronous and synchronous rules.</param>
+        /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
             AsyncRuleset<TIn, TOut> ruleSet,
+            bool isParallel = false,
             ILogger logger = null
         ) : this(
             null,
@@ -42,21 +44,27 @@ namespace RulesEngine
             ruleSet.AsyncRules,
             null,
             ruleSet.AsyncPostRules,
-            logger) { }
+            isParallel,
+            logger)
+        { }
 
         /// <summary>
         ///     Convenience ruleset constructor.
         /// </summary>
         /// <param name="ruleSet">Collection of synchronous and synchronous rules.</param>
+        /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
             Ruleset<TIn, TOut> ruleSet,
+            bool isParallel = false,
             ILogger logger = null
         ) : this(
             ruleSet.PreRules, null,
             ruleSet.Rules, null,
             ruleSet.PostRules, null,
-            logger) { }
+            isParallel,
+            logger)
+        { }
 
         /// <summary>
         ///     Full constructor.
@@ -64,13 +72,15 @@ namespace RulesEngine
         /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
         /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
         /// <param name="asyncPostRules">Collection of asynchronous postprocessing rules.</param>
+        /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
             IEnumerable<IAsyncPreRule<TIn>> asyncPreRules,
             IEnumerable<IAsyncRule<TIn, TOut>> asyncRules,
             IEnumerable<IAsyncPostRule<TOut>> asyncPostRules,
-            ILogger logger = null
-        ) : this(null, asyncPreRules, null, asyncRules, null, asyncPostRules, logger) { }
+            ILogger logger = null,
+            bool isParallel = false
+        ) : this(null, asyncPreRules, null, asyncRules, null, asyncPostRules, isParallel, logger) { }
 
 
         /// <summary>
@@ -82,6 +92,7 @@ namespace RulesEngine
         /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
         /// <param name="postRules">Collection of synchronous postprocessing rules.</param>
         /// <param name="asyncPostRules">Collection of asynchronous postprocessing rules.</param>
+        /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
             IEnumerable<IPreRule<TIn>> preRules,
@@ -90,9 +101,11 @@ namespace RulesEngine
             IEnumerable<IAsyncRule<TIn, TOut>> asyncRules,
             IEnumerable<IPostRule<TOut>> postRules,
             IEnumerable<IAsyncPostRule<TOut>> asyncPostRules,
+            bool isParallel = false,
             ILogger logger = null
         )
         {
+            IsParallel = isParallel;
             _preRules =
                 (preRules ?? Enumerable.Empty<IPreRule<TIn>>()).Select(r => r.WrapAsync())
                                                                .Concat(asyncPreRules ??
@@ -117,9 +130,15 @@ namespace RulesEngine
             Logger = logger ?? NullLogger.Instance;
         }
 
-        public bool IsParallel { get; set; }
+        public bool IsParallel { get; internal set; }
 
         public bool IsAsync => true;
+
+        /// <inheritdoc />
+        public Type InputType => typeof(TIn);
+
+        /// <inheritdoc />
+        public Type OutputType => typeof(TOut);
 
         public IEnumerable<IAsyncPreRule<TIn>> PreRules => _preRules.SelectMany(_ => _);
 
@@ -131,7 +150,7 @@ namespace RulesEngine
 
         public Task ApplyAsync(TIn input, TOut output, IEngineContext context = null)
         {
-            var ctx = context ?? new EngineContext(Logger);
+            var ctx = context ?? new EngineContext();
             SetupContext(ctx);
             return IsParallel
                 ? ApplyParallel(ctx, input, output)
@@ -140,7 +159,7 @@ namespace RulesEngine
 
         public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
         {
-            var ctx = context ?? new EngineContext(Logger);
+            var ctx = context ?? new EngineContext();
             SetupContext(ctx);
             return IsParallel
                 ? ApplyManyAsyncParallel(inputs, output, ctx)
@@ -175,7 +194,7 @@ namespace RulesEngine
                 };
             }
         }
-        
+
         private async Task ApplyRule(IEngineContext context, IAsyncRule<TIn, TOut> rule, TIn input, TOut output)
         {
             try
@@ -217,7 +236,7 @@ namespace RulesEngine
                 foreach (var rule in set)
                     await ApplyPrePostRule(context, rule, output).ConfigureAwait(false);
         }
-        
+
         private async Task ApplyParallel(IEngineContext context, TIn input, TOut output)
         {
             foreach (var set in _preRules)
@@ -240,10 +259,10 @@ namespace RulesEngine
             {
                 foreach (var set in _preRules)
                     foreach (var rule in set)
-                        await ApplyPrePostRule(context, rule, input);
+                        await ApplyPrePostRule(context, rule, input).ConfigureAwait(false);
                 foreach (var set in _rules)
                     foreach (var rule in set)
-                        await ApplyRule(context, rule, input, output);
+                        await ApplyRule(context, rule, input, output).ConfigureAwait(false);
             }
 
             foreach (var set in _postRules)
@@ -257,19 +276,19 @@ namespace RulesEngine
             {
                 foreach (var set in _preRules)
                     await Task.WhenAll(
-                        set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input).ConfigureAwait(false)))
+                        set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input)))
                     ).ConfigureAwait(false);
                 foreach (var set in _rules)
                     await Task.WhenAll(
-                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, output).ConfigureAwait(false)))
+                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, output)))
                     ).ConfigureAwait(false);
             }
             foreach (var set in _postRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output).ConfigureAwait(false)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output)))
                 ).ConfigureAwait(false);
         }
 
-        private void SetupContext(IEngineContext ctx) => ctx[EngineConextExtensions.ENGINE_KEY] = this;
+        internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
     }
 }

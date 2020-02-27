@@ -53,7 +53,7 @@ namespace RulesEngine
 
         public void Apply(TIn input, TOut output, IEngineContext context = null)
         {
-            var ctx = context ?? new EngineContext(Logger);
+            var ctx = context ?? new EngineContext();
             SetupContext(ctx);
             foreach (var set in _preprocessingRules)
                 foreach (var rule in set)
@@ -69,7 +69,7 @@ namespace RulesEngine
 
         public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
         {
-            var ctx = context ?? new EngineContext(Logger);
+            var ctx = context ?? new EngineContext();
             foreach (var input in inputs)
             {
                 foreach (var set in _preprocessingRules)
@@ -94,12 +94,21 @@ namespace RulesEngine
         public IEnumerable<IPostRule<TOut>> PostRules
             => _postprocessingRules.SelectMany(_ => _);
 
+        /// <inheritdoc />
         public ILogger Logger { get; }
 
+        /// <inheritdoc />
         public bool IsAsync => false;
 
+        /// <inheritdoc />
         public bool IsParallel => false;
-        
+
+        /// <inheritdoc />
+        public Type InputType => typeof(TIn);
+
+        /// <inheritdoc />
+        public Type OutputType => typeof(TOut);
+
         private void ApplyPrePostRule<T>(IEngineContext context, IPrePostRule<T> rule, T input)
         {
             try
@@ -146,6 +155,6 @@ namespace RulesEngine
             }
         }
 
-        private void SetupContext(IEngineContext ctx) => ctx[EngineConextExtensions.ENGINE_KEY] = this;
+        internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
     }
 }

@@ -16,7 +16,7 @@ namespace RulesEngine.Builder
         internal AsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new AsyncRuleset<TIn, TOut>();
 
         public IAsyncRulesEngine<TIn, TOut> Build()
-            => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, _logger) { IsParallel = _isParallel };
+            => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, _isParallel, _logger);
 
         public IAsyncPostRuleBuilder<TIn, TOut> WithPostRule(string name)
             => new AsyncPostRuleBuilder<TIn, TOut>(this, name);

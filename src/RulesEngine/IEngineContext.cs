@@ -10,11 +10,6 @@ namespace RulesEngine
         object this[string name] { get; set; }
 
         /// <summary>
-        ///     Engine logger.
-        /// </summary>
-        ILogger Logger { get; }
-
-        /// <summary>
         ///     Check if an arbitrary value exists by name;
         /// </summary>
         bool ContainsKey(string name);

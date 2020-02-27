@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace RulesEngine
 {
-    public static class EngineConextExtensions
+    public static class EngineContextExtensions
     {
         public const string ENGINE_KEY = "_ENGINE";
 
@@ -49,5 +50,12 @@ namespace RulesEngine
         /// <param name="context">The engine context.</param>
         public static bool IsParallel(this IEngineContext context)
             => context.GetEngine().IsParallel;
+
+        public static Type GetInputType(this IEngineContext context)
+            => context.GetEngine().InputType;
+        
+        public static Type GetOutputType(this IEngineContext context)
+            => context.GetEngine().OutputType;
+
     }
 }

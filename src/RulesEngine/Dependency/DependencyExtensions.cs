@@ -41,23 +41,7 @@ namespace RulesEngine.Dependency
                 foreach (var res in newlyResolvedObjects) depList.Remove(res);
             }
 
-            //Check that all dependencies have at least one provider.
-            var depNotFound = depList.SelectMany(d => d.Dependencies)
-                                     .Distinct()
-                                     .Where(d => !providerMap.ContainsKey(d)).ToArray();
-            if (depNotFound.Any())
-            {
-                var e = new DependencyException("Missing dependencies.");
-                var errorList = new List<string>();
-                foreach (var dep in depNotFound)
-                {
-                    var oList = depList.Where(d => d.Dependencies.Contains(dep)).Select(d => d.Name).ToArray();
-                    errorList.Add($"{string.Join(", ", oList)} depend(s) on missing dependency {dep}.");
-                }
-
-                e.Details = errorList;
-                throw e;
-            }
+            CheckForMissing(depList, providerMap);
 
             //Find root dependencies
             var roots = depMap.Where(d => !d.Value.Any())
@@ -86,11 +70,32 @@ namespace RulesEngine.Dependency
             return toReturn;
         }
 
+        private static void CheckForMissing<T>(IReadOnlyCollection<T> depList, IReadOnlyDictionary<string, List<T>> providerMap) where T : class, IDependency
+        {
+            //Check that all dependencies have at least one provider.
+            var depNotFound = depList.SelectMany(d => d.Dependencies)
+                                     .Distinct()
+                                     .Where(d => !providerMap.ContainsKey(d)).ToArray();
+            if (depNotFound.Any())
+            {
+                var e = new DependencyException("Missing dependencies.");
+                var errorList = new List<string>();
+                foreach (var dep in depNotFound)
+                {
+                    var oList = depList.Where(d => d.Dependencies.Contains(dep)).Select(d => d.Name).ToArray();
+                    errorList.Add($"{string.Join(", ", oList)} depend(s) on missing dependency {dep}.");
+                }
+
+                e.Details = errorList;
+                throw e;
+            }
+        }
+
         private static string FindCycle<T>(IEnumerable<T> deps) where T : class, IDependency
         {
             var depList = deps.ToList();
             var paths = new List<List<T>>(depList.Select(d => new List<T> { d }));
-            while (paths.Any())
+            while (true)
             {
                 var path = paths.First();
                 paths.Remove(path);
@@ -109,9 +114,6 @@ namespace RulesEngine.Dependency
 
                 paths.AddRange(newPaths);
             }
-
-            //This shouldn't ever happen, but we have to make the compiler happy.
-            return "";
         }
     }
 }

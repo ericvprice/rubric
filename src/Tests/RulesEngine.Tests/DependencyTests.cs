@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using RulesEngine.Dependency;
 using Xunit;
@@ -50,7 +51,7 @@ namespace RulesEngine.Tests
             var dep = new TestDependency("dep1") { Provides = new[] { "test" } };
             var dep0 = new TestDependency("dep2") { Provides = new[] { "test0" }, Dependencies = new[] { "test" } };
             var dep1 = new TestDependency("dep3")
-                { Provides = new[] { "test1" }, Dependencies = new[] { "test2", "test0" } };
+            { Provides = new[] { "test1" }, Dependencies = new[] { "test2", "test0" } };
             var dep2 = new TestDependency("dep4") { Provides = new[] { "test2" }, Dependencies = new[] { "test3" } };
             var dep3 = new TestDependency("dep5") { Provides = new[] { "test3" }, Dependencies = new[] { "test1" } };
             Assert.Throws<DependencyException>(() => new[] { dep, dep0, dep1, dep2, dep3 }
@@ -154,6 +155,19 @@ namespace RulesEngine.Tests
                                                               .ToArray());
             Assert.Single(ex.Details);
             Assert.Equal("dep3 depend(s) on missing dependency test3.", ex.Details.First());
+        }
+
+        [Fact]
+        public void ThrowsOnNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => DependencyExtensions.ResolveDependencies((IEnumerable<TestDependency>)null));
+        }
+
+        [Fact]
+        public void ReturnsEmpty()
+        {
+            var result = DependencyExtensions.ResolveDependencies(new TestDependency[0]);
+            Assert.Empty(result);
         }
     }
 }
