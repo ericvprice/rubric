@@ -57,13 +57,13 @@ namespace RulesEngine
             SetupContext(ctx);
             foreach (var set in _preprocessingRules)
                 foreach (var rule in set)
-                    ApplyPreRule(ctx, rule, input);
+                    ApplyPrePostRule(ctx, rule, input);
             foreach (var set in _rules)
                 foreach (var rule in set)
                     ApplyRule(ctx, rule, input, output);
             foreach (var set in _postprocessingRules)
                 foreach (var rule in set)
-                    ApplyPostRule(ctx, rule, output);
+                    ApplyPrePostRule(ctx, rule, output);
         }
 
 
@@ -74,7 +74,7 @@ namespace RulesEngine
             {
                 foreach (var set in _preprocessingRules)
                     foreach (var rule in set)
-                        ApplyPreRule(ctx, rule, input);
+                        ApplyPrePostRule(ctx, rule, input);
                 foreach (var set in _rules)
                     foreach (var rule in set)
                         ApplyRule(ctx, rule, input, output);
@@ -82,7 +82,7 @@ namespace RulesEngine
 
             foreach (var set in _postprocessingRules)
                 foreach (var rule in set)
-                    ApplyPostRule(ctx, rule, output);
+                    ApplyPrePostRule(ctx, rule, output);
         }
 
         public IEnumerable<IPreRule<TIn>> PreRules
@@ -99,52 +99,25 @@ namespace RulesEngine
         public bool IsAsync => false;
 
         public bool IsParallel => false;
-
-        private void ApplyPostRule(IEngineContext context, IPostRule<TOut> rule, TOut output)
-        {
-            try
-            {
-                var doesApply = rule.DoesApply(context, output);
-                Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-                if (doesApply)
-                {
-                    Logger.LogTrace($"Applying {rule.Name}.");
-                    rule.Apply(context, output);
-                    Logger.LogTrace($"Finished applying {rule.Name}.");
-                }
-            }
-            catch (Exception e)
-            {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
-                {
-                    Context = context,
-                    Input = null,
-                    Output = output,
-                    Rule = rule
-                };
-            }
-        }
-
-        private void ApplyPreRule(IEngineContext context, IPreRule<TIn> rule, TIn input)
+        
+        private void ApplyPrePostRule<T>(IEngineContext context, IPrePostRule<T> rule, T input)
         {
             try
             {
                 var doesApply = rule.DoesApply(context, input);
                 Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-                if (doesApply)
-                {
-                    Logger.LogTrace($"Applying {rule.Name}.");
-                    rule.Apply(context, input);
-                    Logger.LogTrace($"Finished applying {rule.Name}.");
-                }
+                if (!doesApply) return;
+                Logger.LogTrace($"Applying {rule.Name}.");
+                rule.Apply(context, input);
+                Logger.LogTrace($"Finished applying {rule.Name}.");
             }
             catch (Exception e)
             {
                 throw new EngineHaltException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
-                    Input = input,
-                    Output = null,
+                    Input = input is TIn @in ? @in : default,
+                    Output = input is TOut @out ? @out : default,
                     Rule = rule
                 };
             }
@@ -156,12 +129,10 @@ namespace RulesEngine
             {
                 var doesApply = rule.DoesApply(context, input, output);
                 Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-                if (doesApply)
-                {
-                    Logger.LogTrace($"Applying {rule.Name}.");
-                    rule.Apply(context, input, output);
-                    Logger.LogTrace($"Finished applying {rule.Name}.");
-                }
+                if (!doesApply) return;
+                Logger.LogTrace($"Applying {rule.Name}.");
+                rule.Apply(context, input, output);
+                Logger.LogTrace($"Finished applying {rule.Name}.");
             }
             catch (Exception e)
             {

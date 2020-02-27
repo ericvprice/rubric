@@ -147,7 +147,7 @@ namespace RulesEngine
                 : ApplyManyAsyncSerial(inputs, output, ctx);
         }
 
-        private async Task ApplyPreRule(IEngineContext context, IAsyncPrePostRule<TIn> rule, TIn input)
+        private async Task ApplyPrePostRule<T>(IEngineContext context, IAsyncPrePostRule<T> rule, T input)
         {
             try
             {
@@ -169,42 +169,13 @@ namespace RulesEngine
                 throw new EngineHaltException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
-                    Input = input,
-                    Output = null,
+                    Input = input is TIn @in ? @in : default,
+                    Output = input is TOut @out ? @out : default,
                     Rule = rule
                 };
             }
         }
-
-        private async Task ApplyPostRule(IEngineContext context, IAsyncPrePostRule<TOut> rule, TOut output)
-        {
-            try
-            {
-                var doesApply = await rule.DoesApply(context, output).ConfigureAwait(false);
-                if (doesApply)
-                {
-                    Logger.LogTrace($"Rule {rule.Name} applies.");
-                    Logger.LogTrace($"Applying {rule.Name}.");
-                    await rule.Apply(context, output).ConfigureAwait(false);
-                    Logger.LogTrace($"Finished applying {rule.Name}.");
-                }
-                else
-                {
-                    Logger.LogTrace($"Rule {rule.Name} does not apply.");
-                }
-            }
-            catch (Exception e)
-            {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
-                {
-                    Context = context,
-                    Input = null,
-                    Output = output,
-                    Rule = rule
-                };
-            }
-        }
-
+        
         private async Task ApplyRule(IEngineContext context, IAsyncRule<TIn, TOut> rule, TIn input, TOut output)
         {
             try
@@ -238,20 +209,20 @@ namespace RulesEngine
         {
             foreach (var set in _preRules)
                 foreach (var rule in set)
-                    await ApplyPreRule(context, rule, input);
+                    await ApplyPrePostRule(context, rule, input).ConfigureAwait(false);
             foreach (var set in _rules)
                 foreach (var rule in set)
-                    await ApplyRule(context, rule, input, output);
+                    await ApplyRule(context, rule, input, output).ConfigureAwait(false);
             foreach (var set in _postRules)
                 foreach (var rule in set)
-                    await ApplyPostRule(context, rule, output);
+                    await ApplyPrePostRule(context, rule, output).ConfigureAwait(false);
         }
-
+        
         private async Task ApplyParallel(IEngineContext context, TIn input, TOut output)
         {
             foreach (var set in _preRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPreRule(context, r, input)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input)))
                 ).ConfigureAwait(false);
             foreach (var set in _rules)
                 await Task.WhenAll(
@@ -259,7 +230,7 @@ namespace RulesEngine
                 ).ConfigureAwait(false);
             foreach (var set in _postRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPostRule(context, r, output)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output)))
                 ).ConfigureAwait(false);
         }
 
@@ -269,7 +240,7 @@ namespace RulesEngine
             {
                 foreach (var set in _preRules)
                     foreach (var rule in set)
-                        await ApplyPreRule(context, rule, input);
+                        await ApplyPrePostRule(context, rule, input);
                 foreach (var set in _rules)
                     foreach (var rule in set)
                         await ApplyRule(context, rule, input, output);
@@ -277,7 +248,7 @@ namespace RulesEngine
 
             foreach (var set in _postRules)
                 foreach (var rule in set)
-                    await ApplyPostRule(context, rule, output);
+                    await ApplyPrePostRule(context, rule, output);
         }
 
         private async Task ApplyManyAsyncParallel(IEnumerable<TIn> inputs, TOut output, IEngineContext context)
@@ -286,18 +257,16 @@ namespace RulesEngine
             {
                 foreach (var set in _preRules)
                     await Task.WhenAll(
-                        set.Select(r => Task.Run(() => ApplyPreRule(context, r, input)))
+                        set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input).ConfigureAwait(false)))
                     ).ConfigureAwait(false);
-                ;
                 foreach (var set in _rules)
                     await Task.WhenAll(
-                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, output)))
+                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, output).ConfigureAwait(false)))
                     ).ConfigureAwait(false);
             }
-
             foreach (var set in _postRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPostRule(context, r, output)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output).ConfigureAwait(false)))
                 ).ConfigureAwait(false);
         }
 

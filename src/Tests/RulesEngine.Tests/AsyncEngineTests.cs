@@ -221,7 +221,7 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
-        public async Task WrapApplyAsyncException()
+        public async Task ApplyAsyncException()
         {
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null, new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) }, null);
@@ -233,7 +233,7 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
-        public async Task WrapDoesApplyAsyncException()
+        public async Task DoesApplyAsyncException()
         {
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null, new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) }, null);
@@ -245,51 +245,71 @@ namespace RulesEngine.Tests
         }
 
         [Fact]
-        public async Task WrapPostApplyAsyncException()
+        public async Task PostApplyAsyncException()
         {
+            var testPostRule = new TestExceptionAsyncPostRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    null, null, new AsyncPostRule<TestOutput>[] { new TestExceptionAsyncPostRule(false) });
+                    null, null, new AsyncPostRule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            Assert.True(output.TestFlag);
+            Assert.Equal(testPostRule, exception.Rule);
+            Assert.Null(exception.Input);
+            Assert.Equal(output, exception.Output);
+            Assert.NotNull(exception.Context);
+        }
+
+        [Fact]
+        public async Task PostDoesApplyAsyncException()
+        {
+            var testPostRule = new TestExceptionAsyncPostRule(false);
+            var engine =
+                new AsyncRulesEngine<TestInput, TestOutput>(
+                    null, null, new AsyncPostRule<TestOutput>[] { testPostRule });
+            var input = new TestInput();
+            var output = new TestOutput();
+            var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            Assert.Equal(testPostRule, exception.Rule);
+            Assert.Null(exception.Input);
+            Assert.Equal(output, exception.Output);
+            Assert.NotNull(exception.Context);
             Assert.True(output.TestFlag);
         }
 
         [Fact]
-        public async Task WrapPostDoesApplyAsyncException()
+        public async Task PreApplyAsyncException()
         {
+            var testPreRule = new TestExceptionAsyncPreRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    null, null, new AsyncPostRule<TestOutput>[] { new TestExceptionAsyncPostRule(true) });
+                    new AsyncPreRule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
-            Assert.False(output.TestFlag);
-        }
-
-        [Fact]
-        public async Task WrapPreApplyAsyncException()
-        {
-            var engine =
-                new AsyncRulesEngine<TestInput, TestOutput>(
-                    new AsyncPreRule<TestInput>[] { new TestExceptionAsyncPreRule(false) }, null, null);
-            var input = new TestInput();
-            var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            Assert.Equal(testPreRule, exception.Rule);
+            Assert.Equal(input, exception.Input);
+            Assert.Null(exception.Output);
+            Assert.NotNull(exception.Context);
             Assert.True(input.InputFlag);
         }
 
         [Fact]
-        public async Task WrapPreDoesApplyAsyncException()
+        public async Task PreDoesApplyAsyncException()
         {
+            var testPreRule = new TestExceptionAsyncPreRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    new AsyncPreRule<TestInput>[] { new TestExceptionAsyncPreRule(true) }, null, null);
+                    new AsyncPreRule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(async () => await engine.ApplyAsync(input, output));
-            Assert.False(input.InputFlag);
+            var exception = await Assert.ThrowsAsync<EngineHaltException>(async () => await engine.ApplyAsync(input, output));
+            Assert.Equal(testPreRule, exception.Rule);
+            Assert.Equal(input, exception.Input);
+            Assert.Null(exception.Output);
+            Assert.NotNull(exception.Context);
+            Assert.True(input.InputFlag);
         }
     }
 }

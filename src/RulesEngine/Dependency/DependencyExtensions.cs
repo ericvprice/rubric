@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using MoreLinq;
 
 namespace RulesEngine.Dependency
 {
@@ -11,54 +9,109 @@ namespace RulesEngine.Dependency
     /// </summary>
     public static class DependencyExtensions
     {
-        /// <summary>
-        ///     Given a list of objects marked with dependency attributes, organize into list of lists, where each successive list
-        ///     has mutually independent objects that are dependent on the objects in the previous lists.
-        /// </summary>
-        /// <typeparam name="T">The generic object type.</typeparam>
-        /// <exception cref="ArgumentNullException">dependencies is null</exception>
         public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies)
             where T : class, IDependency
         {
-            //Preconditions
             if (dependencies == null) throw new ArgumentNullException();
-            dependencies = dependencies.ToArray();
-            if (!dependencies.Any()) yield break;
-            var depMap = dependencies.ToDictionary(d => d, d => d.Dependencies.ToArray());
-            var resolvedDeps = new List<string>();
-            var unresolved = dependencies.ToArray();
+            var depList = dependencies.ToList();
+            if (!depList.Any()) return new T[0][];
 
-            while (unresolved.Any())
+            //Setup local lists and dictionary lookups
+            var resolvedObjects = new List<T>();
+            var resolvedDependencies = new List<string>();
+            var depMap = depList.ToDictionary(d => d, d => d.Dependencies.ToArray());
+            var providesMap = depList.ToDictionary(d => d, d => d.Provides.ToArray());
+            var providerMap = depList.SelectMany(d => d.Provides)
+                                     .Distinct()
+                                     .ToDictionary(
+                                         p => p, p => depList.Where(d => d.Provides.Contains(p)).ToList());
+
+            var toReturn = new List<List<T>>();
+
+            void UpdateResolved(List<T> newlyResolvedObjects)
             {
-                var (newResolved, newUnresolved) =
-                    unresolved.Partition(d => depMap[d].All(a => resolvedDeps.Contains(a)));
-                newResolved = newResolved.ToArray();
-                newUnresolved = newUnresolved.ToArray();
-                if (!newResolved.Any())
-                {
-                    var sb = new StringBuilder();
-                    foreach (var r in unresolved)
-                    {
-                        var notFound = depMap[r].Where(dep => !resolvedDeps.Contains(dep)).ToArray();
-                        var (circular, nonCircular) =
-                            notFound.Partition(n => unresolved.Any(u => u.Provides.Contains(n)));
-                        circular = circular.ToArray();
-                        nonCircular = nonCircular.ToArray();
-                        if (nonCircular.Any())
-                            sb.AppendLine(
-                                $"Rule {typeof(T).FullName} has unsatisfied dependencies {string.Join(", ", nonCircular.Select(t => t))}.");
-                        else if (circular.Any())
-                            sb.AppendLine(
-                                $"Rule {typeof(T).FullName} has circular dependencies {string.Join(", ", circular.Select(t => t))}.");
-                    }
+                resolvedObjects.AddRange(newlyResolvedObjects);
+                //Add dependencies that have all of their providers now resolved
+                resolvedDependencies.AddRange(
+                    newlyResolvedObjects.SelectMany(o => providesMap[o])
+                                        .Distinct()
+                                        .Where(p => providerMap[p].All(o => resolvedObjects.Contains(o)))
+                );
+                toReturn.Add(newlyResolvedObjects);
+                foreach (var res in newlyResolvedObjects) depList.Remove(res);
+            }
 
-                    throw new DependencyException(sb.ToString());
+            //Check that all dependencies have at least one provider.
+            var depNotFound = depList.SelectMany(d => d.Dependencies)
+                                     .Distinct()
+                                     .Where(d => !providerMap.ContainsKey(d)).ToArray();
+            if (depNotFound.Any())
+            {
+                var e = new DependencyException("Missing dependencies.");
+                var errorList = new List<string>();
+                foreach (var dep in depNotFound)
+                {
+                    var oList = depList.Where(d => d.Dependencies.Contains(dep)).Select(d => d.Name).ToArray();
+                    errorList.Add($"{string.Join(", ", oList)} depend(s) on missing dependency {dep}.");
                 }
 
-                resolvedDeps.AddRange(newResolved.Select(_ => _.Provides).SelectMany(_ => _));
-                unresolved = newUnresolved.ToArray();
-                yield return newResolved.ToArray();
+                e.Details = errorList;
+                throw e;
             }
+
+            //Find root dependencies
+            var roots = depMap.Where(d => !d.Value.Any())
+                              .Select(d => d.Key)
+                              .ToList();
+            if (!roots.Any()) throw new DependencyException("No roots found.");
+            UpdateResolved(roots);
+
+
+            while (depList.Any())
+            {
+                var newlyResolvedDependencies =
+                    depList.Where(d => depMap[d].All(d1 => resolvedDependencies.Contains(d1)))
+                           .ToList();
+                //Uh oh, we hit a brick wall.
+                //We know we have a closed set of dependencies from above, so
+                //the only way this happens is if we have a circular dependency somewhere in the dependencies left.
+                if (!newlyResolvedDependencies.Any())
+                    throw new DependencyException("Circular dependencies found.")
+                    {
+                        Details = new List<string> { FindCycle(depList) }
+                    };
+                UpdateResolved(newlyResolvedDependencies);
+            }
+
+            return toReturn;
+        }
+
+        private static string FindCycle<T>(IEnumerable<T> deps) where T : class, IDependency
+        {
+            var depList = deps.ToList();
+            var paths = new List<List<T>>(depList.Select(d => new List<T> { d }));
+            while (paths.Any())
+            {
+                var path = paths.First();
+                paths.Remove(path);
+                var newPaths = path.Last()
+                                   .Dependencies
+                                   .SelectMany(d => depList.Where(d1 => d1.Provides.Contains(d)))
+                                   .Select(d => new List<T>(path) { d })
+                                   .ToList();
+                foreach (var newPath in newPaths)
+                {
+                    var index = newPath.IndexOf(path.Last());
+                    if (index == path.Count - 1) continue;
+                    var cycleList = newPath.GetRange(index, newPath.Count - 1).Select(d => d.Name);
+                    return $"Dependency cycle {string.Join("->", cycleList)}";
+                }
+
+                paths.AddRange(newPaths);
+            }
+
+            //This shouldn't ever happen, but we have to make the compiler happy.
+            return "";
         }
     }
 }
