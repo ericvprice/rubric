@@ -4,7 +4,7 @@ using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.TestRules.Async
 {
-    public class TestExceptionAsyncPostRule : AsyncPostRule<TestOutput>
+    public class TestExceptionAsyncPostRule : AsyncRule<TestOutput>
     {
         public TestExceptionAsyncPostRule(bool onDoesApply)
             => OnDoesApply = onDoesApply;

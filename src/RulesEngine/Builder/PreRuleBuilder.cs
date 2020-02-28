@@ -6,6 +6,8 @@ using static System.String;
 namespace RulesEngine.Builder
 {
     internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
         private readonly List<string> _deps;
         private readonly string _name;
@@ -25,7 +27,7 @@ namespace RulesEngine.Builder
 
         public IEngineBuilder<TIn, TOut> EndRule()
         {
-            _parentBuilder.Ruleset.AddPreRule(new LambdaPreRule<TIn>(_name, _predicate, _action, _deps, _provides));
+            _parentBuilder.Ruleset.AddPreRule(new LambdaRule<TIn>(_name, _predicate, _action, _deps, _provides));
             return _parentBuilder;
         }
 

@@ -3,7 +3,7 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
 {
-    public class TestExceptionPostRule : PostRule<TestOutput>
+    public class TestExceptionPostRule : Rule<TestOutput>
     {
         public TestExceptionPostRule(bool onDoesApply) => OnDoesApply = onDoesApply;
 

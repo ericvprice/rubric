@@ -20,6 +20,8 @@ namespace RulesEngine
         /// </summary>
         /// <param name="context">The engine context</param>
         public static IRulesEngine<TIn, TOut> GetEngine<TIn, TOut>(this IEngineContext context)
+            where TIn : class
+            where TOut : class
             => context.Get<IRulesEngine<TIn, TOut>>(ENGINE_KEY);
 
         /// <summary>
@@ -28,6 +30,8 @@ namespace RulesEngine
         /// </summary>
         /// <param name="context">The engine context.</param>
         public static IAsyncRulesEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
+            where TIn : class
+            where TOut : class
             => context.Get<IAsyncRulesEngine<TIn, TOut>>(ENGINE_KEY);
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace RulesEngine
 
         public static Type GetInputType(this IEngineContext context)
             => context.GetEngine().InputType;
-        
+
         public static Type GetOutputType(this IEngineContext context)
             => context.GetEngine().OutputType;
 

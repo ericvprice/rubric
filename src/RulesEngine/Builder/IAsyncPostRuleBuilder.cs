@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 namespace RulesEngine.Builder
 {
     public interface IAsyncPostRuleBuilder<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
         IAsyncPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, Task<bool>> predicate);
 

@@ -5,7 +5,7 @@ using RulesEngine.Rules.Async;
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
     [DependsOn(typeof(DepTestAsyncPreRule))]
-    public class DepTestAsyncPreRule2 : AsyncPreRule<TestInput>
+    public class DepTestAsyncPreRule2 : AsyncRule<TestInput>
     {
         private readonly bool _flagValue;
         private readonly bool _shouldApply;

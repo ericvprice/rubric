@@ -2,7 +2,7 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
 {
-    public class TestDefaultPostRule : DefaultPostRule<TestOutput>
+    public class TestDefaultPostRule : DefaultRule<TestOutput>
     {
         public override string Name => nameof(TestDefaultPostRule);
 

@@ -102,7 +102,7 @@ namespace RulesEngine.Tests
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new IAsyncPostRule<TestOutput>[] { rule }
+                new IAsyncRule<TestOutput>[] { rule }
             )
             {
                 IsParallel = true
@@ -120,7 +120,7 @@ namespace RulesEngine.Tests
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new IAsyncPostRule<TestOutput>[] { rule }
+                new IAsyncRule<TestOutput>[] { rule }
             )
             {
                 IsParallel = true
@@ -136,7 +136,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new IAsyncPreRule<TestInput>[] { rule },
+                new IAsyncRule<TestInput>[] { rule },
                 null,
                 null
             )
@@ -154,7 +154,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new IAsyncPreRule<TestInput>[] { rule },
+                new IAsyncRule<TestInput>[] { rule },
                 null,
                 null
             )
@@ -205,7 +205,7 @@ namespace RulesEngine.Tests
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new AsyncPostRule<TestOutput>[] { new TestExceptionAsyncPostRule(false) })
+                new AsyncRule<TestOutput>[] { new TestExceptionAsyncPostRule(false) })
             {
                 IsParallel = true
             };
@@ -221,7 +221,7 @@ namespace RulesEngine.Tests
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new AsyncPostRule<TestOutput>[] { new TestExceptionAsyncPostRule(true) })
+                new AsyncRule<TestOutput>[] { new TestExceptionAsyncPostRule(true) })
             {
                 IsParallel = true
             };
@@ -235,7 +235,7 @@ namespace RulesEngine.Tests
         public async Task WrapPreApplyAsyncException()
         {
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new AsyncPreRule<TestInput>[] { new TestExceptionAsyncPreRule(false) },
+                new AsyncRule<TestInput>[] { new TestExceptionAsyncPreRule(false) },
                 null,
                 null)
             {
@@ -252,7 +252,7 @@ namespace RulesEngine.Tests
         public async Task WrapPreDoesApplyAsyncException()
         {
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new AsyncPreRule<TestInput>[] { new TestExceptionAsyncPreRule(true) },
+                new AsyncRule<TestInput>[] { new TestExceptionAsyncPreRule(true) },
                 null,
                 null)
             {

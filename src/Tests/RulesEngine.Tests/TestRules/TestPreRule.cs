@@ -2,7 +2,7 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
 {
-    public class TestPreRule : PreRule<TestInput>
+    public class TestPreRule : Rule<TestInput>
     {
         private readonly bool _flagValue;
         private readonly bool _shouldApply;

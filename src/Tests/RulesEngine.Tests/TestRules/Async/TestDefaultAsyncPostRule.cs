@@ -3,7 +3,7 @@ using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.TestRules.Async
 {
-    public class TestDefaultAsyncPostRule : DefaultAsyncPostRule<TestOutput>
+    public class TestDefaultAsyncPostRule : DefaultAsyncRule<TestOutput>
     {
         public override string Name => nameof(TestDefaultPostRule);
 

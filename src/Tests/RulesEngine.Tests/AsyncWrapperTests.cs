@@ -6,25 +6,13 @@ namespace RulesEngine.Tests
 {
     public class AsyncWrapperTests
     {
-        [Fact]
-        public async void PostWrapper()
-        {
-            var sync = new TestPostRule(true);
-            var async = new AsyncPrePostRuleWrapper<TestOutput>(sync);
-            var testOutput = new TestOutput();
-            Assert.Equal(sync.Dependencies, async.Dependencies);
-            Assert.Equal(sync.Provides, async.Provides);
-            Assert.StartsWith(sync.Name, async.Name);
-            Assert.Equal(sync.DoesApply(null, testOutput), await async.DoesApply(null, testOutput));
-            await async.Apply(null, testOutput);
-            Assert.True(testOutput.TestFlag);
-        }
+
 
         [Fact]
-        public async void PreWrapper()
+        public async void SingleTypeWrapper()
         {
             var sync = new TestPreRule(true);
-            var async = new AsyncPrePostRuleWrapper<TestInput>(sync);
+            var async = new AsyncRuleWrapper<TestInput>(sync);
             var testInput = new TestInput();
             Assert.Equal(sync.Dependencies, async.Dependencies);
             Assert.Equal(sync.Provides, async.Provides);

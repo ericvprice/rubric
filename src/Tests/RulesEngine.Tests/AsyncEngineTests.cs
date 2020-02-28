@@ -35,7 +35,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new IAsyncPreRule<TestInput>[] { rule, rule2 },
+                new IAsyncRule<TestInput>[] { rule, rule2 },
                 null,
                 null
             );
@@ -51,7 +51,7 @@ namespace RulesEngine.Tests
             var input = new TestInput { InputFlag = true };
             var output = new TestOutput();
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new IAsyncPreRule<TestInput>[] { rule2, rule },
+                new IAsyncRule<TestInput>[] { rule2, rule },
                 null,
                 null
             );
@@ -178,7 +178,7 @@ namespace RulesEngine.Tests
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new IAsyncPostRule<TestOutput>[] { rule }
+                new IAsyncRule<TestOutput>[] { rule }
             );
             await engine.ApplyAsync(input, output);
             Assert.True(output.TestFlag);
@@ -193,7 +193,7 @@ namespace RulesEngine.Tests
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new IAsyncPostRule<TestOutput>[] { rule }
+                new IAsyncRule<TestOutput>[] { rule }
             );
             await engine.ApplyAsync(input, output);
             Assert.False(output.TestFlag);
@@ -206,7 +206,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new IAsyncPreRule<TestInput>[] { rule },
+                new IAsyncRule<TestInput>[] { rule },
                 null,
                 null
             );
@@ -221,7 +221,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new AsyncRulesEngine<TestInput, TestOutput>(
-                new IAsyncPreRule<TestInput>[] { rule },
+                new IAsyncRule<TestInput>[] { rule },
                 null,
                 null
             );
@@ -259,7 +259,7 @@ namespace RulesEngine.Tests
             var testPostRule = new TestExceptionAsyncPostRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    null, null, new AsyncPostRule<TestOutput>[] { testPostRule });
+                    null, null, new AsyncRule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
             var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
@@ -276,7 +276,7 @@ namespace RulesEngine.Tests
             var testPostRule = new TestExceptionAsyncPostRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    null, null, new AsyncPostRule<TestOutput>[] { testPostRule });
+                    null, null, new AsyncRule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
             var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
@@ -293,7 +293,7 @@ namespace RulesEngine.Tests
             var testPreRule = new TestExceptionAsyncPreRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    new AsyncPreRule<TestInput>[] { testPreRule }, null, null);
+                    new AsyncRule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
             var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
@@ -310,7 +310,7 @@ namespace RulesEngine.Tests
             var testPreRule = new TestExceptionAsyncPreRule(false);
             var engine =
                 new AsyncRulesEngine<TestInput, TestOutput>(
-                    new AsyncPreRule<TestInput>[] { testPreRule }, null, null);
+                    new AsyncRule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
             var exception = await Assert.ThrowsAsync<EngineHaltException>(async () => await engine.ApplyAsync(input, output));

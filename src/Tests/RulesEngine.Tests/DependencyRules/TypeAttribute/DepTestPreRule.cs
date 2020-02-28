@@ -2,7 +2,7 @@
 
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
-    public class DepTestPreRule : PreRule<TestInput>
+    public class DepTestPreRule : Rule<TestInput>
     {
         private readonly bool _flagValue;
         private readonly bool _shouldApply;

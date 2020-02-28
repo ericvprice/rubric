@@ -7,7 +7,7 @@ namespace RulesEngine.Tests.DependencyRules
     [DependsOn("dep1")]
     [DependsOn("dep2")]
     [Provides("dep3")]
-    public class DepTestAsyncPostRule : AsyncPostRule<TestOutput>
+    public class DepTestAsyncPostRule : AsyncRule<TestOutput>
     {
         private readonly bool _shouldApply;
 

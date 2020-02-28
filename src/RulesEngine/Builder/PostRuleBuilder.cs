@@ -6,6 +6,8 @@ using static System.String;
 namespace RulesEngine.Builder
 {
     internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
         private readonly List<string> _deps;
         private readonly EngineBuilder<TIn, TOut> _parentBuilder;
@@ -28,7 +30,7 @@ namespace RulesEngine.Builder
 
         public IEngineBuilder<TIn, TOut> EndRule()
         {
-            _parentBuilder.Ruleset.AddPostRule(new LambdaPostRule<TOut>(Name, _predicate, _action, _deps, _provides));
+            _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(Name, _predicate, _action, _deps, _provides));
             return _parentBuilder;
         }
 

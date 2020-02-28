@@ -8,14 +8,14 @@ using Xunit;
 
 namespace RulesEngine.Tests
 {
-    public class AsyncPostRuleTests
+    public class AsyncSingleTypeRuleTests
     {
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
         public async Task DoesApply(bool expected)
         {
-            var rule = new TestAsyncPostRule(expected);
+            var rule = new TestAsyncPreRule(expected);
             Assert.Equal(expected, await rule.DoesApply(null, null));
         }
 
@@ -24,7 +24,7 @@ namespace RulesEngine.Tests
         [InlineData(false)]
         public async Task LambdaDoesApply(bool expected)
         {
-            var rule = new LambdaAsyncPostRule<TestOutput>("test", (c, i) => Task.FromResult(expected),
+            var rule = new LambdaAsyncRule<TestOutput>("test", (c, i) => Task.FromResult(expected),
                                                            (c, i) => Task.CompletedTask);
             Assert.Equal(expected, await rule.DoesApply(null, null));
         }
@@ -32,10 +32,10 @@ namespace RulesEngine.Tests
         [Fact]
         public void LambdaConstructor()
         {
-            var rule = new LambdaAsyncPostRule<TestOutput>(
+            var rule = new LambdaAsyncRule<TestInput>(
                 "test",
-                (c, o) => Task.FromResult(true),
-                (c, o) => Task.CompletedTask,
+                (c, i) => Task.FromResult(true),
+                (c, i) => Task.CompletedTask,
                 new[] { "dep1", "dep2" },
                 new[] { "prv1", "prv2" }
             );
@@ -50,25 +50,29 @@ namespace RulesEngine.Tests
         public void LambdaConstructorException()
         {
             Assert.Throws<ArgumentNullException>(
-                () => new LambdaAsyncPostRule<TestOutput>("test", null, (c, o) => Task.CompletedTask));
+                () => new LambdaAsyncRule<TestInput>("test", null, (c, i) => Task.CompletedTask));
             Assert.Throws<ArgumentNullException>(
-                () => new LambdaAsyncPostRule<TestOutput>("test", (c, o) => Task.FromResult(true), null));
-            Assert.Throws<ArgumentNullException>(
-                () => new LambdaAsyncPostRule<TestOutput>(null, (c, o) => Task.FromResult(true),
-                                                          (c, o) => Task.CompletedTask));
+                () => new LambdaAsyncRule<TestInput>("test", (c, i) => Task.FromResult(true), null));
+            Assert.Throws<ArgumentException>(
+                () => new LambdaAsyncRule<TestInput>(null, (c, i) => Task.FromResult(true),
+                                                        (c, i) => Task.CompletedTask));
+            Assert.Throws<ArgumentException>(
+                () => new LambdaAsyncRule<TestInput>("", (c, i) => Task.FromResult(true),
+                                                        (c, i) => Task.CompletedTask));
+
         }
 
         [Fact]
         public async Task TestDefaultDoesApply()
         {
-            var rule = new TestDefaultAsyncPostRule();
+            var rule = new TestDefaultAsyncPreRule();
             Assert.True(await rule.DoesApply(null, null));
         }
 
         [Fact]
         public void TestDependencies()
         {
-            var rule = new DepTestAsyncPostRule(true);
+            var rule = new DepTestAsyncPreRule(true);
             var dependencies = rule.Dependencies.ToList();
             Assert.Contains("dep1", dependencies);
             Assert.Contains("dep2", dependencies);
@@ -78,10 +82,10 @@ namespace RulesEngine.Tests
         [Fact]
         public void TestProvides()
         {
-            var rule = new DepTestAsyncPostRule(true);
+            var rule = new DepTestAsyncRule(true);
             var provides = rule.Provides.ToList();
             Assert.Contains("dep3", provides);
-            Assert.Contains(typeof(DepTestAsyncPostRule).FullName, provides);
+            Assert.Contains(typeof(DepTestAsyncRule).FullName, provides);
             Assert.Equal(2, provides.Count);
         }
     }

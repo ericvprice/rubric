@@ -3,6 +3,8 @@ using System;
 namespace RulesEngine.Builder
 {
     public interface IPreRuleBuilder<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
         IPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, bool> predicate);
 

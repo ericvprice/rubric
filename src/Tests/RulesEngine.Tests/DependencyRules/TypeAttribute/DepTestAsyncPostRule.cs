@@ -3,7 +3,7 @@ using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
-    public class DepTestAsyncPostRule : AsyncPostRule<TestOutput>
+    public class DepTestAsyncPostRule : AsyncRule<TestOutput>
     {
         private readonly bool _shouldApply;
 

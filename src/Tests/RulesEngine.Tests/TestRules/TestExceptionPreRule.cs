@@ -3,7 +3,7 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
 {
-    public class TestExceptionPreRule : PreRule<TestInput>
+    public class TestExceptionPreRule : Rule<TestInput>
     {
         public TestExceptionPreRule(bool onDoesApply) => OnDoesApply = onDoesApply;
 

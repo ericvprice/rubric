@@ -2,7 +2,7 @@ using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
 {
-    public class TestPostRule : PostRule<TestOutput>
+    public class TestPostRule : Rule<TestOutput>
     {
         private readonly bool _shouldApply;
 

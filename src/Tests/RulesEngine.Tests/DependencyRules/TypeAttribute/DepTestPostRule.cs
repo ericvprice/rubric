@@ -4,7 +4,7 @@ using RulesEngine.Rules;
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
     [Provides("dep1")]
-    public class DepTestPostRule : PostRule<TestOutput>
+    public class DepTestPostRule : Rule<TestOutput>
     {
         private readonly bool _shouldApply;
 

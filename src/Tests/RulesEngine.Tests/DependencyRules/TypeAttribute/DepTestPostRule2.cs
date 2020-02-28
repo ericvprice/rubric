@@ -5,7 +5,7 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
     [DependsOn("dep1")]
     [DependsOn(typeof(DepTestPostRule))]
-    public class DepTestPostRule2 : PostRule<TestOutput>
+    public class DepTestPostRule2 : Rule<TestOutput>
     {
         private readonly bool _shouldApply;
 

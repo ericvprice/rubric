@@ -7,6 +7,8 @@ using static System.String;
 namespace RulesEngine.Builder
 {
     internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
         private readonly List<string> _deps;
         private readonly string _name;
@@ -27,7 +29,7 @@ namespace RulesEngine.Builder
         public IAsyncEngineBuilder<TIn, TOut> EndRule()
         {
             _parentBuilder.AsyncRuleset.AddAsyncPreRule(
-                new LambdaAsyncPreRule<TIn>(_name, _predicate, _action, _deps, _provides));
+                new LambdaAsyncRule<TIn>(_name, _predicate, _action, _deps, _provides));
             return _parentBuilder;
         }
 

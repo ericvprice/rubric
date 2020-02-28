@@ -6,7 +6,7 @@ namespace RulesEngine.Tests.DependencyRules
     [DependsOn("dep1")]
     [DependsOn("dep2")]
     [Provides("dep3")]
-    public class DepTestPostRule : PostRule<TestOutput>
+    public class DepTestPostRule : Rule<TestOutput>
     {
         private readonly bool _shouldApply;
 

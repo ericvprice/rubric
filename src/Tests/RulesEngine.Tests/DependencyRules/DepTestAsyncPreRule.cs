@@ -7,7 +7,7 @@ namespace RulesEngine.Tests.DependencyRules
     [DependsOn("dep1")]
     [DependsOn("dep2")]
     [Provides("dep3")]
-    public class DepTestAsyncPreRule : AsyncPreRule<TestInput>
+    public class DepTestAsyncPreRule : AsyncRule<TestInput>
     {
         private readonly bool _flagValue;
         private readonly bool _shouldApply;

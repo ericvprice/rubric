@@ -7,4 +7,6 @@ namespace RulesEngine.Tests.TestRules
         public override void Apply(IEngineContext context, TestInput input, TestOutput output)
             => input.InputFlag = output.TestFlag = true;
     }
+
+
 }

@@ -3,6 +3,8 @@ using RulesEngine.Rules;
 namespace RulesEngine.Builder
 {
     public interface IEngineBuilder<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
         IPreRuleBuilder<TIn, TOut> WithPreRule(string name);
 
@@ -10,12 +12,20 @@ namespace RulesEngine.Builder
 
         IPostRuleBuilder<TIn, TOut> WithPostRule(string name);
 
-        IEngineBuilder<TIn, TOut> WithPreRule(IPreRule<TIn> rule);
+        IEngineBuilder<TIn, TOut> WithPreRule(IRule<TIn> rule);
 
         IEngineBuilder<TIn, TOut> WithRule(IRule<TIn, TOut> rule);
 
-        IEngineBuilder<TIn, TOut> WithPostRule(IPostRule<TOut> rule);
+        IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
 
         IRulesEngine<TIn, TOut> Build();
+    }
+
+    public interface IEngineBuilder<T>
+        where T : class
+    {
+        IRuleBuilder<T> WithRule(string name);
+
+        IRulesEngine<T> Build();
     }
 }

@@ -4,7 +4,7 @@ using RulesEngine.Rules;
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
     [DependsOn(typeof(DepTestPreRule))]
-    public class DepTestPreRule2 : PreRule<TestInput>
+    public class DepTestPreRule2 : Rule<TestInput>
     {
         private readonly bool _flagValue;
         private readonly bool _shouldApply;

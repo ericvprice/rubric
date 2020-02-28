@@ -9,10 +9,12 @@ using RulesEngine.Rules;
 namespace RulesEngine
 {
     public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
+        where TIn : class
+        where TOut : class
     {
-        private readonly IPostRule<TOut>[][] _postprocessingRules;
+        private readonly IRule<TOut>[][] _postprocessingRules;
 
-        private readonly IPreRule<TIn>[][] _preprocessingRules;
+        private readonly IRule<TIn>[][] _preprocessingRules;
 
         private readonly IRule<TIn, TOut>[][] _rules;
 
@@ -27,19 +29,19 @@ namespace RulesEngine
         /// <param name="postprocessingRules">Collection of synchronous postprocessing rules.</param>
         /// <param name="logger">An optional logger.</param>
         public RulesEngine(
-            IEnumerable<IPreRule<TIn>> preprocessingRules,
+            IEnumerable<IRule<TIn>> preprocessingRules,
             IEnumerable<IRule<TIn, TOut>> rules,
-            IEnumerable<IPostRule<TOut>> postprocessingRules,
+            IEnumerable<IRule<TOut>> postprocessingRules,
             ILogger logger = null
         )
         {
             _preprocessingRules =
-                (preprocessingRules ?? Enumerable.Empty<IPreRule<TIn>>())
+                (preprocessingRules ?? Enumerable.Empty<IRule<TIn>>())
                 .ResolveDependencies()
                 .Select(e => e.ToArray())
                 .ToArray();
             _postprocessingRules =
-                (postprocessingRules ?? Enumerable.Empty<IPostRule<TOut>>())
+                (postprocessingRules ?? Enumerable.Empty<IRule<TOut>>())
                 .ResolveDependencies()
                 .Select(e => e.ToArray())
                 .ToArray();
@@ -85,13 +87,13 @@ namespace RulesEngine
                     ApplyPrePostRule(ctx, rule, output);
         }
 
-        public IEnumerable<IPreRule<TIn>> PreRules
+        public IEnumerable<IRule<TIn>> PreRules
             => _preprocessingRules.SelectMany(_ => _);
 
         public IEnumerable<IRule<TIn, TOut>> Rules
             => _rules.SelectMany(_ => _);
 
-        public IEnumerable<IPostRule<TOut>> PostRules
+        public IEnumerable<IRule<TOut>> PostRules
             => _postprocessingRules.SelectMany(_ => _);
 
         /// <inheritdoc />
@@ -109,7 +111,7 @@ namespace RulesEngine
         /// <inheritdoc />
         public Type OutputType => typeof(TOut);
 
-        private void ApplyPrePostRule<T>(IEngineContext context, IPrePostRule<T> rule, T input)
+        private void ApplyPrePostRule<T>(IEngineContext context, IRule<T> rule, T input)
         {
             try
             {
@@ -150,6 +152,97 @@ namespace RulesEngine
                     Context = context,
                     Input = input,
                     Output = output,
+                    Rule = rule
+                };
+            }
+        }
+
+        internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
+
+    }
+
+    public class RulesEngine<T> : IRulesEngine<T>
+        where T : class
+    {
+        private readonly IRule<T>[][] _rules;
+
+        public RulesEngine(Ruleset<T> ruleset, ILogger logger = null)
+            : this(ruleset.Rules, logger) { }
+
+        /// <summary>
+        ///     Default public constructor.
+        /// </summary>
+        /// <param name="preprocessingRules">Collection of synchronous preprocessing rules.</param>
+        /// <param name="rules">Collection of synchronous processing rules.</param>
+        /// <param name="postprocessingRules">Collection of synchronous postprocessing rules.</param>
+        /// <param name="logger">An optional logger.</param>
+        public RulesEngine(
+            IEnumerable<IRule<T>> rules,
+            ILogger logger = null
+        )
+        {
+            _rules =
+                (rules ?? Enumerable.Empty<IRule<T>>())
+                .ResolveDependencies()
+                .Select(e => e.ToArray())
+                .ToArray();
+            Logger = logger ?? NullLogger.Instance;
+        }
+
+        public void Apply(T input, IEngineContext context = null)
+        {
+            var ctx = context ?? new EngineContext();
+            SetupContext(ctx);
+            foreach (var set in _rules)
+                foreach (var rule in set)
+                    ApplyRule(ctx, rule, input);
+        }
+
+
+        public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
+        {
+            var ctx = context ?? new EngineContext();
+            foreach (var input in inputs)
+                foreach (var set in _rules)
+                    foreach (var rule in set)
+                        ApplyRule(ctx, rule, input);
+        }
+
+        public IEnumerable<IRule<T>> Rules
+            => _rules.SelectMany(_ => _);
+
+        /// <inheritdoc />
+        public ILogger Logger { get; }
+
+        /// <inheritdoc />
+        public bool IsAsync => false;
+
+        /// <inheritdoc />
+        public bool IsParallel => false;
+
+        /// <inheritdoc />
+        public Type InputType => typeof(T);
+
+        /// <inheritdoc />
+        public Type OutputType => typeof(T);
+
+        private void ApplyRule(IEngineContext context, IRule<T> rule, T input)
+        {
+            try
+            {
+                var doesApply = rule.DoesApply(context, input);
+                Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
+                if (!doesApply) return;
+                Logger.LogTrace($"Applying {rule.Name}.");
+                rule.Apply(context, input);
+                Logger.LogTrace($"Finished applying {rule.Name}.");
+            }
+            catch (Exception e)
+            {
+                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+                {
+                    Context = context,
+                    Input = input,
                     Rule = rule
                 };
             }

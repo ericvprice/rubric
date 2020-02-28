@@ -32,7 +32,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new RulesEngine<TestInput, TestOutput>(
-                new IPreRule<TestInput>[] { rule, rule2 },
+                new IRule<TestInput>[] { rule, rule2 },
                 null,
                 null
             );
@@ -48,7 +48,7 @@ namespace RulesEngine.Tests
             var input = new TestInput { InputFlag = true };
             var output = new TestOutput();
             var engine = new RulesEngine<TestInput, TestOutput>(
-                new IPreRule<TestInput>[] { rule2, rule },
+                new IRule<TestInput>[] { rule2, rule },
                 null,
                 null
             );
@@ -166,7 +166,7 @@ namespace RulesEngine.Tests
             var engine = new RulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new IPostRule<TestOutput>[] { rule }
+                new IRule<TestOutput>[] { rule }
             );
             engine.Apply(input, output);
             Assert.True(output.TestFlag);
@@ -177,7 +177,7 @@ namespace RulesEngine.Tests
         {
             var testPostRule = new TestExceptionPostRule(false);
             var engine =
-                new RulesEngine<TestInput, TestOutput>(null, null, new PostRule<TestOutput>[] { testPostRule });
+                new RulesEngine<TestInput, TestOutput>(null, null, new Rule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
             var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
@@ -193,7 +193,7 @@ namespace RulesEngine.Tests
         {
             var testPostRule = new TestExceptionPostRule(true);
             var engine =
-                new RulesEngine<TestInput, TestOutput>(null, null, new PostRule<TestOutput>[] { testPostRule });
+                new RulesEngine<TestInput, TestOutput>(null, null, new Rule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
             var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
@@ -213,7 +213,7 @@ namespace RulesEngine.Tests
             var engine = new RulesEngine<TestInput, TestOutput>(
                 null,
                 null,
-                new IPostRule<TestOutput>[] { rule }
+                new IRule<TestOutput>[] { rule }
             );
             engine.Apply(input, output);
             Assert.False(output.TestFlag);
@@ -226,7 +226,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new RulesEngine<TestInput, TestOutput>(
-                new IPreRule<TestInput>[] { rule },
+                new IRule<TestInput>[] { rule },
                 null,
                 null
             );
@@ -238,7 +238,7 @@ namespace RulesEngine.Tests
         public void PreApplyException()
         {
             var testPreRule = new TestExceptionPreRule(false);
-            var engine = new RulesEngine<TestInput, TestOutput>(new PreRule<TestInput>[] { testPreRule }, null, null);
+            var engine = new RulesEngine<TestInput, TestOutput>(new Rule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
             var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
@@ -253,7 +253,7 @@ namespace RulesEngine.Tests
         public void PreDoesApplyException()
         {
             var testPreRule = new TestExceptionPreRule(true);
-            var engine = new RulesEngine<TestInput, TestOutput>(new PreRule<TestInput>[] { testPreRule }, null, null);
+            var engine = new RulesEngine<TestInput, TestOutput>(new Rule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
             var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
@@ -271,7 +271,7 @@ namespace RulesEngine.Tests
             var input = new TestInput();
             var output = new TestOutput();
             var engine = new RulesEngine<TestInput, TestOutput>(
-                new IPreRule<TestInput>[] { rule },
+                new IRule<TestInput>[] { rule },
                 null,
                 null
             );
