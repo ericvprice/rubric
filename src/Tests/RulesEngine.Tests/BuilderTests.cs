@@ -84,7 +84,7 @@ namespace RulesEngine.Tests
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
                                                      .ForInputAndOutput<TestInput, TestOutput>()
-                                                     .WithPostRule((string) null)
+                                                     .WithPostRule((string)null)
             );
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
@@ -118,12 +118,12 @@ namespace RulesEngine.Tests
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
                                                      .ForInputAndOutput<TestInput, TestOutput>().WithPostRule("foo")
-                                                     .ThatDependsOn((string) null)
+                                                     .ThatDependsOn((string)null)
             );
             Assert.Throws<ArgumentNullException>(() =>
                                                      EngineBuilder
                                                          .ForInputAndOutput<TestInput, TestOutput>().WithPostRule("foo")
-                                                         .ThatDependsOn((Type) null)
+                                                         .ThatDependsOn((Type)null)
             );
         }
 
@@ -160,7 +160,7 @@ namespace RulesEngine.Tests
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
                                                      .ForInputAndOutput<TestInput, TestOutput>()
-                                                     .WithPreRule((string) null)
+                                                     .WithPreRule((string)null)
             );
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
@@ -194,12 +194,12 @@ namespace RulesEngine.Tests
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
                                                      .ForInputAndOutput<TestInput, TestOutput>().WithPreRule("foo")
-                                                     .ThatDependsOn((string) null)
+                                                     .ThatDependsOn((string)null)
             );
             Assert.Throws<ArgumentNullException>(() =>
                                                      EngineBuilder
                                                          .ForInputAndOutput<TestInput, TestOutput>().WithPreRule("foo")
-                                                         .ThatDependsOn((Type) null)
+                                                         .ThatDependsOn((Type)null)
             );
         }
 
@@ -236,7 +236,7 @@ namespace RulesEngine.Tests
         {
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
-                                                     .ForInputAndOutput<TestInput, TestOutput>().WithRule((string) null)
+                                                     .ForInputAndOutput<TestInput, TestOutput>().WithRule((string)null)
             );
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder.ForInputAndOutput<TestInput, TestOutput>().WithRule("")
@@ -269,12 +269,12 @@ namespace RulesEngine.Tests
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
                                                      .ForInputAndOutput<TestInput, TestOutput>().WithRule("foo")
-                                                     .ThatDependsOn((string) null)
+                                                     .ThatDependsOn((string)null)
             );
             Assert.Throws<ArgumentNullException>(() =>
                                                      EngineBuilder
                                                          .ForInputAndOutput<TestInput, TestOutput>().WithRule("foo")
-                                                         .ThatDependsOn((Type) null)
+                                                         .ThatDependsOn((Type)null)
             );
         }
 

@@ -76,6 +76,10 @@ namespace RulesEngine.Builder
             where T : class
             => new EngineBuilder<T>(logger);
 
+        public static IAsyncEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
+            where T : class
+            => new AsyncEngineBuilder<T>(logger);
+
 
         public static IAsyncEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
             where TIn : class

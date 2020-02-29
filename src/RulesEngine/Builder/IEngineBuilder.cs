@@ -26,6 +26,8 @@ namespace RulesEngine.Builder
     {
         IRuleBuilder<T> WithRule(string name);
 
+        IEngineBuilder<T> WithRule(IRule<T> rule);
+
         IRulesEngine<T> Build();
     }
 }
