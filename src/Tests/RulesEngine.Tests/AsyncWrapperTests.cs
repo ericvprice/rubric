@@ -17,8 +17,8 @@ namespace RulesEngine.Tests
             Assert.Equal(sync.Dependencies, async.Dependencies);
             Assert.Equal(sync.Provides, async.Provides);
             Assert.StartsWith(sync.Name, async.Name);
-            Assert.Equal(sync.DoesApply(null, testInput), await async.DoesApply(null, testInput));
-            await async.Apply(null, testInput);
+            Assert.Equal(sync.DoesApply(null, testInput), await async.DoesApply(null, testInput, default));
+            await async.Apply(null, testInput, default);
             Assert.True(testInput.InputFlag);
         }
 
@@ -33,8 +33,8 @@ namespace RulesEngine.Tests
             Assert.Equal(sync.Provides, async.Provides);
             Assert.StartsWith(sync.Name, async.Name);
             Assert.Equal(sync.DoesApply(null, testInput, testOutput),
-                         await async.DoesApply(null, testInput, testOutput));
-            await async.Apply(null, testInput, testOutput);
+                         await async.DoesApply(null, testInput, testOutput, default));
+            await async.Apply(null, testInput, testOutput, default);
             Assert.True(testOutput.TestFlag);
             Assert.True(testInput.InputFlag);
         }

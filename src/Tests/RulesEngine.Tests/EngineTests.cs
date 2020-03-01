@@ -63,7 +63,7 @@ namespace RulesEngine.Tests
             var engine = new RulesEngine<TestInput, TestOutput>(null, new Rule<TestInput, TestOutput>[] { rule }, null);
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input, output));
             Assert.Equal(rule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Equal(output, exception.Output);
@@ -96,7 +96,7 @@ namespace RulesEngine.Tests
             var engine = new RulesEngine<TestInput, TestOutput>(null, new Rule<TestInput, TestOutput>[] { rule }, null);
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input, output));
             Assert.Equal(rule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Equal(output, exception.Output);
@@ -180,7 +180,7 @@ namespace RulesEngine.Tests
                 new RulesEngine<TestInput, TestOutput>(null, null, new Rule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input, output));
             Assert.Equal(testPostRule, exception.Rule);
             Assert.Null(exception.Input);
             Assert.Equal(output, exception.Output);
@@ -196,7 +196,7 @@ namespace RulesEngine.Tests
                 new RulesEngine<TestInput, TestOutput>(null, null, new Rule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input, output));
             Assert.Equal(testPostRule, exception.Rule);
             Assert.Null(exception.Input);
             Assert.Equal(output, exception.Output);
@@ -241,7 +241,7 @@ namespace RulesEngine.Tests
             var engine = new RulesEngine<TestInput, TestOutput>(new Rule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input, output));
             Assert.Equal(testPreRule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Null(exception.Output);
@@ -256,7 +256,7 @@ namespace RulesEngine.Tests
             var engine = new RulesEngine<TestInput, TestOutput>(new Rule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input, output));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input, output));
             Assert.Equal(testPreRule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Null(exception.Output);

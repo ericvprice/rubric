@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using RulesEngine.Builder;
 using RulesEngine.Tests.DependencyRules.TypeAttribute;
@@ -26,12 +27,24 @@ namespace RulesEngine.Tests
             Assert.Throws<ArgumentNullException>(() =>
                                                      EngineBuilder
                                                          .ForInputAsync<TestInput>()
-                                                         .WithRule("foo").WithAction(null)
+                                                         .WithRule("foo")
+                                                         .WithAction((Func<IEngineContext, TestInput, CancellationToken, Task>)null)
             );
             Assert.Throws<ArgumentNullException>(() =>
                                                      EngineBuilder
                                                          .ForInputAsync<TestInput>()
-                                                         .WithRule("foo").WithPredicate(null)
+                                                         .WithRule("foo")
+                                                         .WithAction((Func<IEngineContext, TestInput, Task>)null)
+            );
+            Assert.Throws<ArgumentNullException>(() =>
+                                                     EngineBuilder
+                                                         .ForInputAsync<TestInput>()
+                                                         .WithRule("foo").WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<bool>>)null)
+            );
+            Assert.Throws<ArgumentNullException>(() =>
+                                                     EngineBuilder
+                                                         .ForInputAsync<TestInput>()
+                                                         .WithRule("foo").WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
             );
             Assert.Throws<ArgumentException>(() =>
                                                  EngineBuilder
@@ -67,8 +80,35 @@ namespace RulesEngine.Tests
                                       .Build();
             Assert.NotNull(engine);
             var input = new TestInput();
-            //Just assert nothing goes wrong with a blank engine
+            //No rules is a valid engine... nothing should throw
             await engine.ApplyAsync(input);
+            await engine.ApplyAsync(new TestInput[] { input });
+            await engine.ApplyAsync(new TestInput[0]);
+        }
+
+        [Fact]
+        public async Task EmptyEngineConstructionParallel()
+        {
+            var engine = EngineBuilder.ForInputAsync<TestInput>()
+                                      .AsParallel()
+                                      .Build();
+            Assert.NotNull(engine);
+            var input = new TestInput();
+            //No rules is a valid engine... nothing should throw
+            await engine.ApplyAsync(input);
+            await engine.ApplyAsync(new TestInput[] { input });
+            await engine.ApplyAsync(new TestInput[0]);
+        }
+
+        [Fact]
+        public async Task ThrowsOnNullContext()
+        {
+            var engine = EngineBuilder.ForInputAsync<TestInput>()
+                                      .Build();
+            Assert.NotNull(engine);
+            var input = new TestInput();
+            await Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync(input, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync(new TestInput[] { input }, null));
         }
 
         [Fact]
@@ -78,7 +118,6 @@ namespace RulesEngine.Tests
                                       .AsParallel()
                                       .Build();
             Assert.NotNull(engine);
-            var input = new TestInput();
             Assert.True(engine.IsParallel);
         }
 
@@ -91,7 +130,6 @@ namespace RulesEngine.Tests
             Assert.NotNull(engine);
             Assert.Equal(logger, engine.Logger);
             var input = new TestInput();
-            var output = new TestOutput();
             //Just assert nothing goes wrong with a blank engine
             await engine.ApplyAsync(input);
         }
@@ -116,15 +154,15 @@ namespace RulesEngine.Tests
             var engine = EngineBuilder.ForInputAsync<TestInput>()
                                       .WithRule(new TestAsyncPreRule(true))
                                       .WithRule("test")
-                                      .WithPredicate((c, i) => Task.FromResult(true))
-                                      .WithAction((c, i) => Task.CompletedTask)
-                                      .ThatProvides("foo")
+                                          .WithPredicate((c, i) => Task.FromResult(true))
+                                          .WithAction((c, i) => Task.CompletedTask)
+                                          .ThatProvides("foo")
                                       .EndRule()
                                       .WithRule("test2")
-                                      .WithPredicate((c, i) => Task.FromResult(true))
-                                      .WithAction((c, i) => Task.CompletedTask)
-                                      .ThatDependsOn(typeof(TestAsyncPreRule))
-                                      .ThatDependsOn("test")
+                                          .WithPredicate((c, i, t) => Task.FromResult(true))
+                                          .WithAction((c, i, t) => Task.CompletedTask)
+                                          .ThatDependsOn(typeof(TestAsyncPreRule))
+                                          .ThatDependsOn("test")
                                       .EndRule()
                                       .Build();
             Assert.Equal(3, engine.Rules.Count());
@@ -132,10 +170,12 @@ namespace RulesEngine.Tests
             Assert.Equal("test", rule.Name);
             Assert.Contains("foo", rule.Provides);
             Assert.Contains("test", rule.Provides);
+            Assert.True(await rule.DoesApply(null, null, default));
             rule = engine.Rules.ElementAt(2);
             Assert.Contains("test", rule.Dependencies);
             Assert.Contains(typeof(TestAsyncPreRule).FullName, rule.Dependencies);
-            Assert.True(await rule.DoesApply(null, null));
+            Assert.True(await rule.DoesApply(null, null, default));
+            await engine.ApplyAsync(new TestInput());
         }
 
         [Fact]
@@ -147,7 +187,7 @@ namespace RulesEngine.Tests
             Assert.Single(engine.Rules);
             var rule = engine.Rules.ElementAt(0);
             Assert.Equal($"{typeof(TestPreRule)} (wrapped async)", rule.Name);
-            Assert.True(await rule.DoesApply(null, null));
+            Assert.True(await rule.DoesApply(null, null, default));
 
         }
 

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace RulesEngine
@@ -32,5 +34,6 @@ namespace RulesEngine
         ///     The output type for this engine.
         /// </summary>
         Type OutputType { get; }
+
     }
 }

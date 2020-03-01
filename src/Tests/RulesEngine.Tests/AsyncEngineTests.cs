@@ -236,7 +236,7 @@ namespace RulesEngine.Tests
                 null, new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) }, null);
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.True(input.InputFlag);
             Assert.True(output.TestFlag);
         }
@@ -248,7 +248,7 @@ namespace RulesEngine.Tests
                 null, new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) }, null);
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.False(input.InputFlag);
             Assert.False(output.TestFlag);
         }
@@ -262,7 +262,7 @@ namespace RulesEngine.Tests
                     null, null, new AsyncRule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            var exception = await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.True(output.TestFlag);
             Assert.Equal(testPostRule, exception.Rule);
             Assert.Null(exception.Input);
@@ -279,7 +279,7 @@ namespace RulesEngine.Tests
                     null, null, new AsyncRule<TestOutput>[] { testPostRule });
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            var exception = await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.Equal(testPostRule, exception.Rule);
             Assert.Null(exception.Input);
             Assert.Equal(output, exception.Output);
@@ -296,7 +296,7 @@ namespace RulesEngine.Tests
                     new AsyncRule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            var exception = await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.Equal(testPreRule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Null(exception.Output);
@@ -313,12 +313,14 @@ namespace RulesEngine.Tests
                     new AsyncRule<TestInput>[] { testPreRule }, null, null);
             var input = new TestInput();
             var output = new TestOutput();
-            var exception = await Assert.ThrowsAsync<EngineHaltException>(async () => await engine.ApplyAsync(input, output));
+            var exception = await Assert.ThrowsAsync<EngineExecutionException>(async () => await engine.ApplyAsync(input, output));
             Assert.Equal(testPreRule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Null(exception.Output);
             Assert.NotNull(exception.Context);
             Assert.True(input.InputFlag);
         }
+
+
     }
 }

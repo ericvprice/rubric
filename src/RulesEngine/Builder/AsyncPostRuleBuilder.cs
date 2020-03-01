@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using RulesEngine.Rules.Async;
 using static System.String;
@@ -14,8 +15,8 @@ namespace RulesEngine.Builder
         private readonly string _name;
         private readonly AsyncEngineBuilder<TIn, TOut> _parentBuilder;
         private readonly List<string> _provides;
-        private Func<IEngineContext, TOut, Task> _action;
-        private Func<IEngineContext, TOut, Task<bool>> _predicate;
+        private Func<IEngineContext, TOut, CancellationToken, Task> _action;
+        private Func<IEngineContext, TOut, CancellationToken, Task<bool>> _predicate;
 
         internal AsyncPostRuleBuilder(AsyncEngineBuilder<TIn, TOut> engineBuilder, string name)
         {
@@ -42,6 +43,14 @@ namespace RulesEngine.Builder
 
         public IAsyncPostRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TOut, Task> action)
         {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+            _action = (context, outObj, token) => action(context, outObj);
+            return this;
+        }
+
+        public IAsyncPostRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TOut, CancellationToken, Task> action)
+        {
             _action = action ?? throw new ArgumentNullException(nameof(Action));
             return this;
         }
@@ -60,6 +69,14 @@ namespace RulesEngine.Builder
         }
 
         public IAsyncPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, Task<bool>> predicate)
+        {
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+            _predicate = (ctx, outObj, token) => predicate(ctx, outObj);
+            return this;
+        }
+
+        public IAsyncPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, CancellationToken, Task<bool>> predicate)
         {
             _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
             return this;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -150,35 +151,45 @@ namespace RulesEngine
 
         public ILogger Logger { get; }
 
-        public Task ApplyAsync(TIn input, TOut output, IEngineContext context = null)
+        public Task ApplyAsync(TIn input, TOut output) => ApplyAsync(input, output, new EngineContext());
+
+        public Task ApplyAsync(TIn input, TOut output, IEngineContext context)
         {
-            var ctx = context ?? new EngineContext();
-            SetupContext(ctx);
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            SetupContext(context);
             return IsParallel
-                ? ApplyParallel(ctx, input, output)
-                : ApplySerial(ctx, input, output);
+                ? ApplyParallel(context, input, output)
+                : ApplySerial(context, input, output);
         }
 
-        public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
+        public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output)
+            => ApplyAsync(inputs, output, new EngineContext());
+
+
+        public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context)
         {
-            var ctx = context ?? new EngineContext();
-            SetupContext(ctx);
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+            SetupContext(context);
             return IsParallel
-                ? ApplyManyAsyncParallel(inputs, output, ctx)
-                : ApplyManyAsyncSerial(inputs, output, ctx);
+                ? ApplyManyAsyncParallel(inputs, output, context)
+                : ApplyManyAsyncSerial(inputs, output, context);
         }
 
-        private async Task ApplyPrePostRule<T>(IEngineContext context, IAsyncRule<T> rule, T input) where T : class
+        private async Task ApplyPrePostRule<T>(IEngineContext context, IAsyncRule<T> rule, T input, CancellationTokenSource cts) where T : class
         {
             try
             {
-                var doesApply = await rule.DoesApply(context, input).ConfigureAwait(false);
+                var doesApply = await rule.DoesApply(context, input, cts.Token).ConfigureAwait(false);
                 if (doesApply)
                 {
                     Logger.LogTrace($"Rule {rule.Name} applies.");
                     Logger.LogTrace($"Applying {rule.Name}.");
                     using (var logCtx = Logger.BeginScope(rule.Name))
-                        await rule.Apply(context, input).ConfigureAwait(false);
+                        await rule.Apply(context, input, cts.Token).ConfigureAwait(false);
                     Logger.LogTrace($"Finished applying {rule.Name}.");
                 }
                 else
@@ -188,7 +199,7 @@ namespace RulesEngine
             }
             catch (Exception e)
             {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+                throw new EngineExecutionException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
                     Input = input is TIn @in ? @in : default,
@@ -198,17 +209,17 @@ namespace RulesEngine
             }
         }
 
-        private async Task ApplyRule(IEngineContext context, IAsyncRule<TIn, TOut> rule, TIn input, TOut output)
+        private async Task ApplyRule(IEngineContext context, IAsyncRule<TIn, TOut> rule, TIn input, TOut output, CancellationTokenSource cts)
         {
             try
             {
-                var doesApply = await rule.DoesApply(context, input, output).ConfigureAwait(false);
+                var doesApply = await rule.DoesApply(context, input, output, cts.Token).ConfigureAwait(false);
                 if (doesApply)
                 {
                     Logger.LogTrace($"Rule {rule.Name} applies.");
                     Logger.LogTrace($"Applying {rule.Name}.");
                     using (var logCtx = Logger.BeginScope(rule.Name))
-                        await rule.Apply(context, input, output).ConfigureAwait(false);
+                        await rule.Apply(context, input, output, cts.Token).ConfigureAwait(false);
                     Logger.LogTrace($"Finished applying {rule.Name}.");
                 }
                 else
@@ -218,7 +229,7 @@ namespace RulesEngine
             }
             catch (Exception e)
             {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+                throw new EngineExecutionException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
                     Input = input,
@@ -230,66 +241,70 @@ namespace RulesEngine
 
         private async Task ApplySerial(IEngineContext context, TIn input, TOut output)
         {
+            var tokenSource = new CancellationTokenSource();
             foreach (var set in _preRules)
                 foreach (var rule in set)
-                    await ApplyPrePostRule(context, rule, input).ConfigureAwait(false);
+                    await ApplyPrePostRule(context, rule, input, tokenSource).ConfigureAwait(false);
             foreach (var set in _rules)
                 foreach (var rule in set)
-                    await ApplyRule(context, rule, input, output).ConfigureAwait(false);
+                    await ApplyRule(context, rule, input, output, tokenSource).ConfigureAwait(false);
             foreach (var set in _postRules)
                 foreach (var rule in set)
-                    await ApplyPrePostRule(context, rule, output).ConfigureAwait(false);
+                    await ApplyPrePostRule(context, rule, output, tokenSource).ConfigureAwait(false);
         }
 
         private async Task ApplyParallel(IEngineContext context, TIn input, TOut output)
         {
+            var tokenSource = new CancellationTokenSource();
             foreach (var set in _preRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input, tokenSource)))
                 ).ConfigureAwait(false);
             foreach (var set in _rules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyRule(context, r, input, output)))
+                    set.Select(r => Task.Run(() => ApplyRule(context, r, input, output, tokenSource)))
                 ).ConfigureAwait(false);
             foreach (var set in _postRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output, tokenSource)))
                 ).ConfigureAwait(false);
         }
 
         private async Task ApplyManyAsyncSerial(IEnumerable<TIn> inputs, TOut output, IEngineContext context)
         {
+            var tokenSource = new CancellationTokenSource();
             foreach (var input in inputs)
             {
                 foreach (var set in _preRules)
                     foreach (var rule in set)
-                        await ApplyPrePostRule(context, rule, input).ConfigureAwait(false);
+                        await ApplyPrePostRule(context, rule, input, tokenSource).ConfigureAwait(false);
                 foreach (var set in _rules)
                     foreach (var rule in set)
-                        await ApplyRule(context, rule, input, output).ConfigureAwait(false);
+                        await ApplyRule(context, rule, input, output, tokenSource).ConfigureAwait(false);
             }
 
             foreach (var set in _postRules)
                 foreach (var rule in set)
-                    await ApplyPrePostRule(context, rule, output);
+                    await ApplyPrePostRule(context, rule, output, tokenSource);
         }
 
         private async Task ApplyManyAsyncParallel(IEnumerable<TIn> inputs, TOut output, IEngineContext context)
         {
+            var tokenSource = new CancellationTokenSource();
             foreach (var input in inputs)
             {
                 foreach (var set in _preRules)
                     await Task.WhenAll(
-                        set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input)))
+                        set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, input, tokenSource)))
                     ).ConfigureAwait(false);
                 foreach (var set in _rules)
                     await Task.WhenAll(
-                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, output)))
+                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, output, tokenSource)))
                     ).ConfigureAwait(false);
             }
             foreach (var set in _postRules)
                 await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output)))
+                    set.Select(r => Task.Run(() => ApplyPrePostRule(context, r, output, tokenSource)))
                 ).ConfigureAwait(false);
         }
 

@@ -177,7 +177,7 @@ namespace RulesEngine.Tests
             };
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.True(input.InputFlag);
             Assert.True(output.TestFlag);
         }
@@ -194,7 +194,7 @@ namespace RulesEngine.Tests
             };
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.False(input.InputFlag);
             Assert.False(output.TestFlag);
         }
@@ -211,7 +211,7 @@ namespace RulesEngine.Tests
             };
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.True(output.TestFlag);
         }
 
@@ -227,7 +227,7 @@ namespace RulesEngine.Tests
             };
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.False(output.TestFlag);
         }
 
@@ -243,7 +243,7 @@ namespace RulesEngine.Tests
             };
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(() => engine.ApplyAsync(input, output));
             Assert.True(input.InputFlag);
         }
 
@@ -260,7 +260,7 @@ namespace RulesEngine.Tests
             };
             var input = new TestInput();
             var output = new TestOutput();
-            await Assert.ThrowsAsync<EngineHaltException>(async () => await engine.ApplyAsync(input, output));
+            await Assert.ThrowsAsync<EngineExecutionException>(async () => await engine.ApplyAsync(input, output));
             Assert.False(input.InputFlag);
         }
     }

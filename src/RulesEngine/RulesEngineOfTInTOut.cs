@@ -124,7 +124,7 @@ namespace RulesEngine
             }
             catch (Exception e)
             {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+                throw new EngineExecutionException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
                     Input = input is TIn @in ? @in : default,
@@ -147,7 +147,7 @@ namespace RulesEngine
             }
             catch (Exception e)
             {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+                throw new EngineExecutionException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
                     Input = input,

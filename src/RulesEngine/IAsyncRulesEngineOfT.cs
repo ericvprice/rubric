@@ -16,17 +16,28 @@ namespace RulesEngine
         ///     Apply the given input to the output object.
         /// </summary>
         /// <param name="input">The input object.</param>
-        /// <param name="output">The output object.</param>
-        /// <param name="context">An optional injected context.</param>
-        Task ApplyAsync(T input, IEngineContext context = null);
+        Task ApplyAsync(T input);
 
         /// <summary>
-        ///     Serially apply the given inputs to the output object.
+        ///     Apply rules to the input object.
+        /// </summary>
+        /// <param name="input">The input object.</param>
+        /// <param name="context">An injected context.</param>
+        Task ApplyAsync(T input, IEngineContext context);
+
+        /// <summary>
+        ///     Apply rules to the input objects.
         /// </summary>
         /// <param name="inputs">The input objects.</param>
-        /// <param name="output">The output object.</param>
-        /// <param name="context">An optional injected context.</param>
-        /// <param name="parallelizeInputs">Whether to parallelize on inputs.<param>
-        Task ApplyAsync(IEnumerable<T> inputs, IEngineContext context = null, bool parallelizeInputs = false);
+        /// <param name="parallelizeInputs">Whether to parallelize execution on inputs.<param>
+        Task ApplyAsync(IEnumerable<T> inputs, bool parallelizeInputs = false);
+
+        /// <summary>
+        ///     Apply rules to the input objects.
+        /// </summary>
+        /// <param name="inputs">The input objects.</param>
+        /// <param name="context">An injected context.</param>
+        /// <param name="parallelizeInputs">Whether to parallelize execution on inputs.<param>
+        Task ApplyAsync(IEnumerable<T> inputs, IEngineContext context, bool parallelizeInputs = false);
     }
 }

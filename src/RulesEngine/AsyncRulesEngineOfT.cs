@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -52,29 +53,23 @@ namespace RulesEngine
         { }
 
         /// <summary>
-        ///     Full constructor.
+        ///     Create an engine with the given rules.h
         /// </summary>
-        /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
-        /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
-        /// <param name="asyncPostRules">Collection of asynchronous postprocessing rules.</param>
+        /// <param name="rules">Collection of asynchronous processing rules.</param>
         /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
-            IEnumerable<IAsyncRule<T>> asyncRules,
+            IEnumerable<IAsyncRule<T>> rules,
             bool isParallel = false,
             ILogger logger = null
-        ) : this(null, asyncRules, isParallel, logger) { }
+        ) : this(null, rules, isParallel, logger) { }
 
 
         /// <summary>
         ///     Full constructor.
         /// </summary>
-        /// <param name="preRules">Collection of synchronous preprocessing rules.</param>
-        /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
         /// <param name="rules">Collection of synchronous processing rules.</param>
         /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
-        /// <param name="postRules">Collection of synchronous postprocessing rules.</param>
-        /// <param name="asyncPostRules">Collection of asynchronous postprocessing rules.</param>
         /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
@@ -109,54 +104,78 @@ namespace RulesEngine
 
         public ILogger Logger { get; }
 
-        public Task ApplyAsync(T input, IEngineContext context = null)
+        public Task ApplyAsync(T input) => ApplyAsync(input, new EngineContext());
+
+        public Task ApplyAsync(T input, IEngineContext context)
         {
-            var ctx = context ?? new EngineContext();
-            SetupContext(ctx);
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            SetupContext(context);
             return IsParallel
-                ? ApplyParallel(input, ctx)
-                : ApplySerial(input, ctx);
+                ? ApplyParallel(input, context)
+                : ApplySerial(input, context);
         }
 
-        public Task ApplyAsync(IEnumerable<T> inputs, IEngineContext context = null, bool parallelizeInputs = false)
+        public Task ApplyAsync(IEnumerable<T> inputs, bool parallelizeInputs = false)
+            => ApplyAsync(inputs, new EngineContext(), parallelizeInputs);
+
+        public Task ApplyAsync(IEnumerable<T> inputs, IEngineContext context, bool parallelizeInputs = false)
         {
-            var ctx = context ?? new EngineContext();
-            SetupContext(ctx);
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+            SetupContext(context);
             if (IsParallel)
                 if (parallelizeInputs)
-                    return ApplyParallelManyAsyncParallel(inputs, ctx);
+                    return ApplyParallelManyAsyncParallel(inputs, context);
                 else
-                    return ApplyManyAsyncParallel(inputs, ctx);
+                    return ApplyManyAsyncParallel(inputs, context);
             else
                 if (parallelizeInputs)
-                return ApplyParallelManyAsyncSerial(inputs, ctx);
+                return ApplyParallelManyAsyncSerial(inputs, context);
             else
-                return ApplyManyAsyncSerial(inputs, ctx);
+                return ApplyManyAsyncSerial(inputs, context);
         }
 
-        private async Task ApplyRule(IEngineContext context, IAsyncRule<T> rule, T input)
+        private async Task ApplyRule(IEngineContext context, IAsyncRule<T> rule, T input, CancellationTokenSource cancellationTokenSource)
         {
             try
             {
-                var doesApply = await rule.DoesApply(context, input).ConfigureAwait(false);
-                if (doesApply)
+                using (Logger.BeginScope(rule.Name))
                 {
-                    using (var logCtx = Logger.BeginScope(rule.Name))
+                    if (await rule.DoesApply(context, input, cancellationTokenSource.Token).ConfigureAwait(false))
                     {
-                        Logger.LogTrace($"Rule {rule.Name} applies.");
-                        Logger.LogTrace($"Applying {rule.Name}.");
-                        await rule.Apply(context, input).ConfigureAwait(false);
-                        Logger.LogTrace($"Finished applying {rule.Name}.");
+                        {
+                            Logger.LogTrace($"Rule {rule.Name} applies.");
+                            Logger.LogTrace($"Applying {rule.Name}.");
+                            await rule.Apply(context, input, cancellationTokenSource.Token).ConfigureAwait(false);
+                            Logger.LogTrace($"Finished applying {rule.Name}.");
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogTrace($"Rule {rule.Name} does not apply.");
                     }
                 }
-                else
+            }
+            catch (OperationCanceledException oce)
+            {
+                if (!cancellationTokenSource.IsCancellationRequested)
                 {
-                    Logger.LogTrace($"Rule {rule.Name} does not apply.");
+                    throw new EngineExecutionException("Engine halted due uncaught exception: ", oce);
                 }
+                //Otherwise, do nothing... this is expected
+            }
+            catch (EngineHaltException)
+            {
+                //Cancel and throw.
+                cancellationTokenSource.Cancel();
+                throw;
             }
             catch (Exception e)
             {
-                throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+                //Wrap all other exceptions and throw as engine execution exception and cancel other tasks
+                cancellationTokenSource.Cancel();
+                throw new EngineExecutionException("Engine halted due to uncaught exception.", e)
                 {
                     Context = context,
                     Input = input,
@@ -168,22 +187,45 @@ namespace RulesEngine
 
         private async Task ApplySerial(T input, IEngineContext context)
         {
-            foreach (var set in _rules)
-                foreach (var rule in set)
-                    await ApplyRule(context, rule, input).ConfigureAwait(false);
+            var cancellationTokenSource = new CancellationTokenSource();
+            try
+            {
+                foreach (var set in _rules)
+                    foreach (var rule in set)
+                        await ApplyRule(context, rule, input, cancellationTokenSource).ConfigureAwait(false);
+            }
+            catch (EngineHaltException)
+            {
+                //Do nothing
+            }
         }
 
         private async Task ApplyParallel(T input, IEngineContext context)
         {
+            var cancellationTokenSource = new CancellationTokenSource();
             foreach (var set in _rules)
-                await Task.WhenAll(
-                    set.Select(r => Task.Run(() => ApplyRule(context, r, input)))
-                ).ConfigureAwait(false);
+                try
+                {
+                    await Task.WhenAll(
+                        set.Select(r => Task.Run(() => ApplyRule(context, r, input, cancellationTokenSource), cancellationTokenSource.Token))
+                    ).ConfigureAwait(false);
+                }
+                catch (EngineHaltException)
+                {
+                    cancellationTokenSource.Cancel();
+                    return;
+                }
+                catch (EngineExecutionException)
+                {
+                    cancellationTokenSource.Cancel();
+                    throw;
+                }
         }
 
         private async Task ApplyManyAsyncSerial(IEnumerable<T> inputs, IEngineContext context)
         {
-            foreach (var input in inputs) await ApplyAsync(input, context).ConfigureAwait(false);
+            foreach (var input in inputs)
+                await ApplyAsync(input, context).ConfigureAwait(false);
         }
 
         private Task ApplyParallelManyAsyncSerial(IEnumerable<T> inputs, IEngineContext context)
@@ -191,7 +233,8 @@ namespace RulesEngine
 
         private async Task ApplyManyAsyncParallel(IEnumerable<T> inputs, IEngineContext context)
         {
-            foreach (var input in inputs) await ApplyParallel(input, context).ConfigureAwait(false);
+            foreach (var input in inputs)
+                await ApplyParallel(input, context).ConfigureAwait(false);
         }
 
         private Task ApplyParallelManyAsyncParallel(IEnumerable<T> inputs, IEngineContext context)

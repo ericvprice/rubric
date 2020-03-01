@@ -24,9 +24,9 @@ namespace RulesEngine.Tests
         [InlineData(false)]
         public async Task LambdaDoesApply(bool expected)
         {
-            var rule = new LambdaAsyncRule<TestOutput>("test", (c, i) => Task.FromResult(expected),
-                                                           (c, i) => Task.CompletedTask);
-            Assert.Equal(expected, await rule.DoesApply(null, null));
+            var rule = new LambdaAsyncRule<TestOutput>("test", (c, i, t) => Task.FromResult(expected),
+                                                           (c, i, t) => Task.CompletedTask);
+            Assert.Equal(expected, await rule.DoesApply(null, null, default));
         }
 
         [Fact]
@@ -34,8 +34,8 @@ namespace RulesEngine.Tests
         {
             var rule = new LambdaAsyncRule<TestInput>(
                 "test",
-                (c, i) => Task.FromResult(true),
-                (c, i) => Task.CompletedTask,
+                (c, i, t) => Task.FromResult(true),
+                (c, i, t) => Task.CompletedTask,
                 new[] { "dep1", "dep2" },
                 new[] { "prv1", "prv2" }
             );
@@ -50,15 +50,15 @@ namespace RulesEngine.Tests
         public void LambdaConstructorException()
         {
             Assert.Throws<ArgumentNullException>(
-                () => new LambdaAsyncRule<TestInput>("test", null, (c, i) => Task.CompletedTask));
+                () => new LambdaAsyncRule<TestInput>("test", null, (c, i, t) => Task.CompletedTask));
             Assert.Throws<ArgumentNullException>(
-                () => new LambdaAsyncRule<TestInput>("test", (c, i) => Task.FromResult(true), null));
+                () => new LambdaAsyncRule<TestInput>("test", (c, i, t) => Task.FromResult(true), null));
             Assert.Throws<ArgumentException>(
-                () => new LambdaAsyncRule<TestInput>(null, (c, i) => Task.FromResult(true),
-                                                        (c, i) => Task.CompletedTask));
+                () => new LambdaAsyncRule<TestInput>(null, (c, i, t) => Task.FromResult(true),
+                                                        (c, i, t) => Task.CompletedTask));
             Assert.Throws<ArgumentException>(
-                () => new LambdaAsyncRule<TestInput>("", (c, i) => Task.FromResult(true),
-                                                        (c, i) => Task.CompletedTask));
+                () => new LambdaAsyncRule<TestInput>("", (c, i, t) => Task.FromResult(true),
+                                                        (c, i, t) => Task.CompletedTask));
 
         }
 

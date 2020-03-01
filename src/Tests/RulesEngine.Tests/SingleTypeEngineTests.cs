@@ -97,7 +97,7 @@ namespace RulesEngine.Tests
             var testPreRule = new TestExceptionPreRule(false);
             var engine = new RulesEngine<TestInput>(new Rule<TestInput>[] { testPreRule });
             var input = new TestInput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input));
             Assert.Equal(testPreRule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Null(exception.Output);
@@ -111,7 +111,7 @@ namespace RulesEngine.Tests
             var testPreRule = new TestExceptionPreRule(true);
             var engine = new RulesEngine<TestInput>(new Rule<TestInput>[] { testPreRule });
             var input = new TestInput();
-            var exception = Assert.Throws<EngineHaltException>(() => engine.Apply(input));
+            var exception = Assert.Throws<EngineExecutionException>(() => engine.Apply(input));
             Assert.Equal(testPreRule, exception.Rule);
             Assert.Equal(input, exception.Input);
             Assert.Null(exception.Output);

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RulesEngine.Builder
@@ -9,7 +10,11 @@ namespace RulesEngine.Builder
     {
         IAsyncPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, Task<bool>> predicate);
 
+        IAsyncPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, CancellationToken, Task<bool>> predicate);
+
         IAsyncPreRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TIn, Task> action);
+
+        IAsyncPreRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TIn, CancellationToken, Task> action);
 
         IAsyncPreRuleBuilder<TIn, TOut> ThatDependsOn(string dep);
 
