@@ -1,5 +1,3 @@
-using System;
-
 namespace RulesEngine.Builder
 {
     public interface IRuleBuilder<TIn, TOut>

@@ -1,5 +1,3 @@
-using System;
-
 namespace RulesEngine.Builder
 {
     public interface IPostRuleBuilder<TIn, TOut>

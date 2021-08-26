@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 namespace RulesEngine.Builder
 {
     public interface IAsyncPostRuleBuilder<TIn, TOut>
