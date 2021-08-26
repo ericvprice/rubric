@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RulesEngine.Dependency
 {
     public interface IDependency

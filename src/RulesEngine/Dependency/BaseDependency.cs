@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace RulesEngine.Dependency
+﻿namespace RulesEngine.Dependency
 {
     public abstract class BaseDependency : IDependency
     {
