@@ -36,36 +36,33 @@ namespace RulesEngine
             bool isParallel = false,
             ILogger logger = null
         ) : this(
-            null,
-            ruleSet.AsyncPreRules,
-            null,
-            ruleSet.AsyncRules,
-            null,
-            ruleSet.AsyncPostRules,
-            isParallel,
-            logger)
+            asyncPreRulesFull: ruleSet.AsyncPreRules,
+            asyncRulesFull: ruleSet.AsyncRules,
+            asyncPostRulesFull: ruleSet.AsyncPostRules,
+            isParallel: isParallel,
+            logger: logger)
         { }
 
         /// <summary>
-        ///     Convenience ruleset constructor.
+        ///     Create a rule engine based on a synchronous ruleset.
         /// </summary>
-        /// <param name="ruleSet">Collection of synchronous and synchronous rules.</param>
-        /// <param name="isParallel">Whether to execute rules in parallel.</param>
-        /// <param name="logger">A logger.</param>
+        /// <param name="ruleSet">Collection of synchronous rules.</param>
+        /// <param name="isParallel">Optionally execute in parallel.  False by default.</param>
+        /// <param name="logger">An optional logger.</param>
         public AsyncRulesEngine(
             Ruleset<TIn, TOut> ruleSet,
             bool isParallel = false,
             ILogger logger = null
         ) : this(
-            ruleSet.PreRules, null,
-            ruleSet.Rules, null,
-            ruleSet.PostRules, null,
-            isParallel,
-            logger)
+            preRulesFull: ruleSet.PreRules, 
+            rulesFull: ruleSet.Rules,
+            postRulesFull: ruleSet.PostRules,
+            isParallel: isParallel,
+            logger: logger)
         { }
 
         /// <summary>
-        ///     Full constructor.
+        ///     Construct an async rule engine based on inidvidual collections of async rules.
         /// </summary>
         /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
         /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
@@ -78,11 +75,15 @@ namespace RulesEngine
             IEnumerable<IAsyncRule<TOut>> asyncPostRules,
             ILogger logger = null,
             bool isParallel = false
-        ) : this(null, asyncPreRules, null, asyncRules, null, asyncPostRules, isParallel, logger) { }
+        ) : this(asyncPreRulesFull: asyncPreRules,
+                 asyncRulesFull: asyncRules,
+                 asyncPostRulesFull: asyncPostRules,
+                 isParallel: isParallel,
+                 logger: logger) { }
 
 
         /// <summary>
-        ///     Full constructor.
+        ///     Construct an async rule engine based on inidvidual collections of async and sync rules.
         /// </summary>
         /// <param name="preRules">Collection of synchronous preprocessing rules.</param>
         /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
@@ -93,38 +94,38 @@ namespace RulesEngine
         /// <param name="isParallel">Whether to execute rules in parallel.</param>
         /// <param name="logger">A logger.</param>
         public AsyncRulesEngine(
-            IEnumerable<IRule<TIn>> preRules,
-            IEnumerable<IAsyncRule<TIn>> asyncPreRules,
-            IEnumerable<IRule<TIn, TOut>> rules,
-            IEnumerable<IAsyncRule<TIn, TOut>> asyncRules,
-            IEnumerable<IRule<TOut>> postRules,
-            IEnumerable<IAsyncRule<TOut>> asyncPostRules,
+            IEnumerable<IRule<TIn>> preRulesFull = null,
+            IEnumerable<IAsyncRule<TIn>> asyncPreRulesFull = null,
+            IEnumerable<IRule<TIn, TOut>> rulesFull = null,
+            IEnumerable<IAsyncRule<TIn, TOut>> asyncRulesFull = null,
+            IEnumerable<IRule<TOut>> postRulesFull = null,
+            IEnumerable<IAsyncRule<TOut>> asyncPostRulesFull = null,
             bool isParallel = false,
             ILogger logger = null
         )
         {
             IsParallel = isParallel;
-            _preRules =
-                (preRules ?? Enumerable.Empty<IRule<TIn>>()).Select(r => r.WrapAsync())
-                                                               .Concat(asyncPreRules ??
-                                                                       Enumerable.Empty<IAsyncRule<TIn>>())
-                                                               .ResolveDependencies()
-                                                               .Select(e => e.ToArray())
-                                                               .ToArray();
-            _postRules =
-                (postRules ?? Enumerable.Empty<IRule<TOut>>()).Select(r => r.WrapAsync())
-                                                                  .Concat(asyncPostRules ??
-                                                                          Enumerable.Empty<IAsyncRule<TOut>>())
-                                                                  .ResolveDependencies()
-                                                                  .Select(e => e.ToArray())
-                                                                  .ToArray();
-            _rules =
-                (rules ?? Enumerable.Empty<IRule<TIn, TOut>>()).Select(r => r.WrapAsync())
-                                                               .Concat(asyncRules ??
-                                                                       Enumerable.Empty<IAsyncRule<TIn, TOut>>())
-                                                               .ResolveDependencies()
-                                                               .Select(e => e.ToArray())
-                                                               .ToArray();
+            preRulesFull ??= Enumerable.Empty<IRule<TIn>>();
+            asyncPreRulesFull ??= Enumerable.Empty<IAsyncRule<TIn>>();
+            rulesFull ??= Enumerable.Empty<IRule<TIn, TOut>>();
+            asyncRulesFull ??= Enumerable.Empty<IAsyncRule<TIn, TOut>>();
+            postRulesFull ??= Enumerable.Empty<IRule<TOut>>();
+            asyncPostRulesFull ??= Enumerable.Empty<IAsyncRule<TOut>>();
+            _preRules = preRulesFull.Select(r => r.WrapAsync())
+                                .Concat(asyncPreRulesFull)
+                                .ResolveDependencies()
+                                .Select(e => e.ToArray())
+                                .ToArray();
+            _postRules = postRulesFull.Select(r => r.WrapAsync())
+                                  .Concat(asyncPostRulesFull)
+                                  .ResolveDependencies()
+                                  .Select(e => e.ToArray())
+                                  .ToArray();
+            _rules = rulesFull.Select(r => r.WrapAsync())
+                           .Concat(asyncRulesFull)
+                           .ResolveDependencies()
+                           .Select(e => e.ToArray())
+                           .ToArray();
             Logger = logger ?? NullLogger.Instance;
         }
 
