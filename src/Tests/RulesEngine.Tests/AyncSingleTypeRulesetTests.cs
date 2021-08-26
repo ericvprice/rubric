@@ -1,4 +1,3 @@
-using System;
 using RulesEngine.Rules.Async;
 using RulesEngine.Tests.TestRules.Async;
 using Xunit;

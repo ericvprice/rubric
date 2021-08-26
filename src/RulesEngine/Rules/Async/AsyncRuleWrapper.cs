@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace RulesEngine.Rules.Async
+﻿namespace RulesEngine.Rules.Async
 {
     /// <summary>
     ///     Asynchronous wrapper for a synchronous rule.

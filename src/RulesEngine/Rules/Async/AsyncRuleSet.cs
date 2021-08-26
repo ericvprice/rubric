@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace RulesEngine.Rules.Async
 {
     public class AsyncRuleset<TIn, TOut>

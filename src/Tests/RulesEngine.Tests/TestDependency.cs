@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using RulesEngine.Dependency;
 
 namespace RulesEngine.Tests

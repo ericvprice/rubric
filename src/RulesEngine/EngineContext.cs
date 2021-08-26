@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RulesEngine
 {
     public class EngineContext : IEngineContext

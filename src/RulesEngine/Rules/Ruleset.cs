@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace RulesEngine.Rules
 {
     public class Ruleset<TIn, TOut>

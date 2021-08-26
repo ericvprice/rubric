@@ -1,4 +1,3 @@
-using System.Linq;
 using RulesEngine.Builder;
 using RulesEngine.Rules;
 using RulesEngine.Tests.TestRules;

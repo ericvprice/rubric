@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using RulesEngine.Dependency;
 
 namespace RulesEngine.Rules.Async

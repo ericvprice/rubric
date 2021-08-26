@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using RulesEngine.Builder;
 using RulesEngine.Tests.DependencyRules.TypeAttribute;
 using RulesEngine.Tests.TestRules;

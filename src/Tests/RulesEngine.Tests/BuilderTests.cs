@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using RulesEngine.Builder;
 using RulesEngine.Tests.DependencyRules.TypeAttribute;
 using RulesEngine.Tests.TestRules;

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using RulesEngine.Rules.Async;
 using RulesEngine.Tests.DependencyRules;
 using RulesEngine.Tests.TestRules.Async;

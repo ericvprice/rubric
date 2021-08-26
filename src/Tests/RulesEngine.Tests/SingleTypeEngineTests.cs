@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using RulesEngine.Rules;
 using RulesEngine.Tests.TestRules;
 using Xunit;

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using RulesEngine.Rules;
+﻿using RulesEngine.Rules;
 using RulesEngine.Rules.Async;
 using RulesEngine.Tests.TestRules;
 using RulesEngine.Tests.TestRules.Async;

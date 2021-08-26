@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests.TestRules.Async

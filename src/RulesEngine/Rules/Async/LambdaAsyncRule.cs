@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace RulesEngine.Rules.Async
+﻿namespace RulesEngine.Rules.Async
 {
     public class LambdaAsyncRule<TIn, TOut> : IAsyncRule<TIn, TOut>
     {

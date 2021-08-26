@@ -1,4 +1,3 @@
-using System;
 using RulesEngine.Rules;
 
 namespace RulesEngine.Tests.TestRules
