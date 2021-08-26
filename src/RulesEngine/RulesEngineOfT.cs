@@ -16,9 +16,7 @@ namespace RulesEngine
         /// <summary>
         ///     Default public constructor.
         /// </summary>
-        /// <param name="preprocessingRules">Collection of synchronous preprocessing rules.</param>
         /// <param name="rules">Collection of synchronous processing rules.</param>
-        /// <param name="postprocessingRules">Collection of synchronous postprocessing rules.</param>
         /// <param name="logger">An optional logger.</param>
         public RulesEngine(
             IEnumerable<IRule<T>> rules,
@@ -33,6 +31,7 @@ namespace RulesEngine
             Logger = logger ?? NullLogger.Instance;
         }
 
+        ///<inheritdoc/>
         public void Apply(T input, IEngineContext context = null)
         {
             var ctx = context ?? new EngineContext();
@@ -42,7 +41,7 @@ namespace RulesEngine
                     ApplyRule(ctx, rule, input);
         }
 
-
+        ///<inheritdoc/>
         public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
         {
             var ctx = context ?? new EngineContext();

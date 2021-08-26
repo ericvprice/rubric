@@ -11,49 +11,58 @@ namespace RulesEngine.Tests
         [Fact]
         public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
         {
-            Assert.Throws<ArgumentException>(() =>
-                                                 EngineBuilder
-                                                     .ForInputAsync<TestInput>()
-                                                     .WithRule((string)null)
+            Assert.Throws<ArgumentException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>()
+                        .WithRule((string)null)
             );
-            Assert.Throws<ArgumentException>(() =>
-                                                 EngineBuilder
-                                                     .ForInputAsync<TestInput>().WithRule("")
+            Assert.Throws<ArgumentException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>().WithRule("")
             );
-            Assert.Throws<ArgumentNullException>(() =>
-                                                     EngineBuilder
-                                                         .ForInputAsync<TestInput>()
-                                                         .WithRule("foo").WithAction(null)
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>()
+                        .WithRule("foo").WithAction(null)
             );
-            Assert.Throws<ArgumentNullException>(() =>
-                                                     EngineBuilder
-                                                         .ForInputAsync<TestInput>()
-                                                         .WithRule("foo").WithPredicate(null)
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>()
+                        .WithRule("foo").WithPredicate(null)
             );
-            Assert.Throws<ArgumentException>(() =>
-                                                 EngineBuilder
-                                                     .ForInputAsync<TestInput>().WithRule("foo")
-                                                     .ThatProvides(null)
+            Assert.Throws<ArgumentException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>().WithRule("foo")
+                        .ThatProvides(null)
             );
-            Assert.Throws<ArgumentException>(() =>
-                                                 EngineBuilder
-                                                     .ForInputAsync<TestInput>().WithRule("foo")
-                                                     .ThatProvides("")
+            Assert.Throws<ArgumentException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>().WithRule("foo")
+                        .ThatProvides("")
             );
-            Assert.Throws<ArgumentException>(() =>
-                                                 EngineBuilder
-                                                     .ForInputAsync<TestInput>().WithRule("foo")
-                                                     .ThatDependsOn("")
+            Assert.Throws<ArgumentException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>().WithRule("foo")
+                        .ThatDependsOn("")
             );
-            Assert.Throws<ArgumentException>(() =>
-                                                 EngineBuilder
-                                                     .ForInputAsync<TestInput>().WithRule("foo")
-                                                     .ThatDependsOn((string)null)
+            Assert.Throws<ArgumentException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>().WithRule("foo")
+                        .ThatDependsOn((string)null)
             );
-            Assert.Throws<ArgumentNullException>(() =>
-                                                     EngineBuilder
-                                                         .ForInputAsync<TestInput>()
-                                                         .WithRule("foo").ThatDependsOn((Type)null)
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    EngineBuilder
+                        .ForInputAsync<TestInput>()
+                        .WithRule("foo").ThatDependsOn((Type)null)
             );
         }
 

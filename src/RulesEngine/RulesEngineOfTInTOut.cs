@@ -15,6 +15,11 @@ namespace RulesEngine
 
         private readonly IRule<TIn, TOut>[][] _rules;
 
+        /// <summary>
+        ///     Construct a rule engine from a ruleset.
+        /// </summary>
+        /// <param name="ruleset">A collection of various rules</param>
+        /// <param name="logger">An optional logger</param>
         public RulesEngine(Ruleset<TIn, TOut> ruleset, ILogger logger = null)
             : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, logger) { }
 
@@ -32,24 +37,25 @@ namespace RulesEngine
             ILogger logger = null
         )
         {
-            _preprocessingRules =
-                (preprocessingRules ?? Enumerable.Empty<IRule<TIn>>())
-                .ResolveDependencies()
-                .Select(e => e.ToArray())
-                .ToArray();
-            _postprocessingRules =
-                (postprocessingRules ?? Enumerable.Empty<IRule<TOut>>())
-                .ResolveDependencies()
-                .Select(e => e.ToArray())
-                .ToArray();
-            _rules =
-                (rules ?? Enumerable.Empty<IRule<TIn, TOut>>())
-                .ResolveDependencies()
-                .Select(e => e.ToArray())
-                .ToArray();
+            preprocessingRules ??= Enumerable.Empty<IRule<TIn>>();
+            _preprocessingRules = 
+                preprocessingRules.ResolveDependencies()
+                                .Select(e => e.ToArray())
+                                .ToArray();
+            postprocessingRules ??= Enumerable.Empty<IRule<TOut>>();
+            _postprocessingRules 
+                = postprocessingRules.ResolveDependencies()
+                                     .Select(e => e.ToArray())
+                                     .ToArray();
+            rules ??= Enumerable.Empty<IRule<TIn, TOut>>();
+            _rules
+                = rules.ResolveDependencies()
+                       .Select(e => e.ToArray())
+                       .ToArray();
             Logger = logger ?? NullLogger.Instance;
         }
 
+        ///<inheritdoc/>
         public void Apply(TIn input, TOut output, IEngineContext context = null)
         {
             var ctx = context ?? new EngineContext();
@@ -65,7 +71,7 @@ namespace RulesEngine
                     ApplyPrePostRule(ctx, rule, output);
         }
 
-
+        ///<inheritdoc/>
         public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
         {
             var ctx = context ?? new EngineContext();
