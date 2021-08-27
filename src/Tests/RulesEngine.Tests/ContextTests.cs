@@ -1,6 +1,5 @@
-using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
-using RulesEngine;
+using RulesEngine.Rules.Async;
 
 namespace RulesEngine.Tests
 {
@@ -36,7 +35,7 @@ namespace RulesEngine.Tests
         {
             IEngineContext ctx = new EngineContext();
             var logger = new TestLogger();
-            var engine = new RulesEngine<TestInput, TestOutput>(null, null, null, logger);
+            var engine = new RulesEngine<TestInput, TestOutput>(null, null, null, null, logger);
             engine.SetupContext(ctx);
             Assert.Equal(engine, ctx.GetEngine());
             Assert.Equal(engine, ctx.GetEngine<TestInput, TestOutput>());
@@ -52,7 +51,7 @@ namespace RulesEngine.Tests
         {
             IEngineContext ctx = new EngineContext();
             var logger = new TestLogger();
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(null, null, null, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(new AsyncRuleset<TestInput, TestOutput>(), false, null, logger);
             engine.SetupContext(ctx);
             Assert.Equal(engine, ctx.GetEngine());
             Assert.Equal(engine, ctx.GetAsyncEngine<TestInput, TestOutput>());

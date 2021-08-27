@@ -9,16 +9,18 @@ namespace RulesEngine.Builder
         where TIn : class
         where TOut : class
     {
-        private readonly ILogger _logger;
+        public ILogger Logger { get; private set; }
 
-        private bool _isParallel;
+        public bool IsParallel { get; private set; }
+ 
+        public IExceptionHandler ExceptionHandler {get; private set;}
 
-        public AsyncEngineBuilder(ILogger logger = null) => _logger = logger ?? NullLogger.Instance;
+        public AsyncEngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
         internal AsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new AsyncRuleset<TIn, TOut>();
 
         public IAsyncRulesEngine<TIn, TOut> Build()
-            => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, _isParallel, _logger);
+            => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, IsParallel, ExceptionHandler, Logger);
 
         public IAsyncPostRuleBuilder<TIn, TOut> WithPostRule(string name)
             => new AsyncPostRuleBuilder<TIn, TOut>(this, name);
@@ -67,7 +69,13 @@ namespace RulesEngine.Builder
 
         public IAsyncEngineBuilder<TIn, TOut> AsParallel()
         {
-            _isParallel = true;
+            IsParallel = true;
+            return this;
+        }
+
+        public IAsyncEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler handler)
+        {
+            ExceptionHandler = handler;
             return this;
         }
     }
@@ -75,16 +83,18 @@ namespace RulesEngine.Builder
     internal class AsyncEngineBuilder<T> : IAsyncEngineBuilder<T>
         where T : class
     {
-        private readonly ILogger _logger;
+        public ILogger Logger { get; private set;}
 
-        private bool _isParallel;
+        public bool IsParallel { get; private set;}
 
-        public AsyncEngineBuilder(ILogger logger = null) => _logger = logger ?? NullLogger.Instance;
+        public AsyncEngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
         internal AsyncRuleset<T> AsyncRuleset { get; } = new AsyncRuleset<T>();
 
+        public IExceptionHandler ExceptionHandler {get;} = ExceptionHandlers.Throw;
+
         public IAsyncRulesEngine<T> Build()
-            => new AsyncRulesEngine<T>(AsyncRuleset, _isParallel, _logger);
+            => new AsyncRulesEngine<T>(AsyncRuleset, IsParallel, ExceptionHandler, Logger);
 
         public IAsyncRuleBuilder<T> WithRule(string name)
             => new AsyncRuleBuilder<T>(this, name);
@@ -103,7 +113,7 @@ namespace RulesEngine.Builder
 
         public IAsyncEngineBuilder<T> AsParallel()
         {
-            _isParallel = true;
+            IsParallel = true;
             return this;
         }
     }

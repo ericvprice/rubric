@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using RulesEngine.Builder;
 using RulesEngine.Rules;
 using RulesEngine.Rules.Async;
@@ -64,7 +62,7 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new AsyncRuleset<TestInput, TestOutput>();
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
             Assert.Equal(logger, engine.Logger);
             Assert.False(engine.IsParallel);
         }
@@ -90,7 +88,7 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new Ruleset<TestInput, TestOutput>();
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
             Assert.Equal(logger, engine.Logger);
         }
 
@@ -102,7 +100,7 @@ namespace RulesEngine.Tests
             ruleSet.AddPreRule(new TestPreRule(true));
             ruleSet.AddPostRule(new TestPostRule(true));
             ruleSet.AddRule(new TestRule(true));
-            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
             Assert.NotEmpty(engine.PreRules);
             Assert.NotEmpty(engine.Rules);
             Assert.NotEmpty(engine.PostRules);

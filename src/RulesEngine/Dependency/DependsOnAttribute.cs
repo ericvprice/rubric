@@ -1,5 +1,3 @@
-using System;
-
 namespace RulesEngine.Dependency
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]

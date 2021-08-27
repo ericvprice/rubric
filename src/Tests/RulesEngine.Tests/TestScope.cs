@@ -1,5 +1,3 @@
-using System;
-
 namespace RulesEngine.Tests
 {
     internal class TestScope : IDisposable

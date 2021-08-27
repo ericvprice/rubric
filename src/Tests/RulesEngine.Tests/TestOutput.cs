@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RulesEngine.Tests
 {
     public class TestOutput
