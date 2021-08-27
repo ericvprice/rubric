@@ -26,13 +26,13 @@ public class SingleTypeAsyncBuilderTests
         () =>
             EngineBuilder
                 .ForInputAsync<TestInput>()
-                .WithRule("foo").WithAction(null)
+                .WithRule("foo").WithAction((Func<IEngineContext, TestInput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
         () =>
             EngineBuilder
                 .ForInputAsync<TestInput>()
-                .WithRule("foo").WithPredicate(null)
+                .WithRule("foo").WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
 );
     Assert.Throws<ArgumentException>(
         () =>
@@ -91,17 +91,6 @@ public class SingleTypeAsyncBuilderTests
     await engine.ApplyAsync(input);
     await engine.ApplyAsync(new TestInput[] { input });
     await engine.ApplyAsync(new TestInput[0]);
-  }
-
-  [Fact]
-  public async Task ThrowsOnNullContext()
-  {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
-                              .Build();
-    Assert.NotNull(engine);
-    var input = new TestInput();
-    await Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync(input, null));
-    await Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync(new TestInput[] { input }, null));
   }
 
   [Fact]

@@ -41,7 +41,7 @@ public class AsyncEngineOfTTests
   {
     var logger = new TestLogger();
     var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
     Assert.Equal(logger, engine.Logger);
     Assert.False(engine.IsParallel);
   }
@@ -51,7 +51,7 @@ public class AsyncEngineOfTTests
   {
     var logger = new TestLogger();
     var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
     Assert.True(engine.IsAsync);
     Assert.False(engine.IsParallel);
     Assert.Equal(typeof(TestInput), engine.InputType);
@@ -63,7 +63,7 @@ public class AsyncEngineOfTTests
   {
     var logger = new TestLogger();
     var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRulesEngine<TestInput>(ruleSet, true, logger);
+    var engine = new AsyncRulesEngine<TestInput>(ruleSet, true, null, logger);
     Assert.True(engine.IsAsync);
     Assert.True(engine.IsParallel);
     Assert.Equal(typeof(TestInput), engine.InputType);
@@ -90,7 +90,7 @@ public class AsyncEngineOfTTests
   {
     var logger = new TestLogger();
     var ruleSet = new Ruleset<TestInput>();
-    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
     Assert.Equal(logger, engine.Logger);
   }
 
@@ -100,7 +100,7 @@ public class AsyncEngineOfTTests
     var logger = new TestLogger();
     var ruleSet = new Ruleset<TestInput>();
     ruleSet.AddRule(new TestPreRule(true));
-    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+    var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
     Assert.NotEmpty(engine.Rules);
   }
 
@@ -622,7 +622,7 @@ public class AsyncEngineOfTTests
     var input2 = new TestInput();
     var stopwatch = new Stopwatch();
     stopwatch.Start();
-    await engine.ApplyAsync(new[] { input, input2 }, true);
+    await engine.ApplyAsync(new[] { input, input2 }, null, true);
     stopwatch.Stop();
     Assert.Equal(2, input.Items.Count);
     Assert.Equal("rule2", input.Items.First());
@@ -660,7 +660,7 @@ public class AsyncEngineOfTTests
     var input2 = new TestInput();
     var stopwatch = new Stopwatch();
     stopwatch.Start();
-    await engine.ApplyAsync(new[] { input, input2 }, true);
+    await engine.ApplyAsync(new[] { input, input2 }, null, true);
     stopwatch.Stop();
     Assert.Equal(2, input.Items.Count);
     Assert.Equal("rule1", input.Items.First());

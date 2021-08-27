@@ -28,14 +28,14 @@ namespace RulesEngine.Tests
               EngineBuilder
                   .ForInputAndOutputAsync<TestInput, TestOutput>()
                   .WithPreRule("foo")
-                  .WithAction(null)
+                  .WithAction((Func<IEngineContext, TestInput, Task>)null)
       );
       Assert.Throws<ArgumentNullException>(
           () =>
               EngineBuilder
                   .ForInputAndOutputAsync<TestInput, TestOutput>()
                   .WithPreRule("foo")
-                  .WithPredicate(null)
+                  .WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
       );
       Assert.Throws<ArgumentException>(
           () =>
@@ -92,13 +92,13 @@ namespace RulesEngine.Tests
           () =>
               EngineBuilder
                   .ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithRule("foo").WithAction(null)
+                  .WithRule("foo").WithAction((Func<IEngineContext, TestInput, TestOutput, Task>)null)
       );
       Assert.Throws<ArgumentNullException>(
           () =>
               EngineBuilder
                   .ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithRule("foo").WithPredicate(null)
+                  .WithRule("foo").WithPredicate((Func<IEngineContext, TestInput, TestOutput, Task<bool>>)null)
 );
       Assert.Throws<ArgumentException>(
           () =>
