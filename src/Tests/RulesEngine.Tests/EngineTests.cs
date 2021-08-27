@@ -76,16 +76,18 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new Ruleset<TestInput, TestOutput>();
-            var engine = new RulesEngine<TestInput, TestOutput>(ruleSet, logger);
+            var engine = new RulesEngine<TestInput, TestOutput>(ruleSet, ExceptionHandlers.HaltEngine, logger);
             Assert.Equal(logger, engine.Logger);
+            Assert.Equal(ExceptionHandlers.HaltEngine, engine.ExceptionHandler);
         }
 
         [Fact]
-        public void ConstructorNullLogger()
+        public void ConstructorNullLoggerAndHandler()
         {
             var ruleSet = new Ruleset<TestInput, TestOutput>();
             var engine = new RulesEngine<TestInput, TestOutput>(ruleSet);
             Assert.NotNull(engine.Logger);
+            Assert.NotNull(engine.ExceptionHandler);
         }
 
         [Fact]

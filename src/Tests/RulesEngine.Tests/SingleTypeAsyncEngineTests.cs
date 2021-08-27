@@ -41,9 +41,10 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new AsyncRuleset<TestInput>();
-            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, ExceptionHandlers.HaltEngine, logger);
             Assert.Equal(logger, engine.Logger);
             Assert.False(engine.IsParallel);
+            Assert.Equal(ExceptionHandlers.HaltEngine, engine.ExceptionHandler);
         }
 
         [Fact]
@@ -51,11 +52,12 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new AsyncRuleset<TestInput>();
-            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
             Assert.True(engine.IsAsync);
             Assert.False(engine.IsParallel);
             Assert.Equal(typeof(TestInput), engine.InputType);
             Assert.Equal(typeof(TestInput), engine.OutputType);
+            Assert.Equal(ExceptionHandlers.Throw, engine.ExceptionHandler);
         }
 
         [Fact]
@@ -63,7 +65,7 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new AsyncRuleset<TestInput>();
-            var engine = new AsyncRulesEngine<TestInput>(ruleSet, true, logger);
+            var engine = new AsyncRulesEngine<TestInput>(ruleSet, true, null, logger);
             Assert.True(engine.IsAsync);
             Assert.True(engine.IsParallel);
             Assert.Equal(typeof(TestInput), engine.InputType);
@@ -90,7 +92,7 @@ namespace RulesEngine.Tests
         {
             var logger = new TestLogger();
             var ruleSet = new Ruleset<TestInput>();
-            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
             Assert.Equal(logger, engine.Logger);
         }
 
@@ -100,7 +102,7 @@ namespace RulesEngine.Tests
             var logger = new TestLogger();
             var ruleSet = new Ruleset<TestInput>();
             ruleSet.AddRule(new TestPreRule(true));
-            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, logger);
+            var engine = new AsyncRulesEngine<TestInput>(ruleSet, false, null, logger);
             Assert.NotEmpty(engine.Rules);
         }
 
