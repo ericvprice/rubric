@@ -13,7 +13,7 @@ internal class RuleBuilder<TIn, TOut> : IRuleBuilder<TIn, TOut>
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private readonly List<string> _provides;
   private Action<IEngineContext, TIn, TOut> _action;
-  private Func<IEngineContext, TIn, TOut, bool> _predicate;
+  private Func<IEngineContext, TIn, TOut, bool> _predicate = (c, i, o) => true;
 
   internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {

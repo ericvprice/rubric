@@ -11,7 +11,7 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private readonly List<string> _provides;
   private Action<IEngineContext, TOut> _action;
-  private Func<IEngineContext, TOut, bool> _predicate;
+  private Func<IEngineContext, TOut, bool> _predicate = (c, i) => true;
 
   internal PostRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {

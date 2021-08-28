@@ -4,6 +4,7 @@ namespace RulesEngine.Tests
     {
         public bool InputFlag { get; set; }
 
-        public List<string> Items { get; } = new List<string>();
+        public List<string> Items { get; set; } = new List<string>();
+
     }
 }

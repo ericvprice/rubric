@@ -12,7 +12,7 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private readonly List<string> _provides;
   private Action<IEngineContext, TIn> _action;
-  private Func<IEngineContext, TIn, bool> _predicate;
+  private Func<IEngineContext, TIn, bool> _predicate = (c, i) => true;
 
   internal PreRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {

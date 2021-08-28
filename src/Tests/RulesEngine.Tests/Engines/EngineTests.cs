@@ -320,4 +320,270 @@ public class EngineTests
     engine.Apply(input, output);
     Assert.False(input.InputFlag);
   }
+
+  [Fact]
+  public void ExceptionHandlingIgnore()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException", "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput()
+    {
+      Outputs = new() { "PostException" }
+    };
+    var engine = GetExceptionEngine(ExceptionHandlers.Ignore);
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.Null(engine.LastException);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Equal(4, testInput2.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+
+  }
+
+  [Fact]
+  public void ExceptionHandlingPreThrow()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException", "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput()
+    {
+    };
+    var engine = GetExceptionEngine(ExceptionHandlers.Throw);
+    Assert.Throws<Exception>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
+    Assert.Null(engine.LastException);
+    Assert.Equal(3, testInput.Items.Count);
+    Assert.Empty(testInput2.Items);
+    Assert.Empty(testOutput.Outputs);
+
+  }
+
+  [Fact]
+  public void ExceptionHandlingPreItem()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException", "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetExceptionEngine(ExceptionHandlers.HaltItem);
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(3, testInput.Items.Count);
+    Assert.Equal(4, testInput2.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+
+  }
+
+  [Fact]
+  public void ExceptionHandlingPreEngine()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException", "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetExceptionEngine(ExceptionHandlers.HaltEngine);
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(3, testInput.Items.Count);
+    Assert.Empty(testInput2.Items);
+    Assert.Empty(testOutput.Outputs);
+  }
+
+  [Fact]
+  public void ExceptionHandlingPreHandlerException()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException", "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetExceptionEngine(new LambdaExceptionHandler(
+      (e, c, i, o, r) => throw new InvalidOperationException()));
+    Assert.Throws<InvalidOperationException>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
+    Assert.Null(engine.LastException);
+    Assert.Equal(3, testInput.Items.Count);
+    Assert.Empty(testInput2.Items);
+    Assert.Empty(testOutput.Outputs);
+  }
+
+  [Fact]
+  public void ExceptionHandlingHandlerException()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetExceptionEngine(new LambdaExceptionHandler(
+      (e, c, i, o, r) => throw new InvalidOperationException()));
+    Assert.Throws<InvalidOperationException>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
+    Assert.Null(engine.LastException);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Empty(testInput2.Items);
+    Assert.Empty(testOutput.Outputs);
+  }
+
+  [Fact]
+  public void ExceptionHandlingPreManualItem()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetEngineExceptionEngine<ItemHaltException>();
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(2, testInput.Items.Count);
+    Assert.Equal(4, testInput2.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public void ExceptionHandlingManualEngine()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetEngineExceptionEngine<EngineHaltException>();
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.Rules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Empty(testInput2.Items);
+    Assert.Empty(testOutput.Outputs);
+  }
+
+  [Fact]
+  public void ExceptionHandlingManualItem()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetEngineExceptionEngine<ItemHaltException>();
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.Rules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Equal(4, testInput2.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public void ExceptionHandlingPreManualEngine()
+  {
+    var testInput = new TestInput()
+    {
+      Items = new() { "PreException" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetEngineExceptionEngine<EngineHaltException>();
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(2, testInput.Items.Count);
+    Assert.Empty(testInput2.Items);
+    Assert.Empty(testOutput.Outputs);
+  }
+
+  private IRulesEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
+   => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+                  .WithPreRule("testprerule")
+                    .WithAction((c, i) =>
+                    {
+                      i.Items.Add("testprerule");
+                      if (i.Items.Contains("PreException")) throw new Exception();
+                      i.Items.Add("testprerule");
+                    })
+                  .EndRule()
+                  .WithRule("testrule")
+                    .WithAction((c, i, o) =>
+                    {
+                      i.Items.Add("testrule");
+                      if (i.Items.Contains("Exception")) throw new Exception();
+                      i.Items.Add("testrule2");
+                    })
+                  .EndRule()
+                  .WithPostRule("testpostrule")
+                    .WithAction((c, o) =>
+                    {
+                      o.Outputs.Add("testpostrule");
+                      if (o.Outputs.Contains("PostException")) throw new Exception();
+                      o.Outputs.Add("testpostrule2");
+                    })
+                  .EndRule()
+                  .WithExceptionHandler(handler)
+                  .Build();
+
+    private IRulesEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
+     => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+                  .WithPreRule("testprerule")
+                    .WithAction((c, i) =>
+                    {
+                      i.Items.Add("testprerule");
+                      if (i.Items.Contains("PreException")) throw new T();
+                      i.Items.Add("testprerule");
+                    })
+                  .EndRule()
+                  .WithRule("testrule")
+                    .WithAction((c, i, o) =>
+                    {
+                      i.Items.Add("testrule");
+                      if (i.Items.Contains("Exception")) throw new T();
+                      i.Items.Add("testrule2");
+                    })
+                  .EndRule()
+                  .WithPostRule("testpostrule")
+                    .WithAction((c, o) =>
+                    {
+                      o.Outputs.Add("testpostrule");
+                      if (o.Outputs.Contains("PostException")) throw new T();
+                      o.Outputs.Add("testpostrule2");
+                    })
+                  .EndRule()
+                  .Build();
 }

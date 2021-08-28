@@ -4,6 +4,6 @@ namespace RulesEngine.Tests
     {
         public bool TestFlag { get; set; }
 
-        public List<string> Outputs { get; } = new List<string>();
+        public List<string> Outputs { get; set; } = new List<string>();
     }
 }
