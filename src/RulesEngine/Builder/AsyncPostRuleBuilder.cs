@@ -17,7 +17,7 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
   internal AsyncPostRuleBuilder(AsyncEngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
-    _name = IsNullOrWhiteSpace(name) ? throw new ArgumentException(nameof(name)) : name;
+    _name = IsNullOrWhiteSpace(name) ? throw new ArgumentException(null, nameof(name)) : name;
     _provides = new List<string> { name };
     _deps = new List<string>();
   }
@@ -32,7 +32,7 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
 
   public IAsyncPostRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    if (IsNullOrWhiteSpace(provides)) throw new ArgumentException(nameof(provides));
+    if (IsNullOrWhiteSpace(provides)) throw new ArgumentException(null, nameof(provides));
     _provides.Add(provides);
     return this;
   }
@@ -47,13 +47,13 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
 
   public IAsyncPostRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TOut, CancellationToken, Task> action)
   {
-    _action = action ?? throw new ArgumentNullException(nameof(Action));
+    _action = action ?? throw new ArgumentNullException(null, nameof(Action));
     return this;
   }
 
   public IAsyncPostRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
-    if (IsNullOrWhiteSpace(dep)) throw new ArgumentException(nameof(dep));
+    if (IsNullOrWhiteSpace(dep)) throw new ArgumentException(null, nameof(dep));
     _deps.Add(dep);
     return this;
   }

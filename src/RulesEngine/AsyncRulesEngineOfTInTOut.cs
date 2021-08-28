@@ -135,7 +135,7 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
                     .Select(e => e.ToArray())
                     .ToArray();
     Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = ExceptionHandler ?? ExceptionHandlers.Throw;
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Throw;
   }
 
   public bool IsParallel { get; internal set; }

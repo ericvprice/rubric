@@ -150,13 +150,11 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
       {
         try
         {
-          using (var logCtx = Logger.BeginScope(rule.Name))
-          {
-            Logger.LogTrace($"Rule {rule.Name} applies.");
-            Logger.LogTrace($"Applying {rule.Name}.");
-            await rule.Apply(context, input, token).ConfigureAwait(false);
-            Logger.LogTrace($"Finished applying {rule.Name}.");
-          }
+          using var logCtx = Logger.BeginScope(rule.Name);
+          Logger.LogTrace($"Rule {rule.Name} applies.");
+          Logger.LogTrace($"Applying {rule.Name}.");
+          await rule.Apply(context, input, token).ConfigureAwait(false);
+          Logger.LogTrace($"Finished applying {rule.Name}.");
           //Otherwise, do nothing... this is expected
         }
         catch (EngineHaltException)

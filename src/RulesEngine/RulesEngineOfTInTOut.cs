@@ -176,7 +176,7 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
       throw;
     } catch (Exception ue)
     {
-      bool handled = false;
+      bool handled;
       try
       {
         handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);

@@ -2,7 +2,7 @@ namespace RulesEngine;
 
 public class EngineContext : IEngineContext
 {
-    private readonly Dictionary<string, object> _stash = new Dictionary<string, object>();
+    private readonly Dictionary<string, object> _stash = new();
 
     public object this[string name]
     {

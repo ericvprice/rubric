@@ -92,7 +92,7 @@ public class SingleTypeAsyncBuilderTests
     //No rules is a valid engine... nothing should throw
     await engine.ApplyAsync(input);
     await engine.ApplyAsync(new TestInput[] { input });
-    await engine.ApplyAsync(new TestInput[0]);
+    await engine.ApplyAsync(Array.Empty<TestInput>());
   }
 
   [Fact]
@@ -106,7 +106,7 @@ public class SingleTypeAsyncBuilderTests
     //No rules is a valid engine... nothing should throw
     await engine.ApplyAsync(input);
     await engine.ApplyAsync(new TestInput[] { input });
-    await engine.ApplyAsync(new TestInput[0]);
+    await engine.ApplyAsync(Array.Empty<TestInput>());
   }
 
   [Fact]

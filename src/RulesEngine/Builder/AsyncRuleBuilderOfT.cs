@@ -17,7 +17,7 @@ namespace RulesEngine.Builder
         internal AsyncRuleBuilder(AsyncEngineBuilder<T> builder, string name)
         {
             _builder = builder;
-            _name = IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
+            _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
             _provides = new List<string> { name };
             _deps = new List<string>();
         }
@@ -30,17 +30,14 @@ namespace RulesEngine.Builder
         }
         public IAsyncRuleBuilder<T> ThatProvides(string provides)
         {
-            if (IsNullOrEmpty(provides)) throw new ArgumentException(nameof(provides));
+            if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
             _provides.Add(provides);
             return this;
         }
 
         public IAsyncRuleBuilder<T> WithAction(Func<IEngineContext, T, Task> action)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+            if (action == null) throw new ArgumentNullException(nameof(action));
             _action = (ctx, inObj, token) => action(ctx, inObj);
             return this;
         }
@@ -53,7 +50,7 @@ namespace RulesEngine.Builder
 
         public IAsyncRuleBuilder<T> ThatDependsOn(string dep)
         {
-            if (IsNullOrEmpty(dep)) throw new ArgumentException(nameof(dep));
+            if (IsNullOrEmpty(dep)) throw new ArgumentException(null, nameof(dep));
             _deps.Add(dep);
             return this;
         }
@@ -66,8 +63,7 @@ namespace RulesEngine.Builder
 
         public IAsyncRuleBuilder<T> WithPredicate(Func<IEngineContext, T, Task<bool>> predicate)
         {
-            if (predicate == null)
-                throw new ArgumentNullException(nameof(predicate));
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
             _predicate = (ctx, inObj, token) => predicate(ctx, inObj);
             return this;
         }
