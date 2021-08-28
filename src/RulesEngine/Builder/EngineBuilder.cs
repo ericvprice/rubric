@@ -43,7 +43,7 @@ internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
         return this;
     }
 
-    public IEngineBuilder<TIn, TOut> WithHandler(IExceptionHandler h) {
+    public IEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler h) {
         ExceptionHandler = h;
         return this;
     }
@@ -71,7 +71,7 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
         return this;
     }
 
-    public IEngineBuilder<T> WithHandler(IExceptionHandler h) {
+    public IEngineBuilder<T> WithExceptionHandler(IExceptionHandler h) {
         ExceptionHandler = h;
         return this;
     }

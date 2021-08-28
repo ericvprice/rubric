@@ -17,4 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\RulesEngine\RulesEngine.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Engines\Async\" />
+  </ItemGroup>
 </Project>

@@ -6,6 +6,6 @@ namespace RulesEngine;
 public interface IExceptionHandler
 {
 
-  void HandleException(Exception e, IEngineContext context, object Input, object output, object rule);
+  bool HandleException(Exception e, IEngineContext context, object Input, object output, object rule);
 
 }

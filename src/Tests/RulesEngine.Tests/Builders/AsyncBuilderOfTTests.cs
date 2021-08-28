@@ -4,7 +4,7 @@ using RulesEngine.Tests.TestRules;
 using RulesEngine.Tests.TestRules.Async;
 using Xunit;
 
-namespace RulesEngine.Tests;
+namespace RulesEngine.Tests.Builders;
 
 public class SingleTypeAsyncBuilderTests
 {
@@ -26,14 +26,30 @@ public class SingleTypeAsyncBuilderTests
         () =>
             EngineBuilder
                 .ForInputAsync<TestInput>()
-                .WithRule("foo").WithAction((Func<IEngineContext, TestInput, Task>)null)
+                .WithRule("foo")
+                .WithAction((Func<IEngineContext, TestInput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
         () =>
             EngineBuilder
                 .ForInputAsync<TestInput>()
-                .WithRule("foo").WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
-);
+                .WithRule("foo")
+                .WithAction((Func<IEngineContext, TestInput, CancellationToken, Task>)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+        () =>
+            EngineBuilder
+                .ForInputAsync<TestInput>()
+                .WithRule("foo")
+                .WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
+  );
+    Assert.Throws<ArgumentNullException>(
+        () =>
+            EngineBuilder
+                .ForInputAsync<TestInput>()
+                .WithRule("foo")
+                .WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<bool>>)null)
+  );
     Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
@@ -122,10 +138,14 @@ public class SingleTypeAsyncBuilderTests
     var logger = new TestLogger();
     var engine = EngineBuilder.ForInputAsync<TestInput>(logger)
                               .WithRule(new TestDefaultAsyncPreRule())
+                              .WithExceptionHandler(ExceptionHandlers.Ignore)
+                              .AsParallel()
                               .Build();
     Assert.NotNull(engine);
     Assert.Equal(logger, engine.Logger);
     Assert.Single(engine.Rules);
+    Assert.Equal(ExceptionHandlers.Ignore, engine.ExceptionHandler);
+    Assert.True(engine.IsParallel);
   }
 
 

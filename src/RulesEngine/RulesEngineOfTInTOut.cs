@@ -107,15 +107,15 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
   {
     var ctx = context ?? new EngineContext();
     SetupContext(ctx);
-    foreach (var set in _preprocessingRules)
-      foreach (var rule in set)
-        ApplyPrePostRule(ctx, rule, input);
-    foreach (var set in _rules)
-      foreach (var rule in set)
-        ApplyRule(ctx, rule, input, output);
-    foreach (var set in _postprocessingRules)
-      foreach (var rule in set)
-        ApplyPrePostRule(ctx, rule, output);
+    try
+    {
+      ApplyItem(input, output, ctx);
+
+      foreach (var set in _postprocessingRules)
+        foreach (var rule in set)
+          ApplyPrePostRule(ctx, rule, output);
+    }
+    catch (EngineHaltException) { }
   }
 
   ///<inheritdoc/>
@@ -124,62 +124,143 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
     var ctx = context ?? new EngineContext();
     foreach (var input in inputs)
     {
+      try
+      {
+        ApplyItem(input, output, ctx);
+      } 
+      catch (ItemHaltException)
+      {
+        continue;
+      } 
+      catch (EngineHaltException)
+      {
+        return;
+      }
+    }
+    try
+    {
+      foreach (var set in _postprocessingRules)
+        foreach (var rule in set)
+          ApplyPrePostRule(ctx, rule, output);
+    }
+    catch (EngineException) { }
+  }
+
+  private void ApplyItem(TIn input, TOut output, IEngineContext ctx)
+  {
       foreach (var set in _preprocessingRules)
         foreach (var rule in set)
           ApplyPrePostRule(ctx, rule, input);
       foreach (var set in _rules)
         foreach (var rule in set)
           ApplyRule(ctx, rule, input, output);
-    }
-
-    foreach (var set in _postprocessingRules)
-      foreach (var rule in set)
-        ApplyPrePostRule(ctx, rule, output);
   }
 
-  private void ApplyPrePostRule<T>(IEngineContext context, IRule<T> rule, T input)
+  private void ApplyPrePostRule<T>(IEngineContext ctx, IRule<T> rule, T input)
   {
     try
     {
-      var doesApply = rule.DoesApply(context, input);
+      var doesApply = rule.DoesApply(ctx, input);
       Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
       if (!doesApply) return;
       Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(context, input);
+      rule.Apply(ctx, input);
       Logger.LogTrace($"Finished applying {rule.Name}.");
     }
-    catch (Exception e)
+    catch (EngineException e)
     {
-      throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+      e.Rule = rule;
+      e.Input = input;
+      e.Context = ctx;
+      LastException = e;
+      throw;
+    } catch (Exception ue)
+    {
+      bool handled = false;
+      try
       {
-        Context = context,
-        Input = input is TIn @in ? @in : default,
-        Output = input is TOut @out ? @out : default,
-        Rule = rule
-      };
+        handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);
+      }
+      catch (ItemHaltException e)
+      {
+        e.Rule = rule;
+        e.Input = input;
+        e.Context = ctx;
+        LastException = e;
+        throw;
+      }
+      catch (EngineHaltException ehe)
+      {
+        ehe.Rule = rule;
+        ehe.Input = input;
+        ehe.Context = ctx;
+        LastException = ehe;
+        throw;
+      }
+      catch (Exception)
+      {
+        // The exception handler threw an exception.  Give up.
+        throw;
+      }
+      // Throw with the user's blessing.
+      if (!handled)
+        throw;
     }
   }
 
-  private void ApplyRule(IEngineContext context, IRule<TIn, TOut> rule, TIn input, TOut output)
+  private void ApplyRule(IEngineContext ctx, IRule<TIn, TOut> rule, TIn input, TOut output)
   {
     try
     {
-      var doesApply = rule.DoesApply(context, input, output);
+      var doesApply = rule.DoesApply(ctx, input, output);
       Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
       if (!doesApply) return;
       Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(context, input, output);
+      rule.Apply(ctx, input, output);
       Logger.LogTrace($"Finished applying {rule.Name}.");
     }
-    catch (Exception e)
+    catch (EngineException e)
     {
-      throw new EngineHaltException("Engine halted due to uncaught exception.", e)
+      e.Rule = rule;
+      e.Input = input;
+      e.Context = ctx;
+      e.Output = output;
+      LastException = e;
+      throw;
+    }
+    catch (Exception ue)
+    {
+      bool handled;
+      try
       {
-        Context = context,
-        Input = input,
-        Output = output,
-        Rule = rule
-      };
+        handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);
+      }
+      catch (ItemHaltException e)
+      {
+        e.Rule = rule;
+        e.Input = input;
+        e.Context = ctx;
+        e.Output = output;
+        LastException = e;
+        throw;
+      }
+      catch (EngineHaltException ehe)
+      {
+        ehe.Rule = rule;
+        ehe.Input = input;
+        ehe.Context = ctx;
+        ehe.Output = output;
+        LastException = ehe;
+        throw;
+      }
+      catch (Exception)
+      {
+        // The exception handler threw an exception.  Give up.
+        throw;
+      }
+      // Throw with the user's blessing.
+      if (!handled)
+        throw;
     }
   }
 

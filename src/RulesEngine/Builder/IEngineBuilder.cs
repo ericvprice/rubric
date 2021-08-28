@@ -18,6 +18,8 @@ public interface IEngineBuilder<TIn, TOut>
 
   IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
 
+  IEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler handler);
+
   IRulesEngine<TIn, TOut> Build();
 }
 
@@ -28,5 +30,7 @@ public interface IEngineBuilder<T>
 
   IEngineBuilder<T> WithRule(IRule<T> rule);
 
+  IEngineBuilder<T> WithExceptionHandler(IExceptionHandler handler);
+ 
   IRulesEngine<T> Build();
 }

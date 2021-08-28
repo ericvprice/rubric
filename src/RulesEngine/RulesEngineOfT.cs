@@ -38,7 +38,7 @@ public class RulesEngine<T> : IRulesEngine<T>
                     .Select(e => e.ToArray())
                     .ToArray();
     Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = uncaughtExceptionHandler;
+    ExceptionHandler = uncaughtExceptionHandler ?? ExceptionHandlers.Throw;
   }
 
   #endregion
@@ -76,43 +76,10 @@ public class RulesEngine<T> : IRulesEngine<T>
   public void Apply(T input, IEngineContext context = null)
   {
     var ctx = Reset(context);
-    foreach (var set in _rules)
-      foreach (var rule in set)
-        try
-        {
-          ApplyRule(ctx, rule, input);
-          //Expected exceptions.  Just halt.
-        }
-        catch (EngineException e)
-        {
-          e.Rule = rule;
-          e.Input = input;
-          e.Context = ctx;
-          LastException = e;
-          break;
-          //Unexpected exceptions.  Invoke handler.
-        }
-        catch (Exception ue)
-        {
-          try
-          {
-            ExceptionHandler.HandleException(ue, ctx, input, null, rule);
-          }
-          catch (EngineException e)
-          {
-            e.Rule = rule;
-            e.Input = input;
-            e.Context = ctx;
-            LastException = e;
-            break;
-          }
-          catch (Exception)
-          {
-            //We gave them a chance...
-            throw;
-          }
-          throw;
-        }
+    try
+    {
+      ApplyItem(input, ctx);
+    } catch (EngineHaltException) { }
   }
 
   ///<inheritdoc/>
@@ -121,12 +88,57 @@ public class RulesEngine<T> : IRulesEngine<T>
     var ctx = Reset(context);
     foreach (var input in inputs)
     {
-      foreach (var set in _rules)
-        foreach (var rule in set)
+      try
+      {
+        ApplyItem(input, ctx);
+      }
+      catch (EngineHaltException)
+      {
+        break;
+      }
+    }
+  }
+
+
+  private void ApplyItem(T input, IEngineContext ctx)
+  {
+    foreach (var set in _rules)
+      foreach (var rule in set)
+        try
+        {
+          ApplyRule(ctx, rule, input);
+        }
+        catch (ItemHaltException e)
+        {
+          e.Rule = rule;
+          e.Input = input;
+          e.Context = ctx;
+          LastException = e;
+          break;
+        }
+        catch (EngineHaltException ehe)
+        {
+          ehe.Rule = rule;
+          ehe.Input = input;
+          ehe.Context = ctx;
+          LastException = ehe;
+          throw;
+        }
+        // Unexpected exceptions.  Invoke handler.
+        catch (Exception ue)
+        {
+          bool handled;
           try
           {
-            ApplyRule(ctx, rule, input);
-            //Expected exceptions.  Just halt.
+            handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);
+          }
+          catch (ItemHaltException e)
+          {
+            e.Rule = rule;
+            e.Input = input;
+            e.Context = ctx;
+            LastException = e;
+            break;
           }
           catch (EngineHaltException ehe)
           {
@@ -134,48 +146,17 @@ public class RulesEngine<T> : IRulesEngine<T>
             ehe.Input = input;
             ehe.Context = ctx;
             LastException = ehe;
-            goto END;
+            throw;
           }
-          catch (ItemHaltException ihe)
+          catch (Exception)
           {
-            ihe.Rule = rule;
-            ihe.Input = input;
-            ihe.Context = ctx;
-            LastException = ihe;
-            goto NEXT_ITEM;
-            //Unexpected exceptions.  Invoke handler.
+            // The exception handler threw an exception.  Give up.
+            throw;
           }
-          catch (Exception ue)
-          {
-            try
-            {
-              ExceptionHandler.HandleException(ue, ctx, input, null, rule);
-            }
-            catch (EngineHaltException ehe)
-            {
-              ehe.Rule = rule;
-              ehe.Input = input;
-              ehe.Context = ctx;
-              LastException = ehe;
-              goto END;
-            }
-            catch (ItemHaltException ihe)
-            {
-              ihe.Rule = rule;
-              ihe.Input = input;
-              ihe.Context = ctx;
-              LastException = ihe;
-              //Yeah, yeah, I know.  But this is really the cleanest option.
-              goto NEXT_ITEM;
-            }
-            catch (Exception)
-            {
-              throw;
-            }
-          }
-        NEXT_ITEM:;
-    }
-  END:;
+          // Throw with the user's blessing.
+          if (!handled)
+            throw;
+        }
   }
 
   /// <summary>
