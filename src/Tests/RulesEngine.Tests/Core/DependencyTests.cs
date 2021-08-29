@@ -163,7 +163,7 @@ public class DependencyTests
   [Fact]
   public void ReturnsEmpty()
   {
-    var result = DependencyExtensions.ResolveDependencies(new TestDependency[0]);
+    var result = DependencyExtensions.ResolveDependencies(Array.Empty<TestDependency>());
     Assert.Empty(result);
   }
 }

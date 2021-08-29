@@ -34,5 +34,6 @@ public interface IRulesEngine
 
   IExceptionHandler ExceptionHandler { get; }
 
-  EngineException LastException { get; }
+  EngineException LastException { get; set; }
+
 }

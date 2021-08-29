@@ -96,7 +96,7 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
 
   public IExceptionHandler ExceptionHandler { get; }
 
-  public EngineException LastException { get; private set; }
+  public EngineException LastException { get; set; }
 
   #endregion
 
@@ -113,9 +113,9 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
 
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
-          ApplyPrePostRule(ctx, rule, output);
+          this.ApplyPostRule(ctx, rule, output);
     }
-    catch (EngineHaltException) { }
+    catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -141,7 +141,7 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
     {
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
-          ApplyPrePostRule(ctx, rule, output);
+          this.ApplyPostRule(ctx, rule, output);
     }
     catch (EngineException) { }
   }
@@ -150,118 +150,10 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
   {
       foreach (var set in _preprocessingRules)
         foreach (var rule in set)
-          ApplyPrePostRule(ctx, rule, input);
+          this.ApplyPreRule(ctx, rule, input);
       foreach (var set in _rules)
         foreach (var rule in set)
-          ApplyRule(ctx, rule, input, output);
-  }
-
-  private void ApplyPrePostRule<T>(IEngineContext ctx, IRule<T> rule, T input)
-  {
-    try
-    {
-      var doesApply = rule.DoesApply(ctx, input);
-      Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-      if (!doesApply) return;
-      Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(ctx, input);
-      Logger.LogTrace($"Finished applying {rule.Name}.");
-    }
-    catch (EngineException e)
-    {
-      e.Rule = rule;
-      e.Input = input;
-      e.Context = ctx;
-      LastException = e;
-      throw;
-    } catch (Exception ue)
-    {
-      bool handled;
-      try
-      {
-        handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);
-      }
-      catch (ItemHaltException e)
-      {
-        e.Rule = rule;
-        e.Input = input;
-        e.Context = ctx;
-        LastException = e;
-        throw;
-      }
-      catch (EngineHaltException ehe)
-      {
-        ehe.Rule = rule;
-        ehe.Input = input;
-        ehe.Context = ctx;
-        LastException = ehe;
-        throw;
-      }
-      catch (Exception)
-      {
-        // The exception handler threw an exception.  Give up.
-        throw;
-      }
-      // Throw with the user's blessing.
-      if (!handled)
-        throw;
-    }
-  }
-
-  private void ApplyRule(IEngineContext ctx, IRule<TIn, TOut> rule, TIn input, TOut output)
-  {
-    try
-    {
-      var doesApply = rule.DoesApply(ctx, input, output);
-      Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-      if (!doesApply) return;
-      Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(ctx, input, output);
-      Logger.LogTrace($"Finished applying {rule.Name}.");
-    }
-    catch (EngineException e)
-    {
-      e.Rule = rule;
-      e.Input = input;
-      e.Context = ctx;
-      e.Output = output;
-      LastException = e;
-      throw;
-    }
-    catch (Exception ue)
-    {
-      bool handled;
-      try
-      {
-        handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);
-      }
-      catch (ItemHaltException e)
-      {
-        e.Rule = rule;
-        e.Input = input;
-        e.Context = ctx;
-        e.Output = output;
-        LastException = e;
-        throw;
-      }
-      catch (EngineHaltException ehe)
-      {
-        ehe.Rule = rule;
-        ehe.Input = input;
-        ehe.Context = ctx;
-        ehe.Output = output;
-        LastException = ehe;
-        throw;
-      }
-      catch (Exception)
-      {
-        // The exception handler threw an exception.  Give up.
-        throw;
-      }
-      // Throw with the user's blessing.
-      if (!handled)
-        throw;
-    }
+          this.ApplyRule(ctx, rule, input, output);
   }
 
   internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;

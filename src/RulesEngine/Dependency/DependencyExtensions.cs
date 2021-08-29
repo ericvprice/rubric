@@ -8,9 +8,9 @@ namespace RulesEngine.Dependency
         public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies)
             where T : class, IDependency
         {
-            if (dependencies == null) throw new ArgumentNullException();
+            if (dependencies == null) throw new ArgumentNullException(nameof(dependencies));
             var depList = dependencies.ToList();
-            if (!depList.Any()) return new T[0][];
+            if (!depList.Any()) return Array.Empty<T[]>();
 
             //Setup local lists and dictionary lookups
             var resolvedObjects = new List<T>();

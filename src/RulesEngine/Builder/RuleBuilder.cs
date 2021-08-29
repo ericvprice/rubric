@@ -18,7 +18,7 @@ internal class RuleBuilder<TIn, TOut> : IRuleBuilder<TIn, TOut>
   internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
-    _name = IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
+    _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
     _provides = new List<string> { name };
     _deps = new List<string>();
   }
@@ -32,7 +32,7 @@ internal class RuleBuilder<TIn, TOut> : IRuleBuilder<TIn, TOut>
 
   public IRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(nameof(provides));
+    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
     _provides.Add(provides);
     return this;
   }
@@ -45,7 +45,7 @@ internal class RuleBuilder<TIn, TOut> : IRuleBuilder<TIn, TOut>
 
   public IRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
-    if (IsNullOrEmpty(dep)) throw new ArgumentException(nameof(dep));
+    if (IsNullOrEmpty(dep)) throw new ArgumentException(null, nameof(dep));
     _deps.Add(dep);
     return this;
   }
@@ -77,7 +77,7 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
   internal RuleBuilder(EngineBuilder<T> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
-    _name = IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
+    _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
     _provides = new List<string> { name };
     _deps = new List<string>();
   }
@@ -91,7 +91,7 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
 
   public IRuleBuilder<T> ThatProvides(string provides)
   {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(nameof(provides));
+    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
     _provides.Add(provides);
     return this;
   }
@@ -104,7 +104,7 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
 
   public IRuleBuilder<T> ThatDependsOn(string dep)
   {
-    if (IsNullOrEmpty(dep)) throw new ArgumentException(nameof(dep));
+    if (IsNullOrEmpty(dep)) throw new ArgumentException(null, nameof(dep));
     _deps.Add(dep);
     return this;
   }

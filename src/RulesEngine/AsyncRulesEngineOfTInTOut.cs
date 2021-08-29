@@ -158,7 +158,7 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
 
   public ILogger Logger { get; }
 
-  public EngineException LastException { get; private set; }
+  public EngineException LastException { get; set; }
 
   public Task ApplyAsync(TIn input, TOut output, IEngineContext context = null, CancellationToken token = default)
   {

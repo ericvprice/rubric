@@ -9,6 +9,22 @@
 //{
 //    public class AsyncEngineTests
 //    {
+
+
+//[Fact]
+//public async Task ApplyAsyncException()
+//{
+//  var testPreRule = new TestExceptionAsyncPreRule(false);
+//  var engine =
+//      new AsyncRulesEngine<TestInput, TestOutput>(
+//          new AsyncRule<TestInput>[] { testPreRule }, null, null);
+//  var input = new TestInput();
+//  var output = new TestOutput();
+//  var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+//  Assert.IsNotType<EngineException>(exception);
+//  Assert.Null(engine.LastException);
+//  Assert.True(input.InputFlag);
+//}
 //        [Fact]
 //        public async Task Applies()
 //        {

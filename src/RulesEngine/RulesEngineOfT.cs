@@ -79,7 +79,8 @@ public class RulesEngine<T> : IRulesEngine<T>
     try
     {
       ApplyItem(input, ctx);
-    } catch (EngineHaltException) { }
+    }
+    catch (EngineHaltException) { }
   }
 
   ///<inheritdoc/>
@@ -99,81 +100,20 @@ public class RulesEngine<T> : IRulesEngine<T>
     }
   }
 
-
   private void ApplyItem(T input, IEngineContext ctx)
   {
     foreach (var set in _rules)
       foreach (var rule in set)
         try
         {
-          ApplyRule(ctx, rule, input);
+          this.ApplyPreRule(ctx, rule, input);
         }
-        catch (ItemHaltException e)
+        catch (ItemHaltException)
         {
-          e.Rule = rule;
-          e.Input = input;
-          e.Context = ctx;
-          LastException = e;
-          break;
-        }
-        catch (EngineHaltException ehe)
-        {
-          ehe.Rule = rule;
-          ehe.Input = input;
-          ehe.Context = ctx;
-          LastException = ehe;
-          throw;
-        }
-        // Unexpected exceptions.  Invoke handler.
-        catch (Exception ue)
-        {
-          bool handled;
-          try
-          {
-            handled = ExceptionHandler.HandleException(ue, ctx, input, null, rule);
-          }
-          catch (ItemHaltException e)
-          {
-            e.Rule = rule;
-            e.Input = input;
-            e.Context = ctx;
-            LastException = e;
-            break;
-          }
-          catch (EngineHaltException ehe)
-          {
-            ehe.Rule = rule;
-            ehe.Input = input;
-            ehe.Context = ctx;
-            LastException = ehe;
-            throw;
-          }
-          catch (Exception)
-          {
-            // The exception handler threw an exception.  Give up.
-            throw;
-          }
-          // Throw with the user's blessing.
-          if (!handled)
-            throw;
+          return;
         }
   }
-
-  /// <summary>
-  ///     Apply a rule.  Handle trace logging.
-  /// </summary>
-  /// <param name="context">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="input">The current input item.</param>
-  private void ApplyRule(IEngineContext context, IRule<T> rule, T input)
-  {
-    var doesApply = rule.DoesApply(context, input);
-    Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-    if (!doesApply) return;
-    Logger.LogTrace($"Applying {rule.Name}.");
-    rule.Apply(context, input);
-    Logger.LogTrace($"Finished applying {rule.Name}.");
-  }
+  
   private IEngineContext Reset(IEngineContext context)
   {
     context ??= new EngineContext();
@@ -182,7 +122,12 @@ public class RulesEngine<T> : IRulesEngine<T>
     return context;
   }
 
-  internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
+  internal IEngineContext SetupContext(IEngineContext ctx)
+  {
+    ctx ??= new EngineContext();
+    ctx[EngineContextExtensions.ENGINE_KEY] = this;
+    return ctx;
+  }
 
   #endregion
 

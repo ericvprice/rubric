@@ -26,8 +26,8 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
         : name;
     _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     _action = action ?? throw new ArgumentNullException(nameof(action));
-    Dependencies = dependencies?.ToArray() ?? new string[0];
-    Provides = provides?.ToArray() ?? new string[0];
+    Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
+    Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
 
 
@@ -68,8 +68,8 @@ public class LambdaRule<T> : IRule<T>
         : name;
     _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     _action = action ?? throw new ArgumentNullException(nameof(action));
-    Dependencies = dependencies?.ToArray() ?? new string[0];
-    Provides = provides?.ToArray() ?? new string[0];
+    Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
+    Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
 
 

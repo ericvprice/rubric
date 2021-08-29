@@ -530,7 +530,95 @@ public class EngineTests
     Assert.Empty(testOutput.Outputs);
   }
 
-  private IRulesEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
+  [Fact]
+  public void ExceptionHandlingPostManualEngine()
+  {
+    var testInput = new TestInput()
+    {
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput()
+    {
+      Outputs = new() { "PostException" }
+    };
+    var engine = GetEngineExceptionEngine<EngineHaltException>();
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Equal(4, testInput2.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public void ExceptionHandlingPostManualItem()
+  {
+    var testInput = new TestInput()
+    {
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput()
+    {
+      Outputs = new() { "PostException" }
+    };
+    var engine = GetEngineExceptionEngine<ItemHaltException>();
+    engine.Apply(new[] { testInput, testInput2 }, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Equal(4, testInput2.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public void ExceptionHandlingPostManualEngineSingleItem()
+  {
+    var testInput = new TestInput();
+    var testOutput = new TestOutput()
+    {
+      Outputs = new() { "PostException" }
+    };
+    var engine = GetEngineExceptionEngine<EngineHaltException>();
+    engine.Apply(testInput, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public void ExceptionHandlingPostManualItemSingleItem()
+  {
+    var testInput = new TestInput();
+    var testOutput = new TestOutput()
+    {
+      Outputs = new() { "PostException" }
+    };
+    var engine = GetEngineExceptionEngine<ItemHaltException>();
+    engine.Apply(testInput, testOutput);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  private static IRulesEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
                     .WithAction((c, i) =>
@@ -559,7 +647,7 @@ public class EngineTests
                   .WithExceptionHandler(handler)
                   .Build();
 
-    private IRulesEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
+    private static IRulesEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
      => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
                     .WithAction((c, i) =>

@@ -17,7 +17,7 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
   internal PreRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
-    _name = IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
+    _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
     _provides = new List<string> { name };
     _deps = new List<string>();
   }
@@ -31,7 +31,7 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
 
   public IPreRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException();
+    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
     _provides.Add(provides);
     return this;
   }
@@ -44,7 +44,7 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
 
   public IPreRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
-    if (IsNullOrEmpty(dep)) throw new ArgumentException(dep);
+    if (IsNullOrEmpty(dep)) throw new ArgumentException(null, nameof(dep));
     _deps.Add(dep);
     return this;
   }
@@ -57,7 +57,7 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
 
   public IPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, bool> predicate)
   {
-    _predicate = predicate ?? throw new ArgumentNullException();
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
   }
 }
