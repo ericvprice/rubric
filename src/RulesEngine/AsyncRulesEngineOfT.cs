@@ -133,7 +133,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
     {
       await ApplyItemAsync(input, context, token);
     }
-    catch (EngineHaltException) { }
+    catch (EngineException) { }
   }
 
   private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
@@ -179,14 +179,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   {
     foreach (var set in _rules)
     {
-      try
-      {
         await Parallelize(ctx, set, i, t).ConfigureAwait(false);
-      }
-      catch (ItemHaltException)
-      {
-        return;
-      }
     }
   }
 

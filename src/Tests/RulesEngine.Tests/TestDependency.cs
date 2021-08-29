@@ -5,9 +5,9 @@ namespace RulesEngine.Tests
 
     public TestDependency(string name) => Name = name;
 
-    public IEnumerable<string> Dependencies { get; set; } = new string[0];
+    public IEnumerable<string> Dependencies { get; set; } = Array.Empty<string>();
 
-    public IEnumerable<string> Provides { get; set; } = new string[0];
+    public IEnumerable<string> Provides { get; set; } = Array.Empty<string>();
 
     public string Name { get; set; }
   }

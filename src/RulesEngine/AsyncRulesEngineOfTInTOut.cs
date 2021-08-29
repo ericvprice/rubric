@@ -189,12 +189,12 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
 
   private async Task ApplySerial(IEngineContext ctx, TIn i, TOut o, CancellationToken t)
   {
-      foreach (var set in _preRules)
-        foreach (var rule in set)
-          await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
-      foreach (var set in _rules)
-        foreach (var rule in set)
-          await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
+    foreach (var set in _preRules)
+      foreach (var rule in set)
+        await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+    foreach (var set in _rules)
+      foreach (var rule in set)
+        await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
     foreach (var set in _postRules)
       foreach (var rule in set)
         await this.ApplyAsyncPostRule(ctx, rule, o, t).ConfigureAwait(false);
@@ -202,18 +202,10 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
 
   private async Task ApplyParallel(IEngineContext ctx, TIn i, TOut o, CancellationToken t)
   {
-    try
-    {
-      foreach (var set in _preRules)
-        foreach (var pre in set)
-          await ParallelizePre(ctx, set, i, t);
-      foreach (var set in _rules)
-        await Parallelize(ctx, set, i, o, t);
-    }
-    catch (ItemHaltException)
-    {
-      return;
-    }
+    foreach (var set in _preRules)
+        await ParallelizePre(ctx, set, i, t);
+    foreach (var set in _rules)
+      await Parallelize(ctx, set, i, o, t);
     foreach (var set in _postRules)
       await ParallelizePost(ctx, set, o, t);
   }

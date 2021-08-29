@@ -105,15 +105,14 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
   ///<inheritdoc/>
   public void Apply(TIn input, TOut output, IEngineContext context = null)
   {
-    var ctx = context ?? new EngineContext();
-    SetupContext(ctx);
+    context = SetupContext(context);
     try
     {
-      ApplyItem(input, output, ctx);
+      ApplyItem(input, output, context);
 
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
-          this.ApplyPostRule(ctx, rule, output);
+          this.ApplyPostRule(context, rule, output);
     }
     catch (EngineException) { }
   }
@@ -156,7 +155,13 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
         this.ApplyRule(ctx, rule, input, output);
   }
 
-  internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
+  internal IEngineContext SetupContext(IEngineContext ctx)
+  {
+    ctx ??= new EngineContext();
+    LastException = null;
+    ctx[EngineContextExtensions.ENGINE_KEY] = this;
+    return ctx;
+  }
 
   #endregion
 }

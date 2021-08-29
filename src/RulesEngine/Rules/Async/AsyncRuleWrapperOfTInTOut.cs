@@ -18,8 +18,7 @@ public class AsyncRuleWrapper<TIn, TOut> : IAsyncRule<TIn, TOut>
   /// <inheritdoc />
   public Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token)
   {
-    if (token.IsCancellationRequested)
-      return Task.CompletedTask;
+    token.ThrowIfCancellationRequested();
     _syncRule.Apply(context, input, output);
     return Task.CompletedTask;
   }
@@ -27,8 +26,7 @@ public class AsyncRuleWrapper<TIn, TOut> : IAsyncRule<TIn, TOut>
   /// <inheritdoc />
   public Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token)
   {
-    if (token.IsCancellationRequested)
-      return Task.FromResult(false);
+    token.ThrowIfCancellationRequested();
     return Task.FromResult(_syncRule.DoesApply(context, input, output));
   }
 

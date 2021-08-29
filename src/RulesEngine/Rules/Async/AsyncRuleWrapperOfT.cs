@@ -18,6 +18,7 @@ namespace RulesEngine.Rules.Async
     /// <inheritdoc />
     public Task Apply(IEngineContext context, T input, CancellationToken token)
     {
+      token.ThrowIfCancellationRequested();
       _syncRule.Apply(context, input);
       return Task.CompletedTask;
     }

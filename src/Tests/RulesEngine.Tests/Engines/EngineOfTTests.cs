@@ -26,7 +26,7 @@ public class EngineOfTTests
     var engine = new RulesEngine<TestInput>(
         new IRule<TestInput>[] { rule }
     );
-    engine.Apply(new[] { input, input2 });
+    engine.Apply(new[] { input, input2 }, new EngineContext());
     Assert.True(input.InputFlag);
     Assert.True(input2.InputFlag);
   }

@@ -114,18 +114,11 @@ public class RulesEngine<T> : IRulesEngine<T>
         }
   }
 
-  private IEngineContext Reset(IEngineContext context)
-  {
-    context ??= new EngineContext();
-    SetupContext(context);
-    LastException = null;
-    return context;
-  }
-
-  internal IEngineContext SetupContext(IEngineContext ctx)
+  private IEngineContext Reset(IEngineContext ctx)
   {
     ctx ??= new EngineContext();
     ctx[EngineContextExtensions.ENGINE_KEY] = this;
+    LastException = null;
     return ctx;
   }
 
