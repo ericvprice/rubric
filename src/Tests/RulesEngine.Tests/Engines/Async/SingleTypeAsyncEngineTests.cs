@@ -1,7 +1,7 @@
 ﻿using RulesEngine.Tests.TestRules;
 using RulesEngine.Tests.TestRules.Async;
 
-namespace RulesEngine.Tests;
+namespace RulesEngine.Tests.Engines.Async;
 
 public class SingleTypeAsyncEngineTests
 {
