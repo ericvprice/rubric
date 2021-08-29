@@ -113,7 +113,7 @@ public class RulesEngine<T> : IRulesEngine<T>
           return;
         }
   }
-  
+
   private IEngineContext Reset(IEngineContext context)
   {
     context ??= new EngineContext();

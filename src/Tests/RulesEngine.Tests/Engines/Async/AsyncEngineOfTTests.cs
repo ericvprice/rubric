@@ -1,10 +1,6 @@
-﻿using System.Diagnostics;
-using RulesEngine.Builder;
-using RulesEngine.Rules;
-using RulesEngine.Rules.Async;
-using RulesEngine.Tests.TestRules;
+﻿using RulesEngine.Tests.TestRules;
 using RulesEngine.Tests.TestRules.Async;
-using Xunit;
+using System.Diagnostics;
 
 namespace RulesEngine.Tests.Engines.Async;
 
@@ -802,6 +798,151 @@ public class AsyncEngineOfTTests
     await engine.ApplyAsync(input);
     Assert.Null(engine.LastException);
     Assert.True(input.InputFlag);
+  }
+  [Fact]
+  public async Task ApplyManyHandleEngineHalt()
+  {
+    var testPreRule = new LambdaAsyncRule<TestInput>(
+        "test",
+        async (c, i, t) => true,
+        async (c, i, t) =>
+        {
+          if (i.InputFlag)
+            throw new EngineHaltException();
+          else i.InputFlag = true;
+        });
+    var input = new TestInput() { InputFlag = true };
+    var input2 = new TestInput();
+    var engine = new AsyncRulesEngine<TestInput>(
+        new IAsyncRule<TestInput>[] { testPreRule }
+    );
+    await engine.ApplyAsync(new[] { input, input2 });
+    Assert.True(input.InputFlag);
+    Assert.False(input2.InputFlag);
+    Assert.NotNull(engine.LastException);
+    var exception = engine.LastException;
+    Assert.IsType<EngineHaltException>(exception);
+    Assert.Equal(testPreRule, exception.Rule);
+    Assert.Equal(input, exception.Input);
+    Assert.Null(exception.Output);
+    Assert.NotNull(exception.Context);
+  }
+
+  [Fact]
+  public async Task ApplyManyHandleItemHalt()
+  {
+    var testPreRule = new LambdaAsyncRule<TestInput>(
+        "test",
+        async (c, i, t) => true,
+        async (c, i, t) =>
+        {
+          if (i.InputFlag)
+            throw new ItemHaltException();
+          else i.InputFlag = true;
+        });
+    var input = new TestInput() { InputFlag = true };
+    var input2 = new TestInput();
+    var engine = new AsyncRulesEngine<TestInput>(
+        new IAsyncRule<TestInput>[] { testPreRule }
+    );
+    await engine.ApplyAsync(new[] { input, input2 });
+    Assert.True(input.InputFlag);
+    Assert.True(input2.InputFlag);
+    Assert.NotNull(engine.LastException);
+    var exception = engine.LastException;
+    Assert.IsType<ItemHaltException>(exception);
+    Assert.Equal(testPreRule, exception.Rule);
+    Assert.Equal(input, exception.Input);
+    Assert.Null(exception.Output);
+    Assert.NotNull(exception.Context);
+  }
+
+  [Fact]
+  public async Task ApplyManyHandleExceptionItemHalt()
+  {
+    var testPreRule = new LambdaAsyncRule<TestInput>(
+        "test",
+        async (c, i, t) => true,
+        async (c, i, t) =>
+        {
+          if (i.InputFlag)
+            throw new Exception("Test", null);
+          else i.InputFlag = true;
+        });
+    var input = new TestInput() { InputFlag = true };
+    var input2 = new TestInput();
+    var engine = new AsyncRulesEngine<TestInput>(
+        new IAsyncRule<TestInput>[] { testPreRule },
+        false,
+        ExceptionHandlers.HaltItem
+    );
+    await engine.ApplyAsync(new[] { input, input2 });
+    Assert.True(input.InputFlag);
+    Assert.True(input2.InputFlag);
+    Assert.NotNull(engine.LastException);
+    var exception = engine.LastException;
+    Assert.IsType<ItemHaltException>(exception);
+    Assert.Equal(testPreRule, exception.Rule);
+    Assert.Equal(input, exception.Input);
+    Assert.Null(exception.Output);
+    Assert.NotNull(exception.Context);
+  }
+
+  [Fact]
+  public async Task ApplyManyHandleExceptionEngineHalt()
+  {
+    var testPreRule = new LambdaAsyncRule<TestInput>(
+        "test",
+        async (c, i, t) => true,
+        async (c, i, t) =>
+        {
+          if (i.InputFlag)
+            throw new Exception();
+          else i.InputFlag = true;
+        });
+    var input = new TestInput() { InputFlag = true };
+    var input2 = new TestInput();
+    var engine = new AsyncRulesEngine<TestInput>(
+        new IAsyncRule<TestInput>[] { testPreRule },
+        false,
+        ExceptionHandlers.HaltEngine
+    );
+    await engine.ApplyAsync(new[] { input, input2 });
+    Assert.True(input.InputFlag);
+    Assert.False(input2.InputFlag);
+    Assert.NotNull(engine.LastException);
+    var exception = engine.LastException;
+    Assert.IsType<EngineHaltException>(exception);
+    Assert.Equal(testPreRule, exception.Rule);
+    Assert.Equal(input, exception.Input);
+    Assert.Null(exception.Output);
+    Assert.NotNull(exception.Context);
+  }
+
+  [Fact]
+  public async Task ApplyManyHandleExceptionEngineThrow()
+  {
+    var testPreRule = new LambdaAsyncRule<TestInput>(
+        "test",
+        async (c, i, t) => true,
+        async (c, i, t) =>
+        {
+          if (i.InputFlag)
+            throw new Exception();
+          else i.InputFlag = true;
+        });
+    var input = new TestInput() { InputFlag = true };
+    var input2 = new TestInput();
+    var engine = new AsyncRulesEngine<TestInput>(
+        new IAsyncRule<TestInput>[] { testPreRule },
+        false,
+        ExceptionHandlers.Throw
+    );
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(new[] { input, input2 }));
+    Assert.True(input.InputFlag);
+    Assert.False(input2.InputFlag);
+    Assert.Null(engine.LastException);
+    Assert.IsNotType<EngineHaltException>(exception);
   }
 
   [Fact]

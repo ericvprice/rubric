@@ -128,20 +128,20 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   #region Methods
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
   {
+    context = Reset(context);
     try
     {
-      context = Reset(context);
-      if (IsParallel)
-        await ApplyParallel(context, input, token);
-      else
-        await ApplySerial(context, input, token);
+      await ApplyItemAsync(input, context, token);
     }
     catch (EngineHaltException) { }
   }
 
+  private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
+    => IsParallel ? ApplyParallel(context, input, token) : ApplySerial(context, input, token);
+
   public async Task ApplyAsync(IEnumerable<T> inputs, IEngineContext ctx = null, bool parallelizeInputs = false, CancellationToken token = default)
   {
-    Reset(ctx);
+    ctx = Reset(ctx);
     try
     {
       if (IsParallel)
@@ -150,15 +150,15 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
         else
           await ApplyManyAsyncParallel(inputs, ctx, token);
       else
-          if (parallelizeInputs)
+        if (parallelizeInputs)
         await ApplyParallelManyAsyncSerial(inputs, ctx, token);
       else
         await ApplyManyAsyncSerial(inputs, ctx, token);
     }
     catch (EngineHaltException) { }
   }
-    
-  private async Task ApplySerial(IEngineContext ctx, T i,CancellationToken t)
+
+  private async Task ApplySerial(IEngineContext ctx, T i, CancellationToken t)
   {
     foreach (var set in _rules)
       foreach (var rule in set)
@@ -183,7 +183,6 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
       {
         await Parallelize(ctx, set, i, t).ConfigureAwait(false);
       }
-      //TODO Handle aggregate... how?
       catch (ItemHaltException)
       {
         return;
@@ -197,10 +196,11 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
     t = cts.Token;
     return Task.WhenAll(
       rules.Select(
-        r => Task.Run(async () => {
-                        try { await this.ApplyAsyncPreRule(ctx, r, i, t); } 
-                        catch (Exception) { cts.Cancel(); throw; }
-                      },t)));
+        r => Task.Run(async () =>
+        {
+          try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
+          catch (Exception) { cts.Cancel(); throw; }
+        }, t)));
   }
 
   private IEngineContext Reset(IEngineContext context)
@@ -219,11 +219,11 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
     {
       try
       {
-        await ApplyAsync(input, context, t).ConfigureAwait(false);
+        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
       }
-      catch (ItemHaltException)
+      catch (EngineHaltException)
       {
-        continue;
+        break;
       }
     }
   }
@@ -231,14 +231,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   private async Task ApplyManyAsyncParallel(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
     foreach (var input in inputs)
-      try
-      {
-        await ApplyParallel(context, input, t).ConfigureAwait(false);
-      }
-      catch (ItemHaltException)
-      {
-        continue;
-      }
+      await ApplyParallel(context, input, t).ConfigureAwait(false);
   }
 
   private Task ApplyParallelManyAsyncParallel(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)

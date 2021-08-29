@@ -1,8 +1,6 @@
-using RulesEngine.Builder;
 using RulesEngine.Tests.DependencyRules.TypeAttribute;
 using RulesEngine.Tests.TestRules;
 using RulesEngine.Tests.TestRules.Async;
-using Xunit;
 
 namespace RulesEngine.Tests.Builders;
 
@@ -258,7 +256,7 @@ public class AsyncBuilderOfTInTOutTests
              .WithAction((Func<IEngineContext, TestOutput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () => 
+        () =>
           EngineBuilder
              .ForInputAndOutputAsync<TestInput, TestOutput>()
              .WithPostRule("foo")

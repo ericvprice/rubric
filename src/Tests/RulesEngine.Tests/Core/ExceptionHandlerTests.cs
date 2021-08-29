@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace RulesEngine.Tests.Core;
+﻿namespace RulesEngine.Tests.Core;
 public class ExceptionHandlerTests
 {
   [Fact]

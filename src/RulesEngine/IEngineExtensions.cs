@@ -14,27 +14,93 @@ internal static class IEngineExtensions
   /// <param name="ctx">Engine context.</param>
   /// <param name="rule">The current rule.</param>
   /// <param name="input">The current input item.</param>
-  internal static async Task ApplyAsyncPreRule<T>(this IRulesEngine engine, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
+  internal static async Task ApplyAsyncPreRule<T>(this IRulesEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
   {
     try
     {
       var doesApply = await r.DoesApply(ctx, i, t).ConfigureAwait(false);
       if (doesApply)
       {
-        using var logCtx = engine.Logger.BeginScope(r.Name);
-        engine.Logger.LogTrace($"Rule {r.Name} applies.");
-        engine.Logger.LogTrace($"Applying {r.Name}.");
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        e.Logger.LogTrace($"Rule {r.Name} applies.");
+        e.Logger.LogTrace($"Applying {r.Name}.");
         await r.Apply(ctx, i, t).ConfigureAwait(false);
-        engine.Logger.LogTrace($"Finished applying {r.Name}.");
+        e.Logger.LogTrace($"Finished applying {r.Name}.");
       }
       else
       {
-        engine.Logger.LogTrace($"Rule {r.Name} does not apply.");
+        e.Logger.LogTrace($"Rule {r.Name} does not apply.");
       }
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      if (!HandleException(e, engine, ctx, r, i, null))
+      if (!HandleException(ex, e, ctx, r, i, null))
+      {
+        throw;
+      }
+    }
+  }
+
+  /// <summary>
+  ///     Apply an asyc rule.  Handle trace logging, exception handling, etc.
+  /// </summary>
+  /// <param name="ctx">Engine context.</param>
+  /// <param name="rule">The current rule.</param>
+  /// <param name="input">The current input item.</param>
+  internal static async Task ApplyAsyncPostRule<T>(this IRulesEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
+  {
+    try
+    {
+      var doesApply = await r.DoesApply(ctx, o, t).ConfigureAwait(false);
+      if (doesApply)
+      {
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        e.Logger.LogTrace($"Rule {r.Name} applies.");
+        e.Logger.LogTrace($"Applying {r.Name}.");
+        await r.Apply(ctx, o, t).ConfigureAwait(false);
+        e.Logger.LogTrace($"Finished applying {r.Name}.");
+      }
+      else
+      {
+        e.Logger.LogTrace($"Rule {r.Name} does not apply.");
+      }
+    }
+    catch (Exception ex)
+    {
+      if (!HandleException(ex, e, ctx, r, null, o))
+      {
+        throw;
+      }
+    }
+  }
+
+  /// <summary>
+  ///     Apply an asyc rule.  Handle trace logging, exception handling, etc.
+  /// </summary>
+  /// <param name="ctx">Engine context.</param>
+  /// <param name="rule">The current rule.</param>
+  /// <param name="input">The current input item.</param>
+  internal static async Task ApplyAsyncRule<TIn, TOut>(this IRulesEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
+  {
+    try
+    {
+      var doesApply = await r.DoesApply(ctx, i, o, t).ConfigureAwait(false);
+      if (doesApply)
+      {
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        e.Logger.LogTrace($"Rule {r.Name} applies.");
+        e.Logger.LogTrace($"Applying {r.Name}.");
+        await r.Apply(ctx, i, o, t).ConfigureAwait(false);
+        e.Logger.LogTrace($"Finished applying {r.Name}.");
+      }
+      else
+      {
+        e.Logger.LogTrace($"Rule {r.Name} does not apply.");
+      }
+    }
+    catch (Exception ex)
+    {
+      if (!HandleException(ex, e, ctx, r, i, o))
       {
         throw;
       }
@@ -113,7 +179,7 @@ internal static class IEngineExtensions
     }
     catch (Exception e)
     {
-      if(!HandleException(e, engine, ctx, rule, null, output))
+      if (!HandleException(e, engine, ctx, rule, null, output))
       {
         throw;
       }

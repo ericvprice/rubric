@@ -1,7 +1,5 @@
-﻿using RulesEngine.Rules.Async;
-using RulesEngine.Tests.DependencyRules;
+﻿using RulesEngine.Tests.DependencyRules;
 using RulesEngine.Tests.TestRules.Async;
-using Xunit;
 
 namespace RulesEngine.Tests.Rules.Async;
 

@@ -1,6 +1,3 @@
-using Xunit;
-using RulesEngine.Rules.Async;
-
 namespace RulesEngine.Tests.Core;
 
 public class ContextTests

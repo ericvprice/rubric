@@ -1,7 +1,5 @@
-using RulesEngine.Rules;
 using RulesEngine.Tests.DependencyRules;
 using RulesEngine.Tests.TestRules;
-using Xunit;
 
 namespace RulesEngine.Tests.Rules;
 

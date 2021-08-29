@@ -1,9 +1,7 @@
-using RulesEngine.Rules;
-
 namespace RulesEngine.Tests.TestRules
 {
-    public class TestDefaultPreRule : DefaultRule<TestInput>
-    {
-        public override void Apply(IEngineContext context, TestInput obj) => obj.InputFlag = true;
-    }
+  public class TestDefaultPreRule : DefaultRule<TestInput>
+  {
+    public override void Apply(IEngineContext context, TestInput obj) => obj.InputFlag = true;
+  }
 }

@@ -1,6 +1,3 @@
-using RulesEngine.Dependency;
-using Xunit;
-
 namespace RulesEngine.Tests.Core;
 
 public class DependencyTests

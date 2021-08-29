@@ -127,11 +127,11 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
       try
       {
         ApplyItem(input, output, ctx);
-      } 
+      }
       catch (ItemHaltException)
       {
         continue;
-      } 
+      }
       catch (EngineHaltException)
       {
         return;
@@ -148,12 +148,12 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
 
   private void ApplyItem(TIn input, TOut output, IEngineContext ctx)
   {
-      foreach (var set in _preprocessingRules)
-        foreach (var rule in set)
-          this.ApplyPreRule(ctx, rule, input);
-      foreach (var set in _rules)
-        foreach (var rule in set)
-          this.ApplyRule(ctx, rule, input, output);
+    foreach (var set in _preprocessingRules)
+      foreach (var rule in set)
+        this.ApplyPreRule(ctx, rule, input);
+    foreach (var set in _rules)
+      foreach (var rule in set)
+        this.ApplyRule(ctx, rule, input, output);
   }
 
   internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;

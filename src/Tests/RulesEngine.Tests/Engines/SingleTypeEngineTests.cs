@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
-using RulesEngine.Rules;
 using RulesEngine.Tests.TestRules;
-using Xunit;
 
 namespace RulesEngine.Tests.Engines;
 
@@ -333,7 +331,7 @@ public class SingleTypeEngineTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new Exception());
     var testPreRule2 = new LambdaRule<TestInput>("test2", (c, i) => true, (c, i) => i.InputFlag = true);
-    var engine = new RulesEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, 
+    var engine = new RulesEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 },
         new LambdaExceptionHandler((e, c, i, o, rule) => throw new InvalidOperationException()));
     var input = new TestInput();
     var exception = Assert.Throws<InvalidOperationException>(() => engine.Apply(input));

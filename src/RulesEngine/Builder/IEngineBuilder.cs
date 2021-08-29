@@ -31,6 +31,6 @@ public interface IEngineBuilder<T>
   IEngineBuilder<T> WithRule(IRule<T> rule);
 
   IEngineBuilder<T> WithExceptionHandler(IExceptionHandler handler);
- 
+
   IRulesEngine<T> Build();
 }

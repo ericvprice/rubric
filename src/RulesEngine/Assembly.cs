@@ -3,4 +3,4 @@ global using System.Linq;
 global using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("RulesEngine.Tests")]
+[assembly: InternalsVisibleTo("RulesEngine.Tests")]

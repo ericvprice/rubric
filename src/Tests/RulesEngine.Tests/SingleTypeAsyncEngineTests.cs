@@ -1,8 +1,5 @@
-﻿using RulesEngine.Rules;
-using RulesEngine.Rules.Async;
-using RulesEngine.Tests.TestRules;
+﻿using RulesEngine.Tests.TestRules;
 using RulesEngine.Tests.TestRules.Async;
-using Xunit;
 
 namespace RulesEngine.Tests;
 
@@ -173,28 +170,24 @@ public class SingleTypeAsyncEngineTests
             new AsyncRule<TestInput>[] { testPreRule }, null, null);
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<EngineHaltException>(() => engine.ApplyAsync(input, output));
-    Assert.Equal(testPreRule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Null(exception.Output);
-    Assert.NotNull(exception.Context);
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+    Assert.IsNotType<EngineException>(exception);
+    Assert.Null(engine.LastException);
     Assert.True(input.InputFlag);
   }
 
-  //[Fact]
-  //public async Task DoesApplyAsyncException()
-  //{
-  //    var testPreRule = new TestExceptionAsyncPreRule(false);
-  //    var engine =
-  //        new AsyncRulesEngine<TestInput>(
-  //            new AsyncRule<TestInput>[] { testPreRule }, false, null);
-  //    var input = new TestInput();
-  //    var output = new TestOutput();
-  //    var exception = await Assert.ThrowsAsync<EngineHaltException>(async () => await engine.ApplyAsync(input));
-  //    Assert.Equal(testPreRule, exception.Rule);
-  //    Assert.Equal(input, exception.Input);
-  //    Assert.Null(exception.Output);
-  //    Assert.NotNull(exception.Context);
-  //    Assert.True(input.InputFlag);
-  //}
+  [Fact]
+  public async Task DoesApplyAsyncException()
+  {
+    var testPreRule = new TestExceptionAsyncPreRule(false);
+    var engine =
+        new AsyncRulesEngine<TestInput>(
+            new AsyncRule<TestInput>[] { testPreRule }, false, null);
+    var input = new TestInput();
+    var output = new TestOutput();
+    var exception = await Assert.ThrowsAsync<Exception>(async () => await engine.ApplyAsync(input));
+    Assert.IsNotType<EngineException>(exception);
+    Assert.Null(engine.LastException);
+    Assert.True(input.InputFlag);
+  }
 }

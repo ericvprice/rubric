@@ -1,7 +1,4 @@
-using RulesEngine.Builder;
-using RulesEngine.Rules;
 using RulesEngine.Tests.TestRules;
-using Xunit;
 
 namespace RulesEngine.Tests.Engines;
 
@@ -647,31 +644,31 @@ public class EngineTests
                   .WithExceptionHandler(handler)
                   .Build();
 
-    private static IRulesEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
-     => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
-                  .WithPreRule("testprerule")
-                    .WithAction((c, i) =>
-                    {
-                      i.Items.Add("testprerule");
-                      if (i.Items.Contains("PreException")) throw new T();
-                      i.Items.Add("testprerule");
-                    })
-                  .EndRule()
-                  .WithRule("testrule")
-                    .WithAction((c, i, o) =>
-                    {
-                      i.Items.Add("testrule");
-                      if (i.Items.Contains("Exception")) throw new T();
-                      i.Items.Add("testrule2");
-                    })
-                  .EndRule()
-                  .WithPostRule("testpostrule")
-                    .WithAction((c, o) =>
-                    {
-                      o.Outputs.Add("testpostrule");
-                      if (o.Outputs.Contains("PostException")) throw new T();
-                      o.Outputs.Add("testpostrule2");
-                    })
-                  .EndRule()
-                  .Build();
+  private static IRulesEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
+   => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+                .WithPreRule("testprerule")
+                  .WithAction((c, i) =>
+                  {
+                    i.Items.Add("testprerule");
+                    if (i.Items.Contains("PreException")) throw new T();
+                    i.Items.Add("testprerule");
+                  })
+                .EndRule()
+                .WithRule("testrule")
+                  .WithAction((c, i, o) =>
+                  {
+                    i.Items.Add("testrule");
+                    if (i.Items.Contains("Exception")) throw new T();
+                    i.Items.Add("testrule2");
+                  })
+                .EndRule()
+                .WithPostRule("testpostrule")
+                  .WithAction((c, o) =>
+                  {
+                    o.Outputs.Add("testpostrule");
+                    if (o.Outputs.Contains("PostException")) throw new T();
+                    o.Outputs.Add("testpostrule2");
+                  })
+                .EndRule()
+                .Build();
 }
