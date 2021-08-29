@@ -5,8 +5,7 @@ namespace RulesEngine.Rules.Async;
 /// <summary>
 ///     An asynchronous processing rule.
 /// </summary>
-/// <typeparam name="TIn">The engine input type.</typeparam>
-/// <typeparam name="TOut">The engine output type.</typeparam>
+/// <typeparam name="T">The object type.</typeparam>
 public abstract class AsyncRule<T> : BaseDependency, IAsyncRule<T>
       where T : class
 {
@@ -14,15 +13,8 @@ public abstract class AsyncRule<T> : BaseDependency, IAsyncRule<T>
   public override string Name => GetType().FullName;
 
   /// <inheritdoc />
-  public Task Apply(IEngineContext context, T input, CancellationToken token)
-      => Apply(context, input);
-
-
-  public abstract Task Apply(IEngineContext context, T input);
-
+  public abstract Task Apply(IEngineContext context, T input, CancellationToken token);
   /// <inheritdoc />
-  public Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token)
-      => DoesApply(context, input);
+  public abstract Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token);
 
-  public abstract Task<bool> DoesApply(IEngineContext context, T input);
 }

@@ -1,6 +1,6 @@
 using RulesEngine.Tests.TestRules.Async;
 
-namespace RulesEngine.Tests.Engine.Async;
+namespace RulesEngine.Tests.Engines.Async;
 
 public class ParallelAsyncEngineTests
 {

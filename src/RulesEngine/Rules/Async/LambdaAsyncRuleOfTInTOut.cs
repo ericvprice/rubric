@@ -3,7 +3,7 @@
 public class LambdaAsyncRule<TIn, TOut> : IAsyncRule<TIn, TOut>
 {
   private readonly Func<IEngineContext, TIn, TOut, CancellationToken, Task> _body;
-  private readonly Func<IEngineContext, TIn, TOut, CancellationToken, Task<bool>> _predicate;
+  private readonly Func<IEngineContext, TIn, TOut, CancellationToken, Task<bool>> _predicate = (c, i, o, t) => Task.FromResult(true);
 
   public LambdaAsyncRule(
       string name,
@@ -14,10 +14,10 @@ public class LambdaAsyncRule<TIn, TOut> : IAsyncRule<TIn, TOut>
   )
   {
     Name = name ?? throw new ArgumentNullException(nameof(name));
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     _body = body ?? throw new ArgumentNullException(nameof(body));
-    Dependencies = dependencies?.ToArray() ?? new string[0];
-    Provides = provides?.ToArray() ?? new string[0];
+    _predicate = predicate ?? _predicate;
+    Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
+    Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
 
 

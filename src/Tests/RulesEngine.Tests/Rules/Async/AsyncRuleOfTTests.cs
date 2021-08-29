@@ -11,7 +11,7 @@ public class AsyncSingleTypeRuleTests
   public async Task DoesApply(bool expected)
   {
     var rule = new TestAsyncPreRule(expected);
-    Assert.Equal(expected, await rule.DoesApply(null, null));
+    Assert.Equal(expected, await rule.DoesApply(null, null, default));
   }
 
   [Theory]
@@ -45,8 +45,6 @@ public class AsyncSingleTypeRuleTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-        () => new LambdaAsyncRule<TestInput>("test", null, (c, i, t) => Task.CompletedTask));
-    Assert.Throws<ArgumentNullException>(
         () => new LambdaAsyncRule<TestInput>("test", (c, i, t) => Task.FromResult(true), null));
     Assert.Throws<ArgumentException>(
         () => new LambdaAsyncRule<TestInput>(null, (c, i, t) => Task.FromResult(true),
@@ -61,7 +59,7 @@ public class AsyncSingleTypeRuleTests
   public async Task TestDefaultDoesApply()
   {
     var rule = new TestDefaultAsyncPreRule();
-    Assert.True(await rule.DoesApply(null, null));
+    Assert.True(await rule.DoesApply(null, null, default));
   }
 
   [Fact]

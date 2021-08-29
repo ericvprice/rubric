@@ -13,15 +13,9 @@ public abstract class AsyncRule<TIn, TOut> : BaseDependency, IAsyncRule<TIn, TOu
   public override string Name => GetType().FullName;
 
   /// <inheritdoc />
-  public Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token)
-      => Apply(context, input, output);
-
-  public abstract Task Apply(IEngineContext context, TIn input, TOut output);
+  public abstract Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token);
 
   /// <inheritdoc />
-  public Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token)
-      => DoesApply(context, input, output);
+  public abstract Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token);
 
-  /// <inheritdoc />
-  public abstract Task<bool> DoesApply(IEngineContext context, TIn input, TOut output);
 }

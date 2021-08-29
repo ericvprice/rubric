@@ -11,7 +11,7 @@ public class AsyncRuleTests
   public async Task TestDoesApply(bool expected)
   {
     var rule = new TestAsyncRule(expected);
-    Assert.Equal(expected, await rule.DoesApply(null, null, null));
+    Assert.Equal(expected, await rule.DoesApply(null, null, null, default));
   }
 
 
@@ -43,8 +43,6 @@ public class AsyncRuleTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-        () => new LambdaAsyncRule<TestInput, TestOutput>("test", null, (c, i, o, t) => Task.CompletedTask));
-    Assert.Throws<ArgumentNullException>(
         () => new LambdaAsyncRule<TestInput, TestOutput>("test", (c, i, o, t) => Task.FromResult(true), null));
     Assert.Throws<ArgumentNullException>(
         () => new LambdaAsyncRule<TestInput, TestOutput>(null, (c, i, o, t) => Task.FromResult(true),
@@ -55,7 +53,7 @@ public class AsyncRuleTests
   public async Task TestDefaultDoesApply()
   {
     var rule = new TestDefaultAsyncRule();
-    Assert.True(await rule.DoesApply(null, null, null));
+    Assert.True(await rule.DoesApply(null, null, null, default));
   }
 
   [Fact]

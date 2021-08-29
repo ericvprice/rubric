@@ -12,13 +12,13 @@ namespace RulesEngine.Tests.DependencyRules.TypeAttribute
       _flagValue = flagValue;
     }
 
-    public override Task Apply(IEngineContext context, TestInput input, TestOutput output)
+    public override Task Apply(IEngineContext context, TestInput input, TestOutput output, CancellationToken token)
     {
       input.InputFlag = output.TestFlag = _flagValue;
       return Task.CompletedTask;
     }
 
-    public override Task<bool> DoesApply(IEngineContext context, TestInput input, TestOutput output)
+    public override Task<bool> DoesApply(IEngineContext context, TestInput input, TestOutput output, CancellationToken token)
         => Task.FromResult(_expected);
   }
 }

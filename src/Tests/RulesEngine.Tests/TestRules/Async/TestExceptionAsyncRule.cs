@@ -7,13 +7,13 @@ namespace RulesEngine.Tests.TestRules.Async
 
     public bool OnDoesApply { get; }
 
-    public override Task Apply(IEngineContext context, TestInput obj, TestOutput output)
+    public override Task Apply(IEngineContext context, TestInput obj, TestOutput output, CancellationToken token)
     {
       obj.InputFlag = output.TestFlag = true;
       throw new Exception();
     }
 
-    public override Task<bool> DoesApply(IEngineContext context, TestInput obj, TestOutput output)
+    public override Task<bool> DoesApply(IEngineContext context, TestInput obj, TestOutput output, CancellationToken token)
         => OnDoesApply ? throw new Exception() : Task.FromResult(true);
   }
 }

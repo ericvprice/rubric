@@ -162,94 +162,148 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
 
   public async Task ApplyAsync(TIn input, TOut output, IEngineContext context = null, CancellationToken token = default)
   {
-    var ctx = context ?? new EngineContext();
-    SetupContext(ctx);
+    context = Reset(context);
     try
     {
       await ApplyItemAsync(input, output, context, token);
     }
-    catch (EngineHaltException) { }
+    catch (EngineException) { }
   }
 
   private Task ApplyItemAsync(TIn input, TOut output, IEngineContext context = null, CancellationToken token = default)
   => IsParallel ? ApplyParallel(context, input, output, token) : ApplySerial(context, input, output, token);
 
 
-  public Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null, CancellationToken token = default)
+  public async Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null, CancellationToken token = default)
   {
-    var ctx = context ?? new EngineContext();
-    SetupContext(ctx);
-    return IsParallel
-        ? ApplyManyAsyncParallel(inputs, output, ctx, token)
-        : ApplyManyAsyncSerial(inputs, output, ctx, token);
+    context = Reset(context);
+    try
+    {
+      if (IsParallel)
+        await ApplyManyAsyncParallel(inputs, output, context, token);
+      else
+        await ApplyManyAsyncSerial(inputs, output, context, token);
+    } catch (EngineException) { }
   }
 
 
-  private async Task ApplySerial(IEngineContext context, TIn input, TOut output, CancellationToken token)
+  private async Task ApplySerial(IEngineContext ctx, TIn i, TOut o, CancellationToken t)
   {
-    foreach (var set in _preRules)
-      foreach (var rule in set)
-        await this.ApplyAsyncPreRule(context, rule, input, token).ConfigureAwait(false);
-    foreach (var set in _rules)
-      foreach (var rule in set)
-        await this.ApplyAsyncRule(context, rule, input, output, token).ConfigureAwait(false);
+      foreach (var set in _preRules)
+        foreach (var rule in set)
+          await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+      foreach (var set in _rules)
+        foreach (var rule in set)
+          await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
     foreach (var set in _postRules)
       foreach (var rule in set)
-        await this.ApplyAsyncPostRule(context, rule, output, token).ConfigureAwait(false);
+        await this.ApplyAsyncPostRule(ctx, rule, o, t).ConfigureAwait(false);
   }
 
-  private async Task ApplyParallel(IEngineContext context, TIn input, TOut output, CancellationToken token)
+  private async Task ApplyParallel(IEngineContext ctx, TIn i, TOut o, CancellationToken t)
   {
-    foreach (var set in _preRules)
-      await Task.WhenAll(
-          set.Select(r => Task.Run(() => this.ApplyAsyncPreRule(context, r, input, token)))
-      ).ConfigureAwait(false);
-    foreach (var set in _rules)
-      await Task.WhenAll(
-          set.Select(r => Task.Run(() => this.ApplyAsyncRule(context, r, input, output, token)))
-      ).ConfigureAwait(false);
+    try
+    {
+      foreach (var set in _preRules)
+        foreach (var pre in set)
+          await ParallelizePre(ctx, set, i, t);
+      foreach (var set in _rules)
+        await Parallelize(ctx, set, i, o, t);
+    }
+    catch (ItemHaltException)
+    {
+      return;
+    }
     foreach (var set in _postRules)
-      await Task.WhenAll(
-          set.Select(r => Task.Run(() => this.ApplyAsyncPostRule(context, r, output, token)))
-      ).ConfigureAwait(false);
+      await ParallelizePost(ctx, set, o, t);
   }
 
-  private async Task ApplyManyAsyncSerial(IEnumerable<TIn> inputs, TOut output, IEngineContext context, CancellationToken token)
+  private async Task ApplyManyAsyncSerial(IEnumerable<TIn> inputs, TOut output, IEngineContext ctx, CancellationToken t)
   {
     foreach (var input in inputs)
     {
-      var tokenSource = new CancellationTokenSource();
-      foreach (var set in _preRules)
-        foreach (var rule in set)
-          await this.ApplyAsyncPreRule(context, rule, input, token).ConfigureAwait(false);
-      foreach (var set in _rules)
-        foreach (var rule in set)
-          await this.ApplyAsyncRule(context, rule, input, output, token).ConfigureAwait(false);
+      try
+      {
+        foreach (var set in _preRules)
+          foreach(var pre in set)
+            await this.ApplyAsyncPreRule(ctx, pre, input, t);
+        foreach (var set in _rules)
+            foreach(var rule in set)
+          await this.ApplyAsyncRule(ctx, rule, input, output, t);
+      } 
+      catch(ItemHaltException)
+      {
+        continue;
+      }
     }
-
     foreach (var set in _postRules)
-      foreach (var rule in set)
-        await this.ApplyAsyncPostRule(context, rule, output, token);
+      await ParallelizePost(ctx, set, output, t);
   }
 
-  private async Task ApplyManyAsyncParallel(IEnumerable<TIn> inputs, TOut output, IEngineContext context, CancellationToken token)
+  private async Task ApplyManyAsyncParallel(IEnumerable<TIn> inputs, TOut output, IEngineContext ctx, CancellationToken t)
   {
     foreach (var input in inputs)
     {
-      var tokenSource = new CancellationTokenSource();
-      foreach (var set in _preRules)
-        await Task.WhenAll(
-            set.Select(r => Task.Run(() => this.ApplyAsyncPreRule(context, r, input, token)))
-        ).ConfigureAwait(false);
-      foreach (var set in _rules)
-        await Task.WhenAll(
-            set.Select(r => Task.Run(() => this.ApplyAsyncRule(context, r, input, output, token)))
-        ).ConfigureAwait(false);
+      try
+      {
+        foreach (var set in _preRules)
+          foreach (var pre in set)
+            await ParallelizePre(ctx, set, input, t);
+        foreach (var set in _rules)
+          await Parallelize(ctx, set, input, output, t);
+      }
+      catch (ItemHaltException)
+      {
+        continue;
+      }
     }
     foreach (var set in _postRules)
-      await Task.WhenAll(
-          set.Select(r => Task.Run(() => this.ApplyAsyncPostRule(context, r, output, token)))
-      ).ConfigureAwait(false);
+      await ParallelizePost(ctx, set, output, t);
+  }
+
+  private Task ParallelizePre<T>(IEngineContext ctx, IEnumerable<IAsyncRule<T>> rules, T i, CancellationToken t)
+  {
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    t = cts.Token;
+    return Task.WhenAll(
+      rules.Select(
+        r => Task.Run(async () =>
+        {
+          try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
+          catch (Exception) { cts.Cancel(); throw; }
+        }, t)));
+  }
+
+  private Task Parallelize(IEngineContext ctx, IEnumerable<IAsyncRule<TIn, TOut>> rules, TIn i, TOut o, CancellationToken t)
+  {
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    t = cts.Token;
+    return Task.WhenAll(
+      rules.Select(
+        r => Task.Run(async () =>
+        {
+          try { await this.ApplyAsyncRule(ctx, r, i, o, t); }
+          catch (Exception) { cts.Cancel(); throw; }
+        }, t)));
+  }
+  private Task ParallelizePost<T>(IEngineContext ctx, IEnumerable<IAsyncRule<T>> rules, T i, CancellationToken t)
+  {
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    t = cts.Token;
+    return Task.WhenAll(
+      rules.Select(
+        r => Task.Run(async () =>
+        {
+          try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
+          catch (Exception) { cts.Cancel(); throw; }
+        }, t)));
+  }
+  private IEngineContext Reset(IEngineContext context)
+  {
+    context ??= new EngineContext();
+    SetupContext(context);
+    LastException = null;
+    return context;
   }
 
   internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;

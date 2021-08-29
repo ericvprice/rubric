@@ -4,7 +4,7 @@ namespace RulesEngine.Tests.TestRules.Async
   {
     public override string Name => nameof(TestDefaultPostRule);
 
-    public override Task Apply(IEngineContext context, TestOutput obj)
+    public override Task Apply(IEngineContext context, TestOutput obj, CancellationToken token)
     {
       obj.TestFlag = true;
       return Task.CompletedTask;

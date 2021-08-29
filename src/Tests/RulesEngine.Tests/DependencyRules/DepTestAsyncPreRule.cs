@@ -14,13 +14,13 @@ namespace RulesEngine.Tests.DependencyRules
       _shouldApply = shouldApply;
     }
 
-    public override Task Apply(IEngineContext context, TestInput obj)
+    public override Task Apply(IEngineContext context, TestInput obj, CancellationToken token)
     {
       obj.InputFlag = _flagValue;
       return Task.CompletedTask;
     }
 
-    public override Task<bool> DoesApply(IEngineContext context, TestInput obj)
+    public override Task<bool> DoesApply(IEngineContext context, TestInput obj, CancellationToken token)
         => Task.FromResult(_shouldApply);
   }
 }

@@ -11,7 +11,7 @@ public abstract class DefaultAsyncRule<TIn, TOut> : AsyncRule<TIn, TOut>
 {
 
   /// <inheritdoc />
-  public override Task<bool> DoesApply(IEngineContext context, TIn input, TOut output) => Task.FromResult(true);
+  public override Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token) => Task.FromResult(true);
 
 
 }

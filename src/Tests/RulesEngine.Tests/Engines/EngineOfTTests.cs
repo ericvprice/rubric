@@ -3,7 +3,7 @@ using RulesEngine.Tests.TestRules;
 
 namespace RulesEngine.Tests.Engines;
 
-public class SingleTypeEngineTests
+public class EngineOfTTests
 {
   [Fact]
   public void Applies()

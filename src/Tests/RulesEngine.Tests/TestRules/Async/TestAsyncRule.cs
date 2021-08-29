@@ -6,14 +6,14 @@ namespace RulesEngine.Tests.TestRules.Async
 
     public TestAsyncRule(bool shouldApply) => _shouldApply = shouldApply;
 
-    public override Task Apply(IEngineContext context, TestInput input, TestOutput output)
+    public override Task Apply(IEngineContext context, TestInput input, TestOutput output, CancellationToken token)
     {
       input.InputFlag = true;
       output.TestFlag = true;
       return Task.CompletedTask;
     }
 
-    public override Task<bool> DoesApply(IEngineContext context, TestInput input, TestOutput output)
+    public override Task<bool> DoesApply(IEngineContext context, TestInput input, TestOutput output, CancellationToken token)
         => Task.FromResult(_shouldApply);
   }
 }

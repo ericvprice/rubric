@@ -9,7 +9,7 @@ public abstract class DefaultAsyncRule<T> : AsyncRule<T>
         where T : class
 {
   /// <inheritdoc />
-  public override Task<bool> DoesApply(IEngineContext context, T input) => Task.FromResult(true);
+  public override Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token) => Task.FromResult(true);
 
 
 }

@@ -3,7 +3,7 @@ namespace RulesEngine.Rules.Async;
 public class LambdaAsyncRule<T> : IAsyncRule<T>
 {
   private readonly Func<IEngineContext, T, CancellationToken, Task> _body;
-  private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate;
+  private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (ctx, o, t) => Task.FromResult(true);
 
   public LambdaAsyncRule(
       string name,
@@ -13,11 +13,11 @@ public class LambdaAsyncRule<T> : IAsyncRule<T>
       IEnumerable<string> provides = null
   )
   {
-    Name = string.IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    Name = string.IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
     _body = body ?? throw new ArgumentNullException(nameof(body));
-    Dependencies = dependencies?.ToArray() ?? new string[0];
-    Provides = provides?.ToArray() ?? new string[0];
+    _predicate = predicate ?? _predicate;
+    Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
+    Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
 
 

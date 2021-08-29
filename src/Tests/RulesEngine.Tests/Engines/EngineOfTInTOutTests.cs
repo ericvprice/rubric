@@ -2,7 +2,7 @@ using RulesEngine.Tests.TestRules;
 
 namespace RulesEngine.Tests.Engines;
 
-public class EngineTests
+public class EngineOfTInTOutTests
 {
   [Fact]
   public void Applies()
