@@ -2,7 +2,7 @@ using RulesEngine.Rules.Async;
 
 namespace RulesEngine;
 
-public interface IAsyncRulesEngine<in TIn, in TOut> : IRulesEngine
+public interface IAsyncRulesEngine<in TIn, in TOut> : IAsyncRulesEngine
     where TIn : class
     where TOut : class
 {

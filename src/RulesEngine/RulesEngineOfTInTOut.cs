@@ -90,9 +90,6 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
   public bool IsAsync => false;
 
   /// <inheritdoc />
-  public bool IsParallel => false;
-
-  /// <inheritdoc />
   public Type InputType => typeof(TIn);
 
   /// <inheritdoc />

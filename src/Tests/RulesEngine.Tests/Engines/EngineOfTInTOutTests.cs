@@ -157,20 +157,20 @@ public class EngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                               .WithPreRule("test")
-                              .WithPredicate((c, i) => true)
-                              .WithAction((c, i) => i.Items.Add("pre"))
+                                .WithPredicate((c, i) => true)
+                                .WithAction((c, i) => i.Items.Add("pre"))
                               .EndRule()
                               .WithRule("test")
-                              .WithPredicate((c, i, o) => true)
-                              .WithAction((c, i, o) =>
-                              {
-                                i.Items.Add("rule");
-                                o.Outputs.Add("rule");
-                              })
+                                .WithPredicate((c, i, o) => true)
+                                .WithAction((c, i, o) =>
+                                {
+                                  i.Items.Add("rule");
+                                  o.Outputs.Add("rule");
+                                })
                               .EndRule()
                               .WithPostRule("test")
-                              .WithPredicate((c, o) => true)
-                              .WithAction((c, o) => o.Outputs.Add("postrule"))
+                                .WithPredicate((c, o) => true)
+                                .WithAction((c, o) => o.Outputs.Add("postrule"))
                               .EndRule()
                               .Build();
     var input1 = new TestInput();

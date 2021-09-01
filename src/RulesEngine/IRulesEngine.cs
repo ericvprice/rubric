@@ -40,5 +40,4 @@ public interface IAsyncRulesEngine : IRulesEngine
   /// </summary>
   bool IsParallel { get; }
 
-
 }

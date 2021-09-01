@@ -681,6 +681,62 @@ public class AsyncEngineOfTTests
   }
 
   [Fact]
+  public async Task TestStream()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRule("rule1")
+                                .WithAction(async (c, i) =>
+                                {
+                                  //Ensure second rule gets into its execution
+                                  await Task.Delay(200);
+                                  i.Items.Add("rule1");
+                                })
+                              .EndRule()
+                              .WithRule("rule2")
+                                .WithAction(async (c, i) =>
+                                {
+                                  await Task.Delay(100);
+                                  i.Items.Add("rule2");
+                                })
+                              .EndRule()
+                              .Build();
+    var input = new TestInput();
+    var input2 = new TestInput();
+    await engine.ApplyAsync(new[] { input, input2 }.ToAsyncEnumerable());
+    Assert.Equal(2, input.Items.Count);
+    Assert.Equal("rule1", input.Items.First());
+    Assert.Equal("rule2", input.Items.Last());
+  }
+  
+  [Fact]
+  public async Task TestStreamParallel()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRule("rule1")
+                                .WithAction(async (c, i) =>
+                                {
+                                  await Task.Delay(200);
+                                  i.Items.Add("rule1");
+                                })
+                              .EndRule()
+                              .WithRule("rule2")
+                                .WithAction(async (c, i) =>
+                                {
+                                  await Task.Delay(100);
+                                  i.Items.Add("rule2");
+                                })
+                              .EndRule()
+                              .AsParallel()
+                              .Build();
+    var input = new TestInput();
+    var input2 = new TestInput();
+    await engine.ApplyAsync(new[] { input, input2 }.ToAsyncEnumerable());
+    Assert.Equal(2, input.Items.Count);
+    Assert.Equal("rule2", input.Items.First());
+    Assert.Equal("rule1", input.Items.Last());
+  }
+
+  [Fact]
   public async Task ApplyException()
   {
     var testPreRule = new TestExceptionAsyncPreRule(false);
@@ -799,6 +855,7 @@ public class AsyncEngineOfTTests
     Assert.Null(engine.LastException);
     Assert.True(input.InputFlag);
   }
+
   [Fact]
   public async Task ApplyManyHandleEngineHalt()
   {

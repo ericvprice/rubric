@@ -4,6 +4,18 @@ namespace RulesEngine.Tests.Core;
 
 public class DependencyTests
 {
+
+  [Fact]
+  public void ConstructorThrowsOnNull()
+  {
+    Assert.Throws<ArgumentNullException>(() => new DependsOnAttribute((Type)null));
+  }
+
+  [Fact]
+  public void ConstructorThrowsOnEmpty()
+  {
+    Assert.Throws<ArgumentException>(() => new DependsOnAttribute(""));
+  }
   [Fact]
   public void Cycle2()
   {

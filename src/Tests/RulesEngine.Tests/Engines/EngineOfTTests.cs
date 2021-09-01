@@ -382,7 +382,6 @@ public class EngineOfTTests
     var ruleSet = new Ruleset<TestInput>();
     var engine = new RulesEngine<TestInput>(ruleSet, ExceptionHandlers.Throw, logger);
     Assert.False(engine.IsAsync);
-    Assert.False(engine.IsParallel);
     Assert.Equal(typeof(TestInput), engine.InputType);
     Assert.Equal(typeof(TestInput), engine.OutputType);
     Assert.Equal(ExceptionHandlers.Throw, engine.ExceptionHandler);

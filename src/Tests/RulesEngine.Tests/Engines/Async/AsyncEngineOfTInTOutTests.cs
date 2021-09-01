@@ -109,35 +109,80 @@ public class AsyncEngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithPreRule("test")
-                              .WithPredicate((c, i) => Task.FromResult(true))
-                              .WithAction((c, i) =>
-                              {
-                                i.Items.Add("pre");
-                                return Task.CompletedTask;
-                              })
+                                .WithPredicate((c, i) => Task.FromResult(true))
+                                .WithAction((c, i) =>
+                                {
+                                  i.Items.Add("pre");
+                                  return Task.CompletedTask;
+                                })
                               .EndRule()
                               .WithRule("test")
-                              .WithPredicate((c, i, o) => Task.FromResult(true))
-                              .WithAction((c, i, o) =>
-                              {
-                                i.Items.Add("rule");
-                                o.Outputs.Add("rule");
-                                return Task.CompletedTask;
-                              })
+                                .WithPredicate((c, i, o) => Task.FromResult(true))
+                                .WithAction((c, i, o) =>
+                                {
+                                  i.Items.Add("rule");
+                                  o.Outputs.Add("rule");
+                                  return Task.CompletedTask;
+                                })
                               .EndRule()
                               .WithPostRule("test")
-                              .WithPredicate((c, o) => Task.FromResult(true))
-                              .WithAction((c, o) =>
-                              {
-                                o.Outputs.Add("postrule");
-                                return Task.CompletedTask;
-                              })
+                                .WithPredicate((c, o) => Task.FromResult(true))
+                                .WithAction((c, o) =>
+                                {
+                                  o.Outputs.Add("postrule");
+                                  return Task.CompletedTask;
+                                })
                               .EndRule()
                               .Build();
     var input1 = new TestInput();
     var input2 = new TestInput();
     var output = new TestOutput();
     await engine.ApplyAsync(new[] { input1, input2 }, output);
+    Assert.Equal(2, input1.Items.Count);
+    Assert.Contains("pre", input1.Items);
+    Assert.Contains("rule", input1.Items);
+    Assert.Equal(2, input2.Items.Count);
+    Assert.Contains("pre", input2.Items);
+    Assert.Contains("rule", input2.Items);
+    Assert.Equal(3, output.Outputs.Count);
+    Assert.Equal(2, output.Outputs.Count(o => o == "rule"));
+    Assert.Single(output.Outputs.Where(o => o == "postrule"));
+  }
+
+  [Fact]
+  public async Task FullRunStream()
+  {
+    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithPreRule("test")
+                                .WithPredicate((c, i) => Task.FromResult(true))
+                                .WithAction((c, i) =>
+                                {
+                                  i.Items.Add("pre");
+                                  return Task.CompletedTask;
+                                })
+                              .EndRule()
+                              .WithRule("test")
+                                .WithPredicate((c, i, o) => Task.FromResult(true))
+                                .WithAction((c, i, o) =>
+                                {
+                                  i.Items.Add("rule");
+                                  o.Outputs.Add("rule");
+                                  return Task.CompletedTask;
+                                })
+                              .EndRule()
+                              .WithPostRule("test")
+                                .WithPredicate((c, o) => Task.FromResult(true))
+                                .WithAction((c, o) =>
+                                {
+                                  o.Outputs.Add("postrule");
+                                  return Task.CompletedTask;
+                                })
+                              .EndRule()
+                              .Build();
+    var input1 = new TestInput();
+    var input2 = new TestInput();
+    var output = new TestOutput();
+    await engine.ApplyAsync(new[] { input1, input2 }.ToAsyncEnumerable(), output);
     Assert.Equal(2, input1.Items.Count);
     Assert.Contains("pre", input1.Items);
     Assert.Contains("rule", input1.Items);

@@ -4,8 +4,6 @@ using RulesEngine.Rules.Async;
 
 namespace RulesEngine;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 internal static class EngineExtensions
 {
   /// <summary>
@@ -25,14 +23,14 @@ internal static class EngineExtensions
       if (doesApply)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
-        e.Logger.LogTrace($"Rule {r.Name} applies.");
-        e.Logger.LogTrace($"Applying {r.Name}.");
+        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Applying {name}.", r.Name);
         await r.Apply(ctx, i, t).ConfigureAwait(false);
-        e.Logger.LogTrace($"Finished applying {r.Name}.");
+        e.Logger.LogTrace("Finished applying {name}.", r.Name);
       }
       else
       {
-        e.Logger.LogTrace($"Rule {r.Name} does not apply.");
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
       }
     }
     catch (Exception ex)
@@ -61,14 +59,14 @@ internal static class EngineExtensions
       if (doesApply)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
-        e.Logger.LogTrace($"Rule {r.Name} applies.");
-        e.Logger.LogTrace($"Applying {r.Name}.");
+        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Applying {name}.", r.Name);
         await r.Apply(ctx, o, t).ConfigureAwait(false);
-        e.Logger.LogTrace($"Finished applying {r.Name}.");
+        e.Logger.LogTrace("Finished applying {name}.", r.Name);
       }
       else
       {
-        e.Logger.LogTrace($"Rule {r.Name} does not apply.");
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
       }
     }
     catch (Exception ex)
@@ -98,14 +96,14 @@ internal static class EngineExtensions
       if (doesApply)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
-        e.Logger.LogTrace($"Rule {r.Name} applies.");
-        e.Logger.LogTrace($"Applying {r.Name}.");
+        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Applying {name}.", r.Name);
         await r.Apply(ctx, i, o, t).ConfigureAwait(false);
-        e.Logger.LogTrace($"Finished applying {r.Name}.");
+        e.Logger.LogTrace("Finished applying {name}.", r.Name);
       }
       else
       {
-        e.Logger.LogTrace($"Rule {r.Name} does not apply.");
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
       }
     }
     catch (Exception ex)
@@ -129,11 +127,16 @@ internal static class EngineExtensions
     try
     {
       var doesApply = r.DoesApply(ctx, i);
-      e.Logger.LogTrace($"Rule {r.Name} {(doesApply ? "doeus" : "does not")} apply.");
-      if (!doesApply) return;
-      e.Logger.LogTrace($"Applying {r.Name}.");
+      if (!doesApply)
+      {
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        return;
+      }
+     e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        
+      e.Logger.LogTrace("Applying {name}.", r.Name);
       r.Apply(ctx, i);
-      e.Logger.LogTrace($"Finished applying {r.Name}.");
+      e.Logger.LogTrace("Finished applying {Name}.", r.Name);
     }
     catch (Exception ex)
     {
@@ -157,11 +160,15 @@ internal static class EngineExtensions
     try
     {
       var doesApply = r.DoesApply(ctx, i, o);
-      e.Logger.LogTrace($"Rule {r.Name} {(doesApply ? "does" : "does not")} apply.");
-      if (!doesApply) return;
-      e.Logger.LogTrace($"Applying {r.Name}.");
+      if (!doesApply)
+      {
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        return;
+      }
+      e.Logger.LogTrace("Rule {name} applies.", r.Name);
+      e.Logger.LogTrace("Applying {name}.", r.Name);
       r.Apply(ctx, i, o);
-      e.Logger.LogTrace($"Finished applying {r.Name}.");
+      e.Logger.LogTrace("Finished applying {name}.", r.Name);
     }
     catch (Exception ex)
     {
@@ -184,11 +191,14 @@ internal static class EngineExtensions
     try
     {
       var doesApply = r.DoesApply(ctx, o);
-      e.Logger.LogTrace($"Rule {r.Name} {(doesApply ? "does" : "does not")} apply.");
-      if (!doesApply) return;
-      e.Logger.LogTrace($"Applying {r.Name}.");
+      if (!doesApply) {
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        return;
+      }
+      e.Logger.LogTrace("Rule {name} does not applies.", r.Name);
+      e.Logger.LogTrace("Applying {name}.", r.Name);
       r.Apply(ctx, o);
-      e.Logger.LogTrace($"Finished applying {r.Name}.");
+      e.Logger.LogTrace("Finished applying {name}.", r.Name);
     }
     catch (Exception ex)
     {
