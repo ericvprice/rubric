@@ -1,3 +1,5 @@
+using RulesEngine.Dependency;
+
 namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
   [DependsOn(typeof(DepTestAsyncPostRule))]

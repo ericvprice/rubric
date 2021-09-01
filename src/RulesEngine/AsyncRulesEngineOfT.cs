@@ -21,6 +21,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   /// </summary>
   /// <param name="ruleSet">Collection of synchronous and synchronous rules.</param>
   /// <param name="isParallel">Whether to execute rules in parallel.</param>
+  /// <param name="handler">An exception handler.</param>
   /// <param name="logger">A logger.</param>
   public AsyncRulesEngine(
       AsyncRuleset<T> ruleSet,
@@ -40,6 +41,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   /// </summary>
   /// <param name="ruleSet">Collection of synchronous and synchronous rules.</param>
   /// <param name="isParallel">Whether to execute rules in parallel.</param>
+  /// <param name="handler">An exception handler.</param>
   /// <param name="logger">A logger.</param>
   public AsyncRulesEngine(
       Ruleset<T> ruleSet,
@@ -57,29 +59,25 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   /// <summary>
   ///     Full constructor.
   /// </summary>
-  /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
   /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
-  /// <param name="asyncPostRules">Collection of asynchronous postprocessing rules.</param>
   /// <param name="isParallel">Whether to execute rules in parallel.</param>
+  /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">A logger.</param>
   public AsyncRulesEngine(
       IEnumerable<IAsyncRule<T>> asyncRules,
       bool isParallel = false,
-      IExceptionHandler handler = null,
+      IExceptionHandler exceptionHandler = null,
       ILogger logger = null
-  ) : this(null, asyncRules, isParallel, handler, logger) { }
+  ) : this(null, asyncRules, isParallel, exceptionHandler, logger) { }
 
 
   /// <summary>
   ///     Full constructor.
   /// </summary>
-  /// <param name="preRules">Collection of synchronous preprocessing rules.</param>
-  /// <param name="asyncPreRules">Collection of asynchronous preprocessing rules.</param>
   /// <param name="rules">Collection of synchronous processing rules.</param>
   /// <param name="asyncRules">Collection of asynchronous processing rules.</param>
-  /// <param name="postRules">Collection of synchronous postprocessing rules.</param>
-  /// <param name="asyncPostRules">Collection of asynchronous postprocessing rules.</param>
   /// <param name="isParallel">Whether to execute rules in parallel.</param>
+  /// <param name="handler">An optional exception handler.</param>
   /// <param name="logger">A logger.</param>
   public AsyncRulesEngine(
       IEnumerable<IRule<T>> rules,
@@ -139,7 +137,11 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
     => IsParallel ? ApplyParallel(context, input, token) : ApplySerial(context, input, token);
 
-  public async Task ApplyAsync(IEnumerable<T> inputs, IEngineContext ctx = null, bool parallelizeInputs = false, CancellationToken token = default)
+  public async Task ApplyAsync(
+    IEnumerable<T> inputs, 
+    IEngineContext ctx = null, 
+    bool parallelizeInputs = false, 
+    CancellationToken token = default)
   {
     ctx = Reset(ctx);
     try
@@ -152,6 +154,22 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
       else
         if (parallelizeInputs)
         await ApplyParallelManyAsyncSerial(inputs, ctx, token);
+      else
+        await ApplyManyAsyncSerial(inputs, ctx, token);
+    }
+    catch (EngineHaltException) { }
+  }
+
+  public async Task ApplyAsync(
+    IAsyncEnumerable<T> inputs,
+    IEngineContext ctx = null,
+    CancellationToken token = default)
+  {
+    ctx = Reset(ctx);
+    try
+    {
+      if (IsParallel)
+        await ApplyManyAsyncParallel(inputs, ctx, token);
       else
         await ApplyManyAsyncSerial(inputs, ctx, token);
     }
@@ -179,7 +197,8 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   {
     foreach (var set in _rules)
     {
-        await Parallelize(ctx, set, i, t).ConfigureAwait(false);
+      t.ThrowIfCancellationRequested();
+      await Parallelize(ctx, set, i, t).ConfigureAwait(false);
     }
   }
 
@@ -221,10 +240,51 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
     }
   }
 
+  private async Task ApplyManyAsyncSerial(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
+  {
+    await foreach (var input in inputs)
+    {
+      try
+      {
+        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+      }
+      catch (EngineHaltException)
+      {
+        break;
+      }
+    }
+  }
+
   private async Task ApplyManyAsyncParallel(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
     foreach (var input in inputs)
-      await ApplyParallel(context, input, t).ConfigureAwait(false);
+    {
+      try
+      {
+        t.ThrowIfCancellationRequested();
+        await ApplyParallel(context, input, t).ConfigureAwait(false);
+      }
+      catch (EngineHaltException)
+      {
+        break;
+      }
+    }
+  }
+
+  private async Task ApplyManyAsyncParallel(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
+  {
+    await foreach (var input in inputs)
+    {
+      try
+      {
+        t.ThrowIfCancellationRequested();
+        await ApplyParallel(context, input, t).ConfigureAwait(false);
+      }
+      catch (EngineHaltException)
+      {
+        break;
+      }
+    }
   }
 
   private Task ApplyParallelManyAsyncParallel(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)

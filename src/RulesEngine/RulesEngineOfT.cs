@@ -26,10 +26,11 @@ public class RulesEngine<T> : IRulesEngine<T>
   ///     Default public constructor.
   /// </summary>
   /// <param name="rules">Collection of synchronous processing rules.</param>
+  /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger.</param>
   public RulesEngine(
       IEnumerable<IRule<T>> rules,
-      IExceptionHandler uncaughtExceptionHandler = null,
+      IExceptionHandler exceptionHandler = null,
       ILogger logger = null
   )
   {
@@ -38,7 +39,7 @@ public class RulesEngine<T> : IRulesEngine<T>
                     .Select(e => e.ToArray())
                     .ToArray();
     Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = uncaughtExceptionHandler ?? ExceptionHandlers.Throw;
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Throw;
   }
 
   #endregion
@@ -53,9 +54,6 @@ public class RulesEngine<T> : IRulesEngine<T>
 
   /// <inheritdoc />
   public bool IsAsync => false;
-
-  /// <inheritdoc />
-  public bool IsParallel => false;
 
   /// <inheritdoc />
   public Type InputType => typeof(T);

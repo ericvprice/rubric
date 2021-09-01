@@ -10,7 +10,7 @@ internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
 {
   internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
-  internal Ruleset<TIn, TOut> Ruleset { get; } = new Ruleset<TIn, TOut>();
+  internal Ruleset<TIn, TOut> Ruleset { get; } = new();
 
   internal ILogger Logger { get; }
 
@@ -57,7 +57,7 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 {
   internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
-  internal Ruleset<T> Ruleset { get; } = new Ruleset<T>();
+  internal Ruleset<T> Ruleset { get; } = new();
 
   internal ILogger Logger { get; }
 

@@ -47,8 +47,7 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
 /// <summary>
 ///     A runtime-constructed processing rule.
 /// </summary>
-/// <typeparam name="TIn">The engine input type.</typeparam>
-/// <typeparam name="TOut">The engine output type.</typeparam>
+/// <typeparam name="T">The engine input type.</typeparam>
 public class LambdaRule<T> : IRule<T>
 {
   private readonly Action<IEngineContext, T> _action;

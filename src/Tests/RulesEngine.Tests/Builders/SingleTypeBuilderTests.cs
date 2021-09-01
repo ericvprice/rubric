@@ -1,4 +1,3 @@
-using RulesEngine.Tests.DependencyRules.TypeAttribute;
 using RulesEngine.Tests.TestRules;
 
 namespace RulesEngine.Tests.Builders;
@@ -114,15 +113,5 @@ public class SingleTypeBuilderTests
                                                  .ForInput<TestInput>().WithRule("foo")
                                                  .ThatDependsOn((Type)null)
     );
-  }
-
-  [Fact]
-  public void TypeAttributeDependency()
-  {
-    var engine = EngineBuilder.ForInput<TestInput>()
-                              .WithRule(new DepTestPreRule(true))
-                              .WithRule(new DepTestPreRule2(true))
-                              .Build();
-    Assert.NotNull(engine);
   }
 }

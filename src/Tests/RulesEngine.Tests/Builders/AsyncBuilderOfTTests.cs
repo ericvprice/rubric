@@ -89,7 +89,7 @@ public class SingleTypeAsyncBuilderTests
     var input = new TestInput();
     //No rules is a valid engine... nothing should throw
     await engine.ApplyAsync(input);
-    await engine.ApplyAsync(new TestInput[] { input });
+    await engine.ApplyAsync(new [] { input });
     await engine.ApplyAsync(Array.Empty<TestInput>());
   }
 
@@ -103,7 +103,7 @@ public class SingleTypeAsyncBuilderTests
     var input = new TestInput();
     //No rules is a valid engine... nothing should throw
     await engine.ApplyAsync(input);
-    await engine.ApplyAsync(new TestInput[] { input });
+    await engine.ApplyAsync(new [] { input });
     await engine.ApplyAsync(Array.Empty<TestInput>());
   }
 
@@ -191,13 +191,4 @@ public class SingleTypeAsyncBuilderTests
 
   }
 
-  [Fact]
-  public void TypeAttributeDependency()
-  {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
-                              .WithRule(new DepTestAsyncPreRule(true))
-                              .WithRule(new DepTestAsyncPreRule2(true))
-                              .Build();
-    Assert.NotNull(engine);
-  }
 }

@@ -1,4 +1,6 @@
-﻿namespace RulesEngine.Tests.DependencyRules
+﻿using RulesEngine.Dependency;
+
+namespace RulesEngine.Tests.DependencyRules
 {
   [DependsOn("dep1")]
   [DependsOn("dep2")]

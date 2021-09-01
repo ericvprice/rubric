@@ -1,3 +1,5 @@
+using RulesEngine.Dependency;
+
 namespace RulesEngine.Tests
 {
   public class TestDependency : IDependency

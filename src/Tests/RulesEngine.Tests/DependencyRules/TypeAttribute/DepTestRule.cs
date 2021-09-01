@@ -1,4 +1,6 @@
-﻿namespace RulesEngine.Tests.DependencyRules.TypeAttribute
+﻿using RulesEngine.Dependency;
+
+namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
   internal class DepTestRule : Rule<TestInput, TestOutput>
   {

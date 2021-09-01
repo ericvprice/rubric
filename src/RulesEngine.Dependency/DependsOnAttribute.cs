@@ -5,7 +5,7 @@ namespace RulesEngine.Dependency
   {
     public DependsOnAttribute(string name) => Name = name;
 
-    public DependsOnAttribute(Type type) => Name = type.FullName;
+    public DependsOnAttribute(Type type) => Name = type.FullName ?? throw new ArgumentNullException(nameof(type));
 
     public string Name { get; }
   }

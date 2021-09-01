@@ -27,6 +27,7 @@ public interface IAsyncRulesEngine<in TIn, in TOut> : IRulesEngine
   /// <param name="input">The input object.</param>
   /// <param name="output">The output object.</param>
   /// <param name="context">An optional injected context.</param>
+  /// <param name="token">An optional cancellation token.</param>
   Task ApplyAsync(TIn input, TOut output, IEngineContext context = null, CancellationToken token = default);
 
   /// <summary>
@@ -35,5 +36,24 @@ public interface IAsyncRulesEngine<in TIn, in TOut> : IRulesEngine
   /// <param name="inputs">The input objects.</param>
   /// <param name="output">The output object.</param>
   /// <param name="context">An optional injected context.</param>
+  /// <param name="token">An optional cancellation token.</param>
   Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null, CancellationToken token = default);
+
+  /// <summary>
+  ///     Apply the given inputs to the output object in parallel.
+  /// </summary>
+  /// <param name="inputs">The input objects.</param>
+  /// <param name="output">The output object.</param>
+  /// <param name="context">An optional injected context.</param>
+  /// <param name="token">An optional cancellation token.</param>
+  Task ApplyParallelAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null, CancellationToken token = default);
+
+  /// <summary>
+  ///     Stream inputs and apply them serially to the given output object.
+  /// </summary>
+  /// <param name="inputStream">The input objects.</param>
+  /// <param name="output">The output object.</param>
+  /// <param name="context">An optional injected context.</param>
+  /// <param name="token">An optional cancellation token.</param>
+  Task ApplyAsync(IAsyncEnumerable<TIn> inputStream, TOut output, IEngineContext context = null, CancellationToken token = default);
 }

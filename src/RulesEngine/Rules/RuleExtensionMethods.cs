@@ -18,8 +18,7 @@ public static class RuleExtensionMethods
   ///     Wrap an synchronous rule in an asynchronous wrapper.
   /// </summary>
   /// <param name="syncRule">The rule to write.</param>
-  /// <typeparam name="TIn">The input type.</typeparam>
-  /// <typeparam name="TOut">The output type.</typeparam>
+  /// <typeparam name="T">The input type.</typeparam>
   /// <returns>An async wrapper for this rule.</returns>
   public static IAsyncRule<T> WrapAsync<T>(this IRule<T> syncRule) =>
       new AsyncRuleWrapper<T>(syncRule);

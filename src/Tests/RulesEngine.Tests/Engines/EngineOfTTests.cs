@@ -41,9 +41,9 @@ public class EngineOfTTests
         {
           if (i.InputFlag)
             throw new EngineHaltException();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RulesEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule }
@@ -70,9 +70,9 @@ public class EngineOfTTests
         {
           if (i.InputFlag)
             throw new ItemHaltException();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RulesEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule }
@@ -99,9 +99,9 @@ public class EngineOfTTests
         {
           if (i.InputFlag)
             throw new Exception("Test", null);
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RulesEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule },
@@ -129,9 +129,9 @@ public class EngineOfTTests
         {
           if (i.InputFlag)
             throw new Exception();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RulesEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule },
@@ -159,9 +159,9 @@ public class EngineOfTTests
         {
           if (i.InputFlag)
             throw new Exception();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RulesEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule },
@@ -218,7 +218,7 @@ public class EngineOfTTests
   [Fact]
   public void ConstructorNullRules()
   {
-    var engine = new RulesEngine<TestInput>((IEnumerable<IRule<TestInput>>)null, null);
+    var engine = new RulesEngine<TestInput>((IEnumerable<IRule<TestInput>>)null);
     Assert.Empty(engine.Rules);
   }
 

@@ -5,8 +5,7 @@ namespace RulesEngine.Rules.Async;
 /// <summary>
 ///     An asynchronous engine processing rule.
 /// </summary>
-/// <typeparam name="TIn">The input type.</typeparam>
-/// <typeparam name="TOut">The output type.</typeparam>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IAsyncRule<in T> : IDependency
 {
   /// <summary>
@@ -15,7 +14,7 @@ public interface IAsyncRule<in T> : IDependency
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
-  /// <param name="output">The output object.</param>
+  /// <param name="token">An optional cancellation token.</param>
   /// <returns>An awaitable task returning whether this rule should apply.</returns>
   Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token);
 
@@ -24,7 +23,7 @@ public interface IAsyncRule<in T> : IDependency
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
-  /// <param name="output">The output object.</param>
+  /// <param name="token">An optional cancellation token.</param>
   /// <returns>An awaitable task.</returns>
   Task Apply(IEngineContext context, T input, CancellationToken token);
 }

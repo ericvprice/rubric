@@ -30,8 +30,7 @@ public interface IRule<in TIn, in TOut> : IDependency
 /// <summary>
 ///     An engine processing rule.
 /// </summary>
-/// <typeparam name="TIn">The input type.</typeparam>
-/// <typeparam name="TOut">The output type.</typeparam>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IRule<in T> : IDependency
 {
   /// <summary>
@@ -39,7 +38,6 @@ public interface IRule<in T> : IDependency
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
-  /// <param name="output">The output object.</param>
   /// <returns>Whether this rule should be applied.</returns>
   bool DoesApply(IEngineContext context, T input);
 
@@ -48,6 +46,5 @@ public interface IRule<in T> : IDependency
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
-  /// <param name="output">The output object.</param>
   void Apply(IEngineContext context, T input);
 }

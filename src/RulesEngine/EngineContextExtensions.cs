@@ -52,7 +52,7 @@ public static class EngineContextExtensions
   /// </summary>
   /// <param name="context">The engine context.</param>
   public static bool IsParallel(this IEngineContext context)
-      => context.GetEngine().IsParallel;
+      => (context.GetEngine() as IAsyncRulesEngine)?.IsParallel ?? false;
 
   public static Type GetInputType(this IEngineContext context)
       => context.GetEngine().InputType;

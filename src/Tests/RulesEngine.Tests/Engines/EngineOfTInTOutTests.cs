@@ -321,12 +321,12 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingIgnore()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -342,14 +342,12 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPreThrow()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
-    {
-    };
+    var testOutput = new TestOutput();
     var engine = GetExceptionEngine(ExceptionHandlers.Throw);
     Assert.Throws<Exception>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
@@ -362,7 +360,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPreItem()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
@@ -384,7 +382,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPreEngine()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
@@ -405,7 +403,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPreHandlerException()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
@@ -423,7 +421,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingHandlerException()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "Exception" }
     };
@@ -441,7 +439,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPreManualItem()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException" }
     };
@@ -462,7 +460,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingManualEngine()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "Exception" }
     };
@@ -483,7 +481,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingManualItem()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "Exception" }
     };
@@ -504,7 +502,7 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPreManualEngine()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException" }
     };
@@ -530,11 +528,9 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPostManualEngine()
   {
-    var testInput = new TestInput()
-    {
-    };
+    var testInput = new TestInput();
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -554,11 +550,9 @@ public class EngineOfTInTOutTests
   [Fact]
   public void ExceptionHandlingPostManualItem()
   {
-    var testInput = new TestInput()
-    {
-    };
+    var testInput = new TestInput();
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -579,7 +573,7 @@ public class EngineOfTInTOutTests
   public void ExceptionHandlingPostManualEngineSingleItem()
   {
     var testInput = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -599,7 +593,7 @@ public class EngineOfTInTOutTests
   public void ExceptionHandlingPostManualItemSingleItem()
   {
     var testInput = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };

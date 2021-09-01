@@ -18,11 +18,6 @@ public interface IRulesEngine
   bool IsAsync { get; }
 
   /// <summary>
-  ///     Whether this engine is executing rules in parallel.
-  /// </summary>
-  bool IsParallel { get; }
-
-  /// <summary>
   ///     The input type for this engine.
   /// </summary>
   Type InputType { get; }
@@ -35,5 +30,15 @@ public interface IRulesEngine
   IExceptionHandler ExceptionHandler { get; }
 
   EngineException LastException { get; set; }
+
+}
+
+public interface IAsyncRulesEngine : IRulesEngine
+{
+  /// <summary>
+  ///     Whether this engine is executing rules in parallel.
+  /// </summary>
+  bool IsParallel { get; }
+
 
 }

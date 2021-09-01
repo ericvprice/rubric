@@ -9,7 +9,7 @@ namespace RulesEngine.Builder
       where TIn : class
       where TOut : class
   {
-    public ILogger Logger { get; private set; }
+    public ILogger Logger { get; }
 
     public bool IsParallel { get; private set; }
 
@@ -17,7 +17,7 @@ namespace RulesEngine.Builder
 
     public AsyncEngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
-    internal AsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new AsyncRuleset<TIn, TOut>();
+    internal AsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new();
 
     public IAsyncRulesEngine<TIn, TOut> Build()
         => new AsyncRulesEngine<TIn, TOut>(AsyncRuleset, IsParallel, ExceptionHandler, Logger);
@@ -83,13 +83,13 @@ namespace RulesEngine.Builder
   internal class AsyncEngineBuilder<T> : IAsyncEngineBuilder<T>
       where T : class
   {
-    public ILogger Logger { get; private set; }
+    public ILogger Logger { get; }
 
     public bool IsParallel { get; private set; }
 
     public AsyncEngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
-    internal AsyncRuleset<T> AsyncRuleset { get; } = new AsyncRuleset<T>();
+    internal AsyncRuleset<T> AsyncRuleset { get; } = new();
 
     public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Throw;
 

@@ -6,4 +6,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0-preview.7.21377.19" />
     <PackageReference Include="morelinq" Version="3.3.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RulesEngine.Dependency\RulesEngine.Dependency.csproj" />
+  </ItemGroup>
 </Project>

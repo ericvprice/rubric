@@ -6,16 +6,19 @@ namespace RulesEngine;
 
 #pragma warning disable CA2254 // Template should be a static expression
 
-internal static class IEngineExtensions
+internal static class EngineExtensions
 {
   /// <summary>
-  ///     Apply an asyc rule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async r.  Handle trace logging, exception handling, etc.
   /// </summary>
+  /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="input">The current input item.</param>
+  /// <param name="r">The current r.</param>
+  /// <param name="i">The current i item.</param>
+  /// <param name="t">The cancellation t.</param>
   internal static async Task ApplyAsyncPreRule<T>(this IRulesEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
   {
+    t.ThrowIfCancellationRequested();
     try
     {
       var doesApply = await r.DoesApply(ctx, i, t).ConfigureAwait(false);
@@ -34,7 +37,7 @@ internal static class IEngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, i, null))
+      if (!HandleException(ex, e, ctx, r, i, null, t))
       {
         throw;
       }
@@ -42,13 +45,16 @@ internal static class IEngineExtensions
   }
 
   /// <summary>
-  ///     Apply an asyc rule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async r.  Handle trace logging, exception handling, etc.
   /// </summary>
+  /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="input">The current input item.</param>
+  /// <param name="r">The current r.</param>
+  /// <param name="o">The o item.</param>
+  /// <param name="t">The cancellation t.</param>
   internal static async Task ApplyAsyncPostRule<T>(this IRulesEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
   {
+    t.ThrowIfCancellationRequested();
     try
     {
       var doesApply = await r.DoesApply(ctx, o, t).ConfigureAwait(false);
@@ -67,7 +73,7 @@ internal static class IEngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, null, o))
+      if (!HandleException(ex, e, ctx, r, null, o, t))
       {
         throw;
       }
@@ -75,13 +81,17 @@ internal static class IEngineExtensions
   }
 
   /// <summary>
-  ///     Apply an asyc rule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async r.  Handle trace logging, exception handling, etc.
   /// </summary>
+  /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="input">The current input item.</param>
+  /// <param name="r">The current r.</param>
+  /// <param name="i">The current i item.</param>
+  /// <param name="o">The o item.</param>
+  /// <param name="t">The cancellation t.</param>
   internal static async Task ApplyAsyncRule<TIn, TOut>(this IRulesEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
   {
+    t.ThrowIfCancellationRequested();
     try
     {
       var doesApply = await r.DoesApply(ctx, i, o, t).ConfigureAwait(false);
@@ -100,6 +110,61 @@ internal static class IEngineExtensions
     }
     catch (Exception ex)
     {
+      if (!HandleException(ex, e, ctx, r, i, o, t))
+      {
+        throw;
+      }
+    }
+  }
+
+  /// <summary>
+  ///     Apply a pre-r.  Handle trace logging, exception handling, etc.
+  /// </summary>
+  /// <param name="e">The e</param>
+  /// <param name="ctx">Engine context.</param>
+  /// <param name="r">The current r.</param>
+  /// <param name="i">The current i item.</param>
+  internal static void ApplyPreRule<T>(this IRulesEngine e, IEngineContext ctx, IRule<T> r, T i)
+  {
+    try
+    {
+      var doesApply = r.DoesApply(ctx, i);
+      e.Logger.LogTrace($"Rule {r.Name} {(doesApply ? "doeus" : "does not")} apply.");
+      if (!doesApply) return;
+      e.Logger.LogTrace($"Applying {r.Name}.");
+      r.Apply(ctx, i);
+      e.Logger.LogTrace($"Finished applying {r.Name}.");
+    }
+    catch (Exception ex)
+    {
+      if (!HandleException(ex, e, ctx, r, i, null))
+      {
+        throw;
+      }
+    }
+  }
+
+  /// <summary>
+  ///     Apply a r.  Handle trace logging, exception handling, etc.
+  /// </summary>
+  /// <param name="e">Engine.</param>
+  /// <param name="ctx">Engine context.</param>
+  /// <param name="r">The current r.</param>
+  /// <param name="i">The current i item.</param>
+  /// <param name="o">The current o item.</param>
+  internal static void ApplyRule<TIn, TOut>(this IRulesEngine e, IEngineContext ctx, IRule<TIn, TOut> r, TIn i, TOut o)
+  {
+    try
+    {
+      var doesApply = r.DoesApply(ctx, i, o);
+      e.Logger.LogTrace($"Rule {r.Name} {(doesApply ? "does" : "does not")} apply.");
+      if (!doesApply) return;
+      e.Logger.LogTrace($"Applying {r.Name}.");
+      r.Apply(ctx, i, o);
+      e.Logger.LogTrace($"Finished applying {r.Name}.");
+    }
+    catch (Exception ex)
+    {
       if (!HandleException(ex, e, ctx, r, i, o))
       {
         throw;
@@ -108,25 +173,26 @@ internal static class IEngineExtensions
   }
 
   /// <summary>
-  ///     Apply a prerule.  Handle trace logging, exception handling, etc.
+  ///     Apply a post r.  Handle trace logging, exception handling, etc.
   /// </summary>
+  /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="input">The current input item.</param>
-  internal static void ApplyPreRule<T>(this IRulesEngine engine, IEngineContext ctx, IRule<T> rule, T input)
+  /// <param name="r">The current r.</param>
+  /// <param name="o">The o item.</param>
+  internal static void ApplyPostRule<T>(this IRulesEngine e, IEngineContext ctx, IRule<T> r, T o)
   {
     try
     {
-      var doesApply = rule.DoesApply(ctx, input);
-      engine.Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
+      var doesApply = r.DoesApply(ctx, o);
+      e.Logger.LogTrace($"Rule {r.Name} {(doesApply ? "does" : "does not")} apply.");
       if (!doesApply) return;
-      engine.Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(ctx, input);
-      engine.Logger.LogTrace($"Finished applying {rule.Name}.");
+      e.Logger.LogTrace($"Applying {r.Name}.");
+      r.Apply(ctx, o);
+      e.Logger.LogTrace($"Finished applying {r.Name}.");
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      if (!HandleException(e, engine, ctx, rule, input, null))
+      if (!HandleException(ex, e, ctx, r, null, o))
       {
         throw;
       }
@@ -134,83 +200,28 @@ internal static class IEngineExtensions
   }
 
   /// <summary>
-  ///     Apply a rule.  Handle trace logging, exception handling, etc.
+  ///   Consistently handle exceptions after attempting to run a r.
   /// </summary>
-  /// <param name="ctx">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="input">The current input item.</param>
-  /// <param name="output">The current output item.</param>
-  internal static void ApplyRule<TIn, TOut>(this IRulesEngine engine, IEngineContext ctx, IRule<TIn, TOut> rule, TIn input, TOut output)
-  {
-    try
-    {
-      var doesApply = rule.DoesApply(ctx, input, output);
-      engine.Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-      if (!doesApply) return;
-      engine.Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(ctx, input, output);
-      engine.Logger.LogTrace($"Finished applying {rule.Name}.");
-    }
-    catch (Exception e)
-    {
-      if (!HandleException(e, engine, ctx, rule, input, output))
-      {
-        throw;
-      }
-    }
-  }
-
-  /// <summary>
-  ///     Apply a post rule.  Handle trace logging, exception handling, etc.
-  /// </summary>
-  /// <param name="ctx">Engine context.</param>
-  /// <param name="rule">The current rule.</param>
-  /// <param name="output">The current output item.</param>
-  internal static void ApplyPostRule<T>(this IRulesEngine engine, IEngineContext ctx, IRule<T> rule, T output)
-  {
-    try
-    {
-      var doesApply = rule.DoesApply(ctx, output);
-      engine.Logger.LogTrace($"Rule {rule.Name} {(doesApply ? "does" : "does not")} apply.");
-      if (!doesApply) return;
-      engine.Logger.LogTrace($"Applying {rule.Name}.");
-      rule.Apply(ctx, output);
-      engine.Logger.LogTrace($"Finished applying {rule.Name}.");
-    }
-    catch (Exception e)
-    {
-      if (!HandleException(e, engine, ctx, rule, null, output))
-      {
-        throw;
-      }
-    }
-  }
-
-  /// <summary>
-  ///   Consistently handle exceptions after attempting to run a rule.
-  /// </summary>
-  /// <param name="e">The exception.</param>
-  /// <param name="engine">The engine.</param>
+  /// <param name="ex">The exception.</param>
+  /// <param name="e">The e.</param>
   /// <param name="ctx">The current context.</param>
-  /// <param name="rule">The rule being executed.</param>
-  /// <param name="input">The current input object.</param>
-  /// <param name="output">The current output object.</param>
+  /// <param name="rule">The r being executed.</param>
+  /// <param name="input">The current i object.</param>
+  /// <param name="output">The current o object.</param>
+  /// <param name="t">The cancellation t, if present.</param>
   /// <returns>Whether the exception should be rethrown.</returns>
-  private static bool HandleException(Exception e, IRulesEngine engine, IEngineContext ctx, object rule, object input, object output)
+  private static bool HandleException(Exception ex, IRulesEngine e, IEngineContext ctx, object rule, object input, object output, CancellationToken t = default)
   {
-    switch (e)
+    switch (ex)
     {
-      case EngineException ee:
-        ee.Rule = rule;
-        ee.Input = input;
-        ee.Output = output;
-        ee.Context = ctx;
-        engine.LastException = ee;
-        return false;
-      default:
+      case TaskCanceledException tce:
+        if (t == tce.CancellationToken)
+        {
+          return false;
+        }
         try
         {
-          return engine.ExceptionHandler.HandleException(e, ctx, input, null, rule);
+          return e.ExceptionHandler.HandleException(ex, ctx, input, null, rule);
         }
         catch (EngineException ee)
         {
@@ -218,7 +229,28 @@ internal static class IEngineExtensions
           ee.Input = input;
           ee.Output = output;
           ee.Context = ctx;
-          engine.LastException = ee;
+          e.LastException = ee;
+          throw;
+        }
+      case EngineException ee:
+        ee.Rule = rule;
+        ee.Input = input;
+        ee.Output = output;
+        ee.Context = ctx;
+        e.LastException = ee;
+        return false;
+      default:
+        try
+        {
+          return e.ExceptionHandler.HandleException(ex, ctx, input, null, rule);
+        }
+        catch (EngineException ee)
+        {
+          ee.Rule = rule;
+          ee.Input = input;
+          ee.Output = output;
+          ee.Context = ctx;
+          e.LastException = ee;
           throw;
         }
     }

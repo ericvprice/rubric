@@ -1,4 +1,6 @@
-﻿namespace RulesEngine.Tests.DependencyRules.TypeAttribute
+﻿using RulesEngine.Dependency;
+
+namespace RulesEngine.Tests.DependencyRules.TypeAttribute
 {
   [Provides("dep1")]
   public class DepTestPostRule : Rule<TestOutput>

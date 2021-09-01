@@ -275,12 +275,12 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingIgnore()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -296,14 +296,12 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPreThrow()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
-    {
-    };
+    var testOutput = new TestOutput();
     var engine = GetExceptionEngine(ExceptionHandlers.Throw);
     await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
@@ -316,7 +314,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPreItem()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
@@ -338,7 +336,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPreEngine()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
@@ -359,7 +357,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPreHandlerException()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException", "Exception" }
     };
@@ -377,7 +375,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingHandlerException()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "Exception" }
     };
@@ -395,7 +393,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPreManualItem()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException" }
     };
@@ -416,7 +414,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingManualEngine()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "Exception" }
     };
@@ -437,7 +435,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingManualItem()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "Exception" }
     };
@@ -458,7 +456,7 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPreManualEngine()
   {
-    var testInput = new TestInput()
+    var testInput = new TestInput
     {
       Items = new() { "PreException" }
     };
@@ -484,11 +482,9 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPostManualEngine()
   {
-    var testInput = new TestInput()
-    {
-    };
+    var testInput = new TestInput();
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -508,11 +504,9 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task ExceptionHandlingPostManualItem()
   {
-    var testInput = new TestInput()
-    {
-    };
+    var testInput = new TestInput();
     var testInput2 = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -533,7 +527,7 @@ public class ParallelAsyncEngineTests
   public async Task ExceptionHandlingPostManualEngineSingleItem()
   {
     var testInput = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };
@@ -553,7 +547,7 @@ public class ParallelAsyncEngineTests
   public async Task ExceptionHandlingPostManualItemSingleItem()
   {
     var testInput = new TestInput();
-    var testOutput = new TestOutput()
+    var testOutput = new TestOutput
     {
       Outputs = new() { "PostException" }
     };

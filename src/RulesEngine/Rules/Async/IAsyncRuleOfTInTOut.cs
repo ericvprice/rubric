@@ -16,6 +16,7 @@ public interface IAsyncRule<in TIn, in TOut> : IDependency
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
   /// <param name="output">The output object.</param>
+  /// <param name="token">An optional cancellation token.</param>
   /// <returns>An awaitable task returning whether this rule should apply.</returns>
   Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token);
 
@@ -25,6 +26,7 @@ public interface IAsyncRule<in TIn, in TOut> : IDependency
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
   /// <param name="output">The output object.</param>
+  /// <param name="token">An optional cancellation token.</param>
   /// <returns>An awaitable task.</returns>
   Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token);
 }

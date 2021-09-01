@@ -809,9 +809,9 @@ public class AsyncEngineOfTTests
         {
           if (i.InputFlag)
             throw new EngineHaltException();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new AsyncRulesEngine<TestInput>(
         new IAsyncRule<TestInput>[] { testPreRule }
@@ -838,9 +838,9 @@ public class AsyncEngineOfTTests
         {
           if (i.InputFlag)
             throw new ItemHaltException();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new AsyncRulesEngine<TestInput>(
         new IAsyncRule<TestInput>[] { testPreRule }
@@ -867,9 +867,9 @@ public class AsyncEngineOfTTests
         {
           if (i.InputFlag)
             throw new Exception("Test", null);
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new AsyncRulesEngine<TestInput>(
         new IAsyncRule<TestInput>[] { testPreRule },
@@ -898,9 +898,9 @@ public class AsyncEngineOfTTests
         {
           if (i.InputFlag)
             throw new Exception();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new AsyncRulesEngine<TestInput>(
         new IAsyncRule<TestInput>[] { testPreRule },
@@ -929,9 +929,9 @@ public class AsyncEngineOfTTests
         {
           if (i.InputFlag)
             throw new Exception();
-          else i.InputFlag = true;
+          i.InputFlag = true;
         });
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new AsyncRulesEngine<TestInput>(
         new IAsyncRule<TestInput>[] { testPreRule },

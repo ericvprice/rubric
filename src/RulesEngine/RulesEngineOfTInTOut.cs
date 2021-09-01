@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RulesEngine.Dependency;
@@ -26,11 +28,12 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
   ///     Construct a rule engine from a ruleset.
   /// </summary>
   /// <param name="ruleset">A collection of various rules</param>
+  /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger</param>
   public RulesEngine(Ruleset<TIn, TOut> ruleset,
-                     IExceptionHandler handler = null,
+                     IExceptionHandler exceptionHandler = null,
                      ILogger logger = null)
-      : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, handler, logger) { }
+      : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, exceptionHandler, logger) { }
 
   /// <summary>
   ///     Default public constructor.
@@ -38,6 +41,7 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
   /// <param name="preprocessingRules">Collection of synchronous preprocessing rules.</param>
   /// <param name="rules">Collection of synchronous processing rules.</param>
   /// <param name="postprocessingRules">Collection of synchronous postprocessing rules.</param>
+  /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger.</param>
   public RulesEngine(
       IEnumerable<IRule<TIn>> preprocessingRules,
@@ -127,10 +131,7 @@ public class RulesEngine<TIn, TOut> : IRulesEngine<TIn, TOut>
       {
         ApplyItem(input, output, ctx);
       }
-      catch (ItemHaltException)
-      {
-        continue;
-      }
+      catch (ItemHaltException) { }
       catch (EngineHaltException)
       {
         return;
