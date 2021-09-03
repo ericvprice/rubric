@@ -173,7 +173,11 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
   #endregion
 
   ///<inheritdoc/>
-  public async Task ApplyAsync(TIn input, TOut output, IEngineContext context = null, CancellationToken token = default)
+  public async Task ApplyAsync(
+    TIn input, 
+    TOut output, 
+    IEngineContext context = null, 
+    CancellationToken token = default)
   {
     context = Reset(context);
     try
@@ -185,7 +189,11 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
   }
 
   ///<inheritdoc/>
-  public async Task ApplyAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null, CancellationToken token = default)
+  public async Task ApplyAsync(
+    IEnumerable<TIn> inputs, 
+    TOut output, 
+    IEngineContext context = null, 
+    CancellationToken token = default)
   {
     context = Reset(context);
     try
@@ -197,19 +205,26 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
   }
 
   ///<inheritdoc/>
-  public async Task ApplyParallelAsync(IEnumerable<TIn> inputs, TOut output, IEngineContext context, CancellationToken token = default)
+  public async Task ApplyParallelAsync(
+    IEnumerable<TIn> inputs, 
+    TOut output, 
+    IEngineContext context, 
+    CancellationToken token = default)
   {
     context = Reset(context);
     try
     {
       await ApplyManyAsyncParallel(inputs, output, context, token);
-      await ApplyPostAsync(output, context, token);
     }
     catch (EngineException) { }
   }
 
   ///<inheritdoc/>
-  public async Task ApplyAsync(IAsyncEnumerable<TIn> inputStream, TOut output, IEngineContext context, CancellationToken token = default)
+  public async Task ApplyAsync(
+    IAsyncEnumerable<TIn> inputStream, 
+    TOut output, 
+    IEngineContext context, 
+    CancellationToken token = default)
   {
     try
     {
@@ -230,12 +245,12 @@ public class AsyncRulesEngine<TIn, TOut> : IAsyncRulesEngine<TIn, TOut>
   /// <param name="context">The context.</param>
   /// <param name="token">The cancellation token.</param>
   /// <returns>An awaitable task.</returns>
-  private async Task ApplyItemAsync(TIn input, TOut output, IEngineContext context = null, CancellationToken token = default)
+  private async Task ApplyItemAsync(TIn i, TOut o, IEngineContext ctx, CancellationToken t)
   {
     if (IsParallel)
-      await ApplyItemParallel(context, input, output, token);
+      await ApplyItemParallel(ctx, i, o, t);
     else
-      await ApplyItemSerial(context, input, output, token);
+      await ApplyItemSerial(ctx, i, o, t);
   }
 
   /// <summary>

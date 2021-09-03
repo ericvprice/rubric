@@ -702,12 +702,46 @@ public class AsyncEngineOfTTests
                               .Build();
     var input = new TestInput();
     var input2 = new TestInput();
-    await engine.ApplyAsync(new[] { input, input2 }.ToAsyncEnumerable());
-    Assert.Equal(2, input.Items.Count);
-    Assert.Equal("rule1", input.Items.First());
-    Assert.Equal("rule2", input.Items.Last());
+    await engine.ApplyAsync(new TestInput[] { input, input2 }.ToAsyncEnumerable() );
   }
-  
+
+  [Fact]
+  public async Task StreamCatchEngineException()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRule("rule1")
+                                .WithAction(async (c, i) =>
+                                {
+                                  throw new Exception();
+                                })
+                              .EndRule()
+                              .WithExceptionHandler(ExceptionHandlers.HaltEngine)
+                              .Build();
+    var input = new TestInput();
+    var input2 = new TestInput();
+    await engine.ApplyAsync(new[] { input, input2 }.ToAsyncEnumerable());
+    Assert.IsType<EngineHaltException>(engine.LastException);
+  }
+
+  [Fact]
+  public async Task StreamParallelCatchEngineException()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRule("rule1")
+                                .WithAction(async (c, i) =>
+                                {
+                                  throw new Exception();
+                                })
+                              .EndRule()
+                              .WithExceptionHandler(ExceptionHandlers.HaltEngine)
+                              .AsParallel()
+                              .Build();
+    var input = new TestInput();
+    var input2 = new TestInput();
+    await engine.ApplyAsync(new[] { input, input2 }.ToAsyncEnumerable());
+    Assert.IsType<EngineHaltException>(engine.LastException);
+  }
+
   [Fact]
   public async Task TestStreamParallel()
   {

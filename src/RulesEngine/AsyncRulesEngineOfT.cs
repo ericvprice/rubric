@@ -124,6 +124,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   #endregion
 
   #region Methods
+
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
   {
     context = Reset(context);
@@ -133,9 +134,6 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
     }
     catch (EngineException) { }
   }
-
-  private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
-    => IsParallel ? ApplyParallel(context, input, token) : ApplySerial(context, input, token);
 
   public async Task ApplyAsync(
     IEnumerable<T> inputs, 
@@ -175,6 +173,9 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
     }
     catch (EngineHaltException) { }
   }
+
+  private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
+    => IsParallel ? ApplyParallel(context, input, token) : ApplySerial(context, input, token);
 
   private async Task ApplySerial(IEngineContext ctx, T i, CancellationToken t)
   {
@@ -244,14 +245,7 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   {
     await foreach (var input in inputs)
     {
-      try
-      {
-        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
-      }
-      catch (EngineHaltException)
-      {
-        break;
-      }
+      await ApplyItemAsync(input, context, t).ConfigureAwait(false);
     }
   }
 
@@ -259,15 +253,8 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   {
     foreach (var input in inputs)
     {
-      try
-      {
-        t.ThrowIfCancellationRequested();
-        await ApplyParallel(context, input, t).ConfigureAwait(false);
-      }
-      catch (EngineHaltException)
-      {
-        break;
-      }
+      t.ThrowIfCancellationRequested();
+      await ApplyParallel(context, input, t).ConfigureAwait(false);
     }
   }
 
@@ -275,15 +262,8 @@ public class AsyncRulesEngine<T> : IAsyncRulesEngine<T>
   {
     await foreach (var input in inputs)
     {
-      try
-      {
-        t.ThrowIfCancellationRequested();
-        await ApplyParallel(context, input, t).ConfigureAwait(false);
-      }
-      catch (EngineHaltException)
-      {
-        break;
-      }
+      t.ThrowIfCancellationRequested();
+      await ApplyParallel(context, input, t).ConfigureAwait(false);
     }
   }
 

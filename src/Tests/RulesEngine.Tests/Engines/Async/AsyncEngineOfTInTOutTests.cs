@@ -150,48 +150,50 @@ public class AsyncEngineOfTInTOutTests
   }
 
   [Fact]
+  public async Task FullRunStreamHandleEngineException()
+  {
+    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithPostRule("test")
+                                .WithAction((c, o) => throw new Exception())
+                              .EndRule()
+                              .WithExceptionHandler(ExceptionHandlers.HaltEngine)
+                              .Build();
+    var input1 = new TestInput();
+    var input2 = new TestInput();
+    var output = new TestOutput();
+    await engine.ApplyAsync(new[] { input1, input2 }.ToAsyncEnumerable(), output);
+    Assert.IsType<EngineHaltException>(engine.LastException);
+  }
+
+  [Fact]
   public async Task FullRunStream()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule("test")
-                                .WithPredicate((c, i) => Task.FromResult(true))
-                                .WithAction((c, i) =>
-                                {
-                                  i.Items.Add("pre");
-                                  return Task.CompletedTask;
-                                })
-                              .EndRule()
                               .WithRule("test")
-                                .WithPredicate((c, i, o) => Task.FromResult(true))
-                                .WithAction((c, i, o) =>
-                                {
-                                  i.Items.Add("rule");
-                                  o.Outputs.Add("rule");
-                                  return Task.CompletedTask;
-                                })
-                              .EndRule()
-                              .WithPostRule("test")
-                                .WithPredicate((c, o) => Task.FromResult(true))
-                                .WithAction((c, o) =>
-                                {
-                                  o.Outputs.Add("postrule");
-                                  return Task.CompletedTask;
-                                })
+                                .WithAction((c, i, o, t) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .Build();
     var input1 = new TestInput();
     var input2 = new TestInput();
     var output = new TestOutput();
     await engine.ApplyAsync(new[] { input1, input2 }.ToAsyncEnumerable(), output);
-    Assert.Equal(2, input1.Items.Count);
-    Assert.Contains("pre", input1.Items);
-    Assert.Contains("rule", input1.Items);
-    Assert.Equal(2, input2.Items.Count);
-    Assert.Contains("pre", input2.Items);
-    Assert.Contains("rule", input2.Items);
-    Assert.Equal(3, output.Outputs.Count);
-    Assert.Equal(2, output.Outputs.Count(o => o == "rule"));
-    Assert.Single(output.Outputs.Where(o => o == "postrule"));
+    Assert.Equal(2, output.Counter);
+  }
+
+  [Fact]
+  public async Task FullRunStreamAsParallel()
+  {
+    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithRule("test")
+                                .WithAction((c, i, o, t) => { o.Counter++; return Task.CompletedTask; })
+                              .EndRule()
+                              .AsParallel()
+                              .Build();
+    var input1 = new TestInput();
+    var input2 = new TestInput();
+    var output = new TestOutput();
+    await engine.ApplyAsync(new[] { input1, input2 }.ToAsyncEnumerable(), output);
+    Assert.Equal(2, output.Counter);
   }
 
   [Fact]
@@ -374,7 +376,7 @@ public class AsyncEngineOfTInTOutTests
     {
       Outputs = new() { "PostException" }
     };
-    var engine = GetExceptionEngine(ExceptionHandlers.Ignore, parallelizeRules);
+    var engine = GetExceptionEngine<Exception>(ExceptionHandlers.Ignore, parallelizeRules);
     if (parallelizeInputs)
       await engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput);
     else
@@ -382,7 +384,7 @@ public class AsyncEngineOfTInTOutTests
     Assert.Null(engine.LastException);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
-    Assert.Equal(parallelizeInputs ? 3 : 2, testOutput.Outputs.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
   }
 
   [Theory]
@@ -398,7 +400,7 @@ public class AsyncEngineOfTInTOutTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(ExceptionHandlers.Throw, parallelizeRules);
+    var engine = GetExceptionEngine<Exception>(ExceptionHandlers.Throw, parallelizeRules);
     if (parallelizeInputs)
       await Assert.ThrowsAsync<Exception>(() => engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput));
     else
@@ -424,7 +426,7 @@ public class AsyncEngineOfTInTOutTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(ExceptionHandlers.HaltItem, parallelizeRules);
+    var engine = GetExceptionEngine<Exception>(ExceptionHandlers.HaltItem, parallelizeRules);
     if (parallelizeInputs)
       await engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput);
     else
@@ -436,7 +438,7 @@ public class AsyncEngineOfTInTOutTests
     Assert.NotNull(engine.LastException.Context);
     Assert.Equal(3, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
-    Assert.Equal(parallelizeInputs ? 4 : 2, testOutput.Outputs.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
   }
 
   [Theory]
@@ -452,7 +454,7 @@ public class AsyncEngineOfTInTOutTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(ExceptionHandlers.HaltEngine, parallelizeRules);
+    var engine = GetExceptionEngine<Exception>(ExceptionHandlers.HaltEngine, parallelizeRules);
     if (parallelizeInputs)
       await engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput);
     else
@@ -481,7 +483,7 @@ public class AsyncEngineOfTInTOutTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(new LambdaExceptionHandler(
+    var engine = GetExceptionEngine<Exception>(new LambdaExceptionHandler(
       (e, c, i, o, r) => throw new InvalidOperationException()), parallelizeRules);
     if (parallelizeInputs)
       await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput));
@@ -489,10 +491,6 @@ public class AsyncEngineOfTInTOutTests
       await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(3, testInput.Items.Count);
-    if (parallelizeInputs)
-      Assert.NotEmpty(testInput2.Items);
-    else
-      Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
   }
 
@@ -509,7 +507,7 @@ public class AsyncEngineOfTInTOutTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(new LambdaExceptionHandler(
+    var engine = GetExceptionEngine<Exception>(new LambdaExceptionHandler(
       (e, c, i, o, r) => throw new InvalidOperationException()), parallelizeRules);
     if (parallelizeInputs)
       await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput));
@@ -547,7 +545,7 @@ public class AsyncEngineOfTInTOutTests
     Assert.NotNull(engine.LastException.Context);
     Assert.Equal(2, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
-    Assert.Equal(parallelizeInputs ? 4 : 2, testOutput.Outputs.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
   }
 
   [Theory]
@@ -586,6 +584,34 @@ public class AsyncEngineOfTInTOutTests
   [InlineData(true, false)]
   [InlineData(false, true)]
   [InlineData(true, true)]
+  public async Task ExceptionHandlingItemFromForeignTaskCancelled(bool parallelizeRules, bool parallelizeInputs)
+  {
+    var testInput = new TestInput
+    {
+      Items = new() { "Exception" }
+    };
+    var testInput2 = new TestInput();
+    var testOutput = new TestOutput();
+    var engine = GetExceptionEngine<TaskCanceledException>(ExceptionHandlers.HaltItem, parallelizeRules);
+    if (parallelizeInputs)
+      await engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput, null, new CancellationTokenSource().Token);
+    else
+      await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, null, new CancellationTokenSource().Token);
+    Assert.NotNull(engine.LastException);
+    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Equal(testInput, engine.LastException.Input);
+    Assert.Equal(engine.Rules.First(), engine.LastException.Rule);
+    Assert.NotNull(engine.LastException.Context);
+    Assert.Equal(4, testInput.Items.Count);
+    Assert.NotEmpty(testInput2.Items);
+    Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Theory]
+  [InlineData(false, false)]
+  [InlineData(true, false)]
+  [InlineData(false, true)]
+  [InlineData(true, true)]
   public async Task ExceptionHandlingManualItem(bool parallelizeRules, bool parallelizeInputs)
   {
     var testInput = new TestInput
@@ -606,7 +632,7 @@ public class AsyncEngineOfTInTOutTests
     Assert.NotNull(engine.LastException.Context);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
-    Assert.Equal(parallelizeInputs ? 4 : 2, testOutput.Outputs.Count);
+    Assert.Equal(2, testOutput.Outputs.Count);
   }
 
   [Theory]
@@ -756,7 +782,8 @@ public class AsyncEngineOfTInTOutTests
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
-  private static IAsyncRulesEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler, bool parallelizeRules)
+  private static IAsyncRulesEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
+    where T : Exception, new()
   {
     var builder =
       EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
@@ -764,7 +791,7 @@ public class AsyncEngineOfTInTOutTests
                     .WithAction(async (c, i, t) =>
                     {
                       i.Items.Add("testprerule");
-                      if (i.Items.Contains("PreException")) throw new Exception();
+                      if (i.Items.Contains("PreException")) throw new T();
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
@@ -772,7 +799,7 @@ public class AsyncEngineOfTInTOutTests
                     .WithAction(async (c, i, o, t) =>
                     {
                       i.Items.Add("testrule");
-                      if (i.Items.Contains("Exception")) throw new Exception();
+                      if (i.Items.Contains("Exception")) throw new T();
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
@@ -780,7 +807,7 @@ public class AsyncEngineOfTInTOutTests
                     .WithAction(async (c, o, t) =>
                     {
                       o.Outputs.Add("testpostrule");
-                      if (o.Outputs.Contains("PostException")) throw new Exception();
+                      if (o.Outputs.Contains("PostException")) throw new T();
                       o.Outputs.Add("testpostrule2");
                     })
                   .EndRule()
@@ -824,4 +851,5 @@ public class AsyncEngineOfTInTOutTests
     }
     return builder.Build();
   }
+
 }
