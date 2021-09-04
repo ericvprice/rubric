@@ -1,15 +1,13 @@
-# RuleEngine
+# Rubric
 
-RulesEngine is a library for .NET Standard with support for both synchronous
-and asynchronous processing, optional parallelized execution for asynchronous processing,
-and rule dependency resolution.
+Rubric is a .NET library providing synchronous and asynchronous rule engines with optional parallelized execution and rule dependency resolution.
 
 ## Concepts
 ---
 
 ### Motivation
 
-A rule engine is, essentially, a turbocharged version of the [strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern).  It provides a framework for consistently implementing code compliant with [SOLID](https://en.wikipedia.org/wiki/SOLID) (and other) comprehensive architectures:
+A rule engine is, essentially, a turbocharged version of the [strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern).  It provides a framework for consistently implementing highly code compliant with [SOLID](https://en.wikipedia.org/wiki/SOLID) (and other) comprehensive architectures, while avoiding traiditional problems of what class should "own" functionality:
 
 * Rules should be highly-focused and single-purpose transformations, implementing the [single responsibility principle](https://en.wikipedia.org/wiki/Single_responsibility_principle)
 * Rules are composed into engines, and can be easily extended and conditionally added to the engine composition, implementing the [open/closed principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle).
@@ -17,32 +15,30 @@ A rule engine is, essentially, a turbocharged version of the [strategy pattern](
 
 By using declarative ordering and conditional injection, extremely complicated conditional and configurable processing can be accomplished in a decomposed fashion while avoiding large methods or large "god" processing classes with many function calls.
 
-Transforming a complicated algorithm into a rules engine implemenation involves, at a high level:
+Transforming a complicated algorithm into a rule engine implemenation involves, at a high level:
 
 1) Translating input normalization statements into preprocessing rules
 2) Translating `if` statements and their bodies, or decomposed methods, into processing rules.
-3) Using the engine context to hold the local variables shared by rules that don't appear in the output.
+3) Using the engine context engine if necessary to coordinate and shared data between rules.
 4) Translate output normalization statements into postprocessing rules.
-
-From a development methodology standpoint, a rule engine help decompose complex processing into easily unit-testable rule classes.
 
 ### Engines
 
-Engines are created from rules that apply one or several input objects and/or an output object.  Synchronous engines accept rules with synchronous rule implementations, and run their rules one after the other as determined by their dependency ordering.  Asyncronous engines accept rules with both asynchronous and synchronous rule implementations, with the later being wrapped in asynchronous adapters.  Asynchronous engines can optionally execute their rules in parallel, automatically determining what rules can be run in parallel given their dependencies.
+Engines are created from rules and apply them to one or several input objects and potentially an output object for aggregation.  Synchronous engines accept rules with synchronous rule implementations, and run their rules one after the other as determined by their dependency ordering.  Asyncronous engines accept rules with both asynchronous and synchronous rule implementations, with the later being wrapped in asynchronous adapters.  Asynchronous engines can optionally execute their rules in parallel, automatically determining what rules can be run in parallel given their dependencies, and process items in parallel as well.  Support is offered for consuming `IAsyncEnumerable<T>`.
 
 ### Engine Contexts
 
 Engine contexts act as a per-execution temporary object stash where rules can loosely communicate with each other via a dictionary interface.  In addition, contexts can hold global processing flags passed into the engine at executiong time. Care should be taken when using the stash:
 
-* Dependency relations should be used to ensure value are written before being read
+* Dependency relations should be used to ensure values are written before being read
 * When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships enforce it.  Be aware of possible race conditions.
 
 ### Rules
 
-Rules come in three flavors, in both synchrnous and asynchrnous varieties:
+Rules come in three flavors, in both synchrnous and asynchronous varieties:
 
-1) Preprocessing rules are conditionally applied to input objects before the other rule types are run.
-2) Processing rules conditionally apply input objects to the output object after preprocessing rules are run and before postprocessing rules are run.
+1) Preprocessing rules are conditionally applied to an input object before the other rules types are run on that input object.
+2) Processing rules conditionally apply and input object to the output object after preprocessing rules are run and before postprocessing rules are run.
 3) PostProcessing rules conditionally applied to the output object after the other rule types are run.
 
 All rules are constructed from two implemented (or fluently provided) methods:
@@ -52,6 +48,8 @@ All rules are constructed from two implemented (or fluently provided) methods:
     * For postprocessing rules, the engine context and the output object being processed are available to determine executability.
     * For processing rules, the engine context and both the current input object and the output object are availble to detemine executability.
 * `Apply` is a processing method that applies the rule.
+
+For asynchronous engines, a cancellation token is provided as well.
 
 Rules can be either implemented as classes with declarative dependencies, or built via fluent builders with explicit depencies.  Engine constructors are also provided for convenient usage with dependency injection libraries.
 
@@ -168,15 +166,22 @@ public MyOutputType ProcessInputsWithFluentConstruction(IEnumearble<MyInputType>
 }
  ```
 
-Asynchronous engine composition follows analogously.  Set `ProcessInParallel` flag to `true` to enable parallel processing of rules.  By default, the engine executes serailly.
+Asynchronous engine composition follows analogously.  Set `ProcessInParallel` flag to `true` to enable parallel processing of rules.  By default, the engine executes serially.  Parallelization of inputs is enabled in the `Apply*` calls.
 
-## Debug, Logging, and Exceptions
+## Exceptions
 
-Once an engine is constructed, you can view a dump of the rules (and their ordering) by examining their properties.  All rules are exposed via appropriately named properties.  In addition, when debugging inside the rules, the engine context will always contain an instance of the engine available for you to inspect under the `ContextKeys.ENGINE` key.
+When an non-engine exception is thrown during execution, the exception is wrapped is passed to an optionally provided exception handler (by default, the exception is not caught).  Users may short-circuit engine execution using `ItemHaltException` and `EngineHaltException` which will halt the execution of the current item or the entire engine's execution, respectively.  These can be thrown directly from the rules, or from a custom exception handler.  The engine will populate these 2 known exceptions with contextual information, and place the exception the `LastException` property.  These exceptions are not rethrown.
 
-When an exception is thrown during execution, the exception is wrapped in an `EngineHaltException` which provides the current input and output (as applicable to the rule type the exception occured in) as well as the captured engine context.  When executing an asynchronous engine in parallel mode, an `AggregateException` will be thrown instead, with each concurrently executing rule that threw the exception being wrapped in an `EngineHaltException` as above.
+In asynchronous engines, all the above statements apply, except that if one is executing either rules (for `ItemHaltException`) or inputs (for `EngineHaltException`) asynchronously, the engine will attempt to cancel all other tasks being executed in parallel.  Long running rules can check the cancellation token (or pass it to other async functions) to allow graceful exiting.  The engine can guarantee that:
 
-The engines also accept a `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as the execute.  This logger may be accessed through the context with the key `ContextKeys.LOGGER` key within rules.
+1) As soon as any `*HaltException` is encountered, any parallized tasks have their cancellation requested through their token.
+2) All internal paralllized tasks in the engine check the cancellation token before executing each piece of user code, and will exit as soon as possible.
+
+`TaskCancelledException`s caused by user-cancellation of the provided token will be bubbled up and not processed by the exception handling mechanism.  The user should handle this exception appropriately.  Uncaught `TaskCancellationException`s not arising from the same token provided by the user will be processed as any other normal exception.
+
+## Logging and Debugging
+
+The engines accept a `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  This logger may be accessed through the context with the key `ContextKeys.LOGGER` key within rules.
 
 ## License
 
