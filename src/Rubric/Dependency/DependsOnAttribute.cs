@@ -10,7 +10,7 @@ public class DependsOnAttribute : Attribute
     Name = name;
   }
 
-  public DependsOnAttribute(Type type) => Name = type.FullName ?? throw new ArgumentNullException(nameof(type));
+  public DependsOnAttribute(Type type) => Name = type.FullName;
 
   public string Name { get; }
 }

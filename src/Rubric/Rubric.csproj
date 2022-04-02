@@ -11,7 +11,4 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Rubric.Dependency\Rubric.Dependency.csproj" />
-  </ItemGroup>
 </Project>
