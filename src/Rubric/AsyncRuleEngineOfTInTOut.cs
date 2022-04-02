@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
@@ -228,7 +229,7 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
   {
     try
     {
-      await foreach (var input in inputStream)
+      await foreach (var input in inputStream.WithCancellation(token))
       {
         await ApplyItemAsync(input, output, context, token);
       }
@@ -240,10 +241,10 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
   /// <summary>
   ///   Process a single item.
   /// </summary>
-  /// <param name="input">The input.</param>
-  /// <param name="output">The output.</param>
-  /// <param name="context">The context.</param>
-  /// <param name="token">The cancellation token.</param>
+  /// <param name="i">The input.</param>
+  /// <param name="o">The output.</param>
+  /// <param name="ctx">The context.</param>
+  /// <param name="t">The cancellation token.</param>
   /// <returns>An awaitable task.</returns>
   private async Task ApplyItemAsync(TIn i, TOut o, IEngineContext ctx, CancellationToken t)
   {
@@ -357,9 +358,7 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
           }
       }
       catch (ItemHaltException)
-      {
-        continue;
-      }
+      { }
     }
   }
 

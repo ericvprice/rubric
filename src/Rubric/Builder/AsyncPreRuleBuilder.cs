@@ -1,3 +1,4 @@
+using System.Threading;
 using Rubric.Rules.Async;
 using static System.String;
 
@@ -17,9 +18,9 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
   internal AsyncPreRuleBuilder(AsyncEngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
-    _name = IsNullOrEmpty(name) ? throw new ArgumentException(nameof(name)) : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _name = IsNullOrEmpty(name) ? throw new ArgumentNullException(nameof(name)) : name;
+    _provides = new() { name };
+    _deps = new();
   }
 
 
@@ -43,7 +44,7 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
     {
       throw new ArgumentNullException(nameof(action));
     }
-    _action = (ctx, inObj, token) => action(ctx, inObj);
+    _action = (ctx, inObj, _) => action(ctx, inObj);
     return this;
   }
 
@@ -55,7 +56,7 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
 
   public IAsyncPreRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
-    if (IsNullOrEmpty(dep)) throw new ArgumentException(nameof(dep));
+    if (IsNullOrEmpty(dep)) throw new ArgumentNullException(nameof(dep));
     _deps.Add(dep);
     return this;
   }
@@ -70,7 +71,7 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
   {
     if (predicate == null)
       throw new ArgumentNullException(nameof(predicate));
-    _predicate = (ctx, inObj, token) => predicate(ctx, inObj);
+    _predicate = (ctx, inObj, _) => predicate(ctx, inObj);
     return this;
   }
 

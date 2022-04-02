@@ -1,7 +1,6 @@
-namespace Rubric.Tests
+namespace Rubric.Tests;
+
+internal class TestScope : IDisposable
 {
-  internal class TestScope : IDisposable
-  {
-    public void Dispose() { }
-  }
+  public void Dispose() { }
 }

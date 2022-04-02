@@ -11,7 +11,7 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private readonly List<string> _provides;
   private Action<IEngineContext, TOut> _action;
-  private Func<IEngineContext, TOut, bool> _predicate = (c, i) => true;
+  private Func<IEngineContext, TOut, bool> _predicate = (_, _) => true;
 
   internal PostRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {
@@ -19,8 +19,8 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
     Name = IsNullOrWhiteSpace(name)
         ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
         : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _provides = new() { name };
+    _deps = new();
   }
 
   public string Name { get; }

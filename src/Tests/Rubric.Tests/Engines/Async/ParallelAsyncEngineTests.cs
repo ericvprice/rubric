@@ -1,3 +1,4 @@
+using System.Linq;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Engines.Async;
@@ -29,16 +30,16 @@ public class ParallelAsyncEngineTests
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithPreRule("test")
-                              .WithPredicate((c, i) => Task.FromResult(true))
-                              .WithAction((c, i) =>
+                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithAction((_, i) =>
                               {
                                 i.Items.Add("pre");
                                 return Task.CompletedTask;
                               })
                               .EndRule()
                               .WithRule("test")
-                              .WithPredicate((c, i, o) => Task.FromResult(true))
-                              .WithAction((c, i, o) =>
+                              .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithAction((_, i, o) =>
                               {
                                 i.Items.Add("rule");
                                 o.Outputs.Add("rule");
@@ -46,8 +47,8 @@ public class ParallelAsyncEngineTests
                               })
                               .EndRule()
                               .WithPostRule("test")
-                              .WithPredicate((c, o) => Task.FromResult(true))
-                              .WithAction((c, o) =>
+                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithAction((_, o) =>
                               {
                                 o.Outputs.Add("postrule");
                                 return Task.CompletedTask;
@@ -364,7 +365,7 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(new LambdaExceptionHandler(
-      (e, c, i, o, r) => throw new InvalidOperationException()));
+      (_, _, _, _, _) => throw new InvalidOperationException()));
     await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(3, testInput.Items.Count);
@@ -382,7 +383,7 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(new LambdaExceptionHandler(
-      (e, c, i, o, r) => throw new InvalidOperationException()));
+      (_, _, _, _, _) => throw new InvalidOperationException()));
     await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(4, testInput.Items.Count);
@@ -566,26 +567,26 @@ public class ParallelAsyncEngineTests
   private static IAsyncRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
-                    .WithAction(async (c, i, t) =>
+                    .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
-                      if (i.Items.Contains("PreException")) throw new Exception();
+                      if (i.Items.Contains("PreException")) throw new();
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
                   .WithRule("testrule")
-                    .WithAction(async (c, i, o, t) =>
+                    .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
-                      if (i.Items.Contains("Exception")) throw new Exception();
+                      if (i.Items.Contains("Exception")) throw new();
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
                   .WithPostRule("testpostrule")
-                    .WithAction(async (c, o, t) =>
+                    .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
-                      if (o.Outputs.Contains("PostException")) throw new Exception();
+                      if (o.Outputs.Contains("PostException")) throw new();
                       o.Outputs.Add("testpostrule2");
                     })
                   .EndRule()
@@ -596,7 +597,7 @@ public class ParallelAsyncEngineTests
   private static IAsyncRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                 .WithPreRule("testprerule")
-                  .WithAction(async (c, i, t) =>
+                  .WithAction(async (_, i, _) =>
                   {
                     i.Items.Add("testprerule");
                     if (i.Items.Contains("PreException")) throw new T();
@@ -604,7 +605,7 @@ public class ParallelAsyncEngineTests
                   })
                 .EndRule()
                 .WithRule("testrule")
-                  .WithAction(async (c, i, o, t) =>
+                  .WithAction(async (_, i, _, _) =>
                   {
                     i.Items.Add("testrule");
                     if (i.Items.Contains("Exception")) throw new T();
@@ -612,7 +613,7 @@ public class ParallelAsyncEngineTests
                   })
                 .EndRule()
                 .WithPostRule("testpostrule")
-                  .WithAction(async (c, o, t) =>
+                  .WithAction(async (_, o, _) =>
                   {
                     o.Outputs.Add("testpostrule");
                     if (o.Outputs.Contains("PostException")) throw new T();

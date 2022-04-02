@@ -1,13 +1,12 @@
-namespace Rubric.Tests.TestRules
+namespace Rubric.Tests.TestRules;
+
+public class TestPostRule : Rule<TestOutput>
 {
-  public class TestPostRule : Rule<TestOutput>
-  {
-    private readonly bool _shouldApply;
+  private readonly bool _shouldApply;
 
-    public TestPostRule(bool shouldApply) => _shouldApply = shouldApply;
+  public TestPostRule(bool shouldApply) => _shouldApply = shouldApply;
 
-    public override void Apply(IEngineContext context, TestOutput obj) => obj.TestFlag = true;
+  public override void Apply(IEngineContext context, TestOutput obj) => obj.TestFlag = true;
 
-    public override bool DoesApply(IEngineContext context, TestOutput obj) => _shouldApply;
-  }
+  public override bool DoesApply(IEngineContext context, TestOutput obj) => _shouldApply;
 }

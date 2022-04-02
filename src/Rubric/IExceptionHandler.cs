@@ -6,6 +6,6 @@ namespace Rubric;
 public interface IExceptionHandler
 {
 
-  bool HandleException(Exception e, IEngineContext context, object Input, object output, object rule);
+  bool HandleException(Exception e, IEngineContext context, object input, object output, object rule);
 
 }

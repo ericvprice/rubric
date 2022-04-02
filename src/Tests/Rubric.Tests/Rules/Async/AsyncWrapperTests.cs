@@ -1,6 +1,6 @@
 using Rubric.Tests.TestRules;
 
-namespace Rubric.Tests;
+namespace Rubric.Tests.Rules.Async;
 
 public class AsyncWrapperTests
 {

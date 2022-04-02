@@ -1,3 +1,4 @@
+using System.Linq;
 using Rubric.Tests.DependencyRules.TypeAttribute;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
@@ -212,13 +213,13 @@ public class AsyncBuilderOfTInTOutTests
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithPostRule(new TestAsyncPostRule(true))
                               .WithPostRule("test")
-                              .WithPredicate((c, o) => Task.FromResult(true))
-                              .WithAction((c, o) => Task.CompletedTask)
+                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithAction((_, _) => Task.CompletedTask)
                               .ThatProvides("foo")
                               .EndRule()
                               .WithPostRule("test2")
-                              .WithPredicate((c, i, t) => Task.FromResult(true))
-                              .WithAction((c, i, t) => Task.CompletedTask)
+                              .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _) => Task.CompletedTask)
                               .ThatDependsOn(typeof(TestAsyncPostRule))
                               .ThatDependsOn("test")
                               .EndRule()
@@ -233,7 +234,7 @@ public class AsyncBuilderOfTInTOutTests
     Assert.Contains(typeof(TestAsyncPostRule).FullName, rule.Dependencies);
     Assert.Contains("test", rule.Dependencies);
     Assert.True(await rule.DoesApply(null, null, default));
-    await engine.ApplyAsync(new TestInput(), new TestOutput());
+    await engine.ApplyAsync(new TestInput(), new());
   }
 
   [Fact]
@@ -314,13 +315,13 @@ public class AsyncBuilderOfTInTOutTests
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithPreRule(new TestAsyncPreRule(true))
                               .WithPreRule("test")
-                              .WithPredicate((c, i) => Task.FromResult(true))
-                              .WithAction((c, i) => Task.CompletedTask)
+                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithAction((_, _) => Task.CompletedTask)
                               .ThatProvides("foo")
                               .EndRule()
                               .WithPreRule("test2")
-                              .WithPredicate((c, i, t) => Task.FromResult(true))
-                              .WithAction((c, i, t) => Task.CompletedTask)
+                              .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _) => Task.CompletedTask)
                               .ThatDependsOn(typeof(TestAsyncPreRule))
                               .ThatDependsOn("test")
                               .EndRule()
@@ -335,7 +336,7 @@ public class AsyncBuilderOfTInTOutTests
     Assert.Contains("test", rule.Dependencies);
     Assert.Contains(typeof(TestAsyncPreRule).FullName, rule.Dependencies);
     Assert.True(await rule.DoesApply(null, null, default));
-    await engine.ApplyAsync(new TestInput(), new TestOutput());
+    await engine.ApplyAsync(new TestInput(), new());
   }
 
   [Fact]
@@ -344,13 +345,13 @@ public class AsyncBuilderOfTInTOutTests
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithRule(new TestAsyncRule(true))
                               .WithRule("test")
-                              .WithPredicate((c, i, o) => Task.FromResult(true))
-                              .WithAction((c, i, o) => Task.CompletedTask)
+                              .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _) => Task.CompletedTask)
                               .ThatProvides("test1")
                               .EndRule()
                               .WithRule("test2")
-                              .WithPredicate((c, i, o, t) => Task.FromResult(true))
-                              .WithAction((c, i, o, t) => Task.CompletedTask)
+                              .WithPredicate((_, _, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _, _) => Task.CompletedTask)
                               .ThatDependsOn("test1")
                               .ThatDependsOn(typeof(TestAsyncRule))
                               .EndRule()
@@ -364,7 +365,7 @@ public class AsyncBuilderOfTInTOutTests
     Assert.Contains(typeof(TestAsyncRule).FullName, rule.Dependencies);
     Assert.Contains("test1", rule.Dependencies);
     Assert.True(await rule.DoesApply(null, null, null, default));
-    await engine.ApplyAsync(new TestInput(), new TestOutput());
+    await engine.ApplyAsync(new TestInput(), new());
   }
 
 

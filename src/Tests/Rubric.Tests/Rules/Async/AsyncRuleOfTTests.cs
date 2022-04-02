@@ -1,4 +1,5 @@
-﻿using Rubric.Tests.DependencyRules;
+﻿using System.Linq;
+using Rubric.Tests.DependencyRules;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Rules.Async;
@@ -19,8 +20,8 @@ public class AsyncSingleTypeRuleTests
   [InlineData(false)]
   public async Task LambdaDoesApply(bool expected)
   {
-    var rule = new LambdaAsyncRule<TestOutput>("test", (c, i, t) => Task.FromResult(expected),
-                                                    (c, i, t) => Task.CompletedTask);
+    var rule = new LambdaAsyncRule<TestOutput>("test", (_, _, _) => Task.FromResult(expected),
+                                                    (_, _, _) => Task.CompletedTask);
     Assert.Equal(expected, await rule.DoesApply(null, null, default));
   }
 
@@ -29,8 +30,8 @@ public class AsyncSingleTypeRuleTests
   {
     var rule = new LambdaAsyncRule<TestInput>(
         "test",
-        (c, i, t) => Task.FromResult(true),
-        (c, i, t) => Task.CompletedTask,
+        (_, _, _) => Task.FromResult(true),
+        (_, _, _) => Task.CompletedTask,
         new[] { "dep1", "dep2" },
         new[] { "prv1", "prv2" }
     );
@@ -45,13 +46,13 @@ public class AsyncSingleTypeRuleTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-        () => new LambdaAsyncRule<TestInput>("test", (c, i, t) => Task.FromResult(true), null));
+        () => new LambdaAsyncRule<TestInput>("test", (_, _, _) => Task.FromResult(true), null));
     Assert.Throws<ArgumentException>(
-        () => new LambdaAsyncRule<TestInput>(null, (c, i, t) => Task.FromResult(true),
-                                                (c, i, t) => Task.CompletedTask));
+        () => new LambdaAsyncRule<TestInput>(null, (_, _, _) => Task.FromResult(true),
+                                                (_, _, _) => Task.CompletedTask));
     Assert.Throws<ArgumentException>(
-        () => new LambdaAsyncRule<TestInput>("", (c, i, t) => Task.FromResult(true),
-                                                (c, i, t) => Task.CompletedTask));
+        () => new LambdaAsyncRule<TestInput>("", (_, _, _) => Task.FromResult(true),
+                                                (_, _, _) => Task.CompletedTask));
 
   }
 

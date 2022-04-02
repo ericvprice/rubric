@@ -1,3 +1,4 @@
+using System.Linq;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Builders;
@@ -46,13 +47,13 @@ public class SingleTypeBuilderTests
     var engine = EngineBuilder.ForInput<TestInput>()
                               .WithRule(new TestPreRule(true))
                               .WithRule("test")
-                              .WithPredicate((c, i) => true)
-                              .WithAction((c, i) => { })
+                              .WithPredicate((_, _) => true)
+                              .WithAction((_, _) => { })
                               .ThatProvides("test1")
                               .EndRule()
                               .WithRule("test2")
-                              .WithPredicate((c, i) => true)
-                              .WithAction((c, i) => { })
+                              .WithPredicate((_, _) => true)
+                              .WithAction((_, _) => { })
                               .ThatDependsOn(typeof(TestPreRule))
                               .ThatDependsOn("test1")
                               .EndRule()

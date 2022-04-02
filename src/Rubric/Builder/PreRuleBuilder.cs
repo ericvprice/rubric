@@ -12,14 +12,14 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private readonly List<string> _provides;
   private Action<IEngineContext, TIn> _action;
-  private Func<IEngineContext, TIn, bool> _predicate = (c, i) => true;
+  private Func<IEngineContext, TIn, bool> _predicate = (_, _) => true;
 
   internal PreRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
     _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _provides = new() { name };
+    _deps = new();
   }
 
 

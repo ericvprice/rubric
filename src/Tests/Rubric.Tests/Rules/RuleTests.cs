@@ -1,3 +1,4 @@
+using System.Linq;
 using Rubric.Tests.DependencyRules;
 using Rubric.Tests.TestRules;
 
@@ -19,14 +20,14 @@ public class RuleTests
   [InlineData(false)]
   public void TestLambdaDoesApply(bool expected)
   {
-    var rule = new LambdaRule<TestInput, TestOutput>("test", (c, i, o) => expected, (c, i, o) => { });
+    var rule = new LambdaRule<TestInput, TestOutput>("test", (_, _, _) => expected, (_, _, _) => { });
     Assert.Equal(expected, rule.DoesApply(null, null, null));
   }
 
   [Fact]
   public void LambdaConstructor()
   {
-    var rule = new LambdaRule<TestInput, TestOutput>("test", (c, i, o) => true, (c, i, o) => { },
+    var rule = new LambdaRule<TestInput, TestOutput>("test", (_, _, _) => true, (_, _, _) => { },
                                                      new[] { "dep1", "dep2" }, new[] { "prv1", "prv2" });
     Assert.Equal("test", rule.Name);
     Assert.Contains("dep1", rule.Dependencies);
@@ -40,11 +41,11 @@ public class RuleTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-        () => new LambdaRule<TestInput, TestOutput>("test", null, (c, i, o) => { }));
+        () => new LambdaRule<TestInput, TestOutput>("test", null, (_, _, _) => { }));
     Assert.Throws<ArgumentNullException>(
-        () => new LambdaRule<TestInput, TestOutput>("test", (c, i, o) => true, null));
+        () => new LambdaRule<TestInput, TestOutput>("test", (_, _, _) => true, null));
     Assert.Throws<ArgumentException>(
-        () => new LambdaRule<TestInput, TestOutput>(null, (c, i, o) => true, (c, i, o) => { }));
+        () => new LambdaRule<TestInput, TestOutput>(null, (_, _, _) => true, (_, _, _) => { }));
   }
 
   [Fact]

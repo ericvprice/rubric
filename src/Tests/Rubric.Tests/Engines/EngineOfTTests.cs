@@ -36,8 +36,8 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>(
         "test",
-        (c, i) => true,
-        (c, i) =>
+        (_, _) => true,
+        (_, i) =>
         {
           if (i.InputFlag)
             throw new EngineHaltException();
@@ -65,8 +65,8 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>(
         "test",
-        (c, i) => true,
-        (c, i) =>
+        (_, _) => true,
+        (_, i) =>
         {
           if (i.InputFlag)
             throw new ItemHaltException();
@@ -94,11 +94,11 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>(
         "test",
-        (c, i) => true,
-        (c, i) =>
+        (_, _) => true,
+        (_, i) =>
         {
           if (i.InputFlag)
-            throw new Exception("Test", null);
+            throw new("Test", null);
           i.InputFlag = true;
         });
     var input = new TestInput { InputFlag = true };
@@ -124,11 +124,11 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>(
         "test",
-        (c, i) => true,
-        (c, i) =>
+        (_, _) => true,
+        (_, i) =>
         {
           if (i.InputFlag)
-            throw new Exception();
+            throw new();
           i.InputFlag = true;
         });
     var input = new TestInput { InputFlag = true };
@@ -154,11 +154,11 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>(
         "test",
-        (c, i) => true,
-        (c, i) =>
+        (_, _) => true,
+        (_, i) =>
         {
           if (i.InputFlag)
-            throw new Exception();
+            throw new();
           i.InputFlag = true;
         });
     var input = new TestInput { InputFlag = true };
@@ -246,7 +246,7 @@ public class EngineOfTTests
   [Fact]
   public void ApplyEngineException()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new EngineHaltException("Test", null));
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new EngineHaltException("Test", null));
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule });
     var input = new TestInput();
     engine.Apply(input);
@@ -263,7 +263,7 @@ public class EngineOfTTests
   [Fact]
   public void ApplyItemException()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new ItemHaltException());
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new ItemHaltException());
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule });
     var input = new TestInput();
     engine.Apply(input);
@@ -280,8 +280,8 @@ public class EngineOfTTests
   [Fact]
   public void ApplyExceptionHandler()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new Exception());
-    var testPreRule2 = new LambdaRule<TestInput>("test2", (c, i) => true, (c, i) => i.InputFlag = true);
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
+    var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.HaltEngine);
     var input = new TestInput();
     engine.Apply(input);
@@ -298,8 +298,8 @@ public class EngineOfTTests
   [Fact]
   public void ApplyExceptionHandlerItemException()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new Exception());
-    var testPreRule2 = new LambdaRule<TestInput>("test2", (c, i) => true, (c, i) => i.InputFlag = true);
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
+    var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.HaltItem);
     var input = new TestInput();
     engine.Apply(input);
@@ -316,8 +316,8 @@ public class EngineOfTTests
   [Fact]
   public void ApplyExceptionHandlerThrow()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new Exception());
-    var testPreRule2 = new LambdaRule<TestInput>("test2", (c, i) => true, (c, i) => i.InputFlag = true);
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
+    var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Throw);
     var input = new TestInput();
     var exception = Assert.Throws<Exception>(() => engine.Apply(input));
@@ -329,10 +329,10 @@ public class EngineOfTTests
   [Fact]
   public void ApplyExceptionHandlerThrowException()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new Exception());
-    var testPreRule2 = new LambdaRule<TestInput>("test2", (c, i) => true, (c, i) => i.InputFlag = true);
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
+    var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 },
-        new LambdaExceptionHandler((e, c, i, o, rule) => throw new InvalidOperationException()));
+        new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
     var exception = Assert.Throws<InvalidOperationException>(() => engine.Apply(input));
     Assert.Null(engine.LastException);
@@ -342,8 +342,8 @@ public class EngineOfTTests
   [Fact]
   public void ApplyExceptionHandlerIgnore()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (c, i) => true, (c, i) => throw new Exception());
-    var testPreRule2 = new LambdaRule<TestInput>("test2", (c, i) => true, (c, i) => i.InputFlag = true);
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new ());
+    var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Ignore);
     var input = new TestInput();
     engine.Apply(input);

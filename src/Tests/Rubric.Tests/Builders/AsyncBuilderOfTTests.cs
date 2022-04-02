@@ -1,4 +1,4 @@
-using Rubric.Tests.DependencyRules.TypeAttribute;
+using System.Linq;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
 
@@ -154,13 +154,13 @@ public class SingleTypeAsyncBuilderTests
     var engine = EngineBuilder.ForInputAsync<TestInput>()
                               .WithRule(new TestAsyncPreRule(true))
                               .WithRule("test")
-                                  .WithPredicate((c, i) => Task.FromResult(true))
-                                  .WithAction((c, i) => Task.CompletedTask)
+                                  .WithPredicate((_, _) => Task.FromResult(true))
+                                  .WithAction((_, _) => Task.CompletedTask)
                                   .ThatProvides("foo")
                               .EndRule()
                               .WithRule("test2")
-                                  .WithPredicate((c, i, t) => Task.FromResult(true))
-                                  .WithAction((c, i, t) => Task.CompletedTask)
+                                  .WithPredicate((_, _, _) => Task.FromResult(true))
+                                  .WithAction((_, _, _) => Task.CompletedTask)
                                   .ThatDependsOn(typeof(TestAsyncPreRule))
                                   .ThatDependsOn("test")
                               .EndRule()

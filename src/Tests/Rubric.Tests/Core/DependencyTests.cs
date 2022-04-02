@@ -1,3 +1,4 @@
+using System.Linq;
 using Rubric.Dependency;
 
 namespace Rubric.Tests.Core;
@@ -168,13 +169,13 @@ public class DependencyTests
   [Fact]
   public void ThrowsOnNull()
   {
-    Assert.Throws<ArgumentNullException>(() => DependencyExtensions.ResolveDependencies((IEnumerable<TestDependency>)null));
+    Assert.Throws<ArgumentNullException>(() => ((IEnumerable<TestDependency>)null).ResolveDependencies());
   }
 
   [Fact]
   public void ReturnsEmpty()
   {
-    var result = DependencyExtensions.ResolveDependencies(Array.Empty<TestDependency>());
+    var result = Array.Empty<TestDependency>().ResolveDependencies();
     Assert.Empty(result);
   }
 }

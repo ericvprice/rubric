@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
@@ -243,7 +244,7 @@ public class AsyncRuleEngine<T> : IAsyncRuleEngine<T>
 
   private async Task ApplyManyAsyncSerial(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
-    await foreach (var input in inputs)
+    await foreach (var input in inputs.WithCancellation(t))
     {
       await ApplyItemAsync(input, context, t).ConfigureAwait(false);
     }
@@ -260,7 +261,7 @@ public class AsyncRuleEngine<T> : IAsyncRuleEngine<T>
 
   private async Task ApplyManyAsyncParallel(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
-    await foreach (var input in inputs)
+    await foreach (var input in inputs.WithCancellation(t))
     {
       t.ThrowIfCancellationRequested();
       await ApplyParallel(context, input, t).ConfigureAwait(false);
@@ -268,10 +269,10 @@ public class AsyncRuleEngine<T> : IAsyncRuleEngine<T>
   }
 
   private Task ApplyParallelManyAsyncParallel(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)
-      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyParallel(ctx, i, t))));
+      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyParallel(ctx, i, t), t)));
 
   private Task ApplyParallelManyAsyncSerial(IEnumerable<T> inputs, IEngineContext ctx, CancellationToken t)
-      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplySerial(ctx, i, t))));
+      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplySerial(ctx, i, t), t)));
 
   #endregion
 }

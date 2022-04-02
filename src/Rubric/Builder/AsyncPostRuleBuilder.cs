@@ -1,3 +1,4 @@
+using System.Threading;
 using Rubric.Rules.Async;
 using static System.String;
 
@@ -18,8 +19,8 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
   {
     _parentBuilder = engineBuilder;
     _name = IsNullOrWhiteSpace(name) ? throw new ArgumentException(null, nameof(name)) : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _provides = new() { name };
+    _deps = new();
   }
 
 
@@ -41,7 +42,7 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
   {
     if (action == null)
       throw new ArgumentNullException(nameof(action));
-    _action = (context, outObj, token) => action(context, outObj);
+    _action = (context, outObj, _) => action(context, outObj);
     return this;
   }
 
@@ -68,7 +69,7 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
   {
     if (predicate == null)
       throw new ArgumentNullException(nameof(predicate));
-    _predicate = (ctx, outObj, token) => predicate(ctx, outObj);
+    _predicate = (ctx, outObj, _) => predicate(ctx, outObj);
     return this;
   }
 

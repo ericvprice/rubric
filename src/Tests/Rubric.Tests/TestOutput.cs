@@ -1,10 +1,9 @@
-namespace Rubric.Tests
-{
-  public class TestOutput
-  {
-    public bool TestFlag { get; set; }
+namespace Rubric.Tests;
 
-    public List<string> Outputs { get; set; } = new List<string>();
-    public int Counter { get; internal set; }
-  }
+public class TestOutput
+{
+  public bool TestFlag { get; set; }
+
+  public List<string> Outputs { get; set; } = new();
+  public int Counter { get; internal set; }
 }

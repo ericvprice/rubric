@@ -1,6 +1,6 @@
+using System.Linq;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
-using Rubric;
 
 namespace Rubric.Tests.Engines.Async;
 
@@ -110,16 +110,16 @@ public class AsyncEngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithPreRule("test")
-                                .WithPredicate((c, i) => Task.FromResult(true))
-                                .WithAction((c, i) =>
+                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithAction((_, i) =>
                                 {
                                   i.Items.Add("pre");
                                   return Task.CompletedTask;
                                 })
                               .EndRule()
                               .WithRule("test")
-                                .WithPredicate((c, i, o) => Task.FromResult(true))
-                                .WithAction((c, i, o) =>
+                                .WithPredicate((_, _, _) => Task.FromResult(true))
+                                .WithAction((_, i, o) =>
                                 {
                                   i.Items.Add("rule");
                                   o.Outputs.Add("rule");
@@ -127,8 +127,8 @@ public class AsyncEngineOfTInTOutTests
                                 })
                               .EndRule()
                               .WithPostRule("test")
-                                .WithPredicate((c, o) => Task.FromResult(true))
-                                .WithAction((c, o) =>
+                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithAction((_, o) =>
                                 {
                                   o.Outputs.Add("postrule");
                                   return Task.CompletedTask;
@@ -155,7 +155,7 @@ public class AsyncEngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithPostRule("test")
-                                .WithAction((c, o) => throw new Exception())
+                                .WithAction((_, _) => throw new())
                               .EndRule()
                               .WithExceptionHandler(ExceptionHandlers.HaltEngine)
                               .Build();
@@ -171,7 +171,7 @@ public class AsyncEngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithRule("test")
-                                .WithAction((c, i, o, t) => { o.Counter++; return Task.CompletedTask; })
+                                .WithAction((_, _, o, _) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .Build();
     var input1 = new TestInput();
@@ -186,7 +186,7 @@ public class AsyncEngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                               .WithRule("test")
-                                .WithAction((c, i, o, t) => { o.Counter++; return Task.CompletedTask; })
+                                .WithAction((_, _, o, _) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .AsParallel()
                               .Build();
@@ -485,7 +485,7 @@ public class AsyncEngineOfTInTOutTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine<Exception>(new LambdaExceptionHandler(
-      (e, c, i, o, r) => throw new InvalidOperationException()), parallelizeRules);
+      (_, _, _, _, _) => throw new InvalidOperationException()), parallelizeRules);
     if (parallelizeInputs)
       await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput));
     else
@@ -509,7 +509,7 @@ public class AsyncEngineOfTInTOutTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine<Exception>(new LambdaExceptionHandler(
-      (e, c, i, o, r) => throw new InvalidOperationException()), parallelizeRules);
+      (_, _, _, _, _) => throw new InvalidOperationException()), parallelizeRules);
     if (parallelizeInputs)
       await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyParallelAsync(new[] { testInput, testInput2 }, testOutput));
     else
@@ -789,7 +789,7 @@ public class AsyncEngineOfTInTOutTests
     var builder =
       EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
-                    .WithAction(async (c, i, t) =>
+                    .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
                       if (i.Items.Contains("PreException")) throw new T();
@@ -797,7 +797,7 @@ public class AsyncEngineOfTInTOutTests
                     })
                   .EndRule()
                   .WithRule("testrule")
-                    .WithAction(async (c, i, o, t) =>
+                    .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
                       if (i.Items.Contains("Exception")) throw new T();
@@ -805,7 +805,7 @@ public class AsyncEngineOfTInTOutTests
                     })
                   .EndRule()
                   .WithPostRule("testpostrule")
-                    .WithAction(async (c, o, t) =>
+                    .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
                       if (o.Outputs.Contains("PostException")) throw new T();
@@ -823,7 +823,7 @@ public class AsyncEngineOfTInTOutTests
     var builder =
       EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
-                    .WithAction(async (c, i, t) =>
+                    .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
                       if (i.Items.Contains("PreException")) throw new T();
@@ -831,7 +831,7 @@ public class AsyncEngineOfTInTOutTests
                     })
                   .EndRule()
                   .WithRule("testrule")
-                    .WithAction(async (c, i, o, t) =>
+                    .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
                       if (i.Items.Contains("Exception")) throw new T();
@@ -839,7 +839,7 @@ public class AsyncEngineOfTInTOutTests
                     })
                   .EndRule()
                   .WithPostRule("testpostrule")
-                    .WithAction(async (c, o, t) =>
+                    .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
                       if (o.Outputs.Contains("PostException")) throw new T();

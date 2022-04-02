@@ -1,3 +1,4 @@
+using System.Threading;
 using Rubric.Rules.Async;
 using static System.String;
 
@@ -12,14 +13,14 @@ internal class AsyncRuleBuilder<T> : IAsyncRuleBuilder<T>
   private readonly string _name;
   private readonly List<string> _provides;
   private Func<IEngineContext, T, CancellationToken, Task> _action;
-  private Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (c, i, t) => Task.FromResult(true);
+  private Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (_, _, _) => Task.FromResult(true);
 
   internal AsyncRuleBuilder(AsyncEngineBuilder<T> builder, string name)
   {
     _builder = builder;
     _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _provides = new() { name };
+    _deps = new();
   }
 
   public IAsyncEngineBuilder<T> EndRule()
@@ -38,7 +39,7 @@ internal class AsyncRuleBuilder<T> : IAsyncRuleBuilder<T>
   public IAsyncRuleBuilder<T> WithAction(Func<IEngineContext, T, Task> action)
   {
     if (action == null) throw new ArgumentNullException(nameof(action));
-    _action = (ctx, inObj, token) => action(ctx, inObj);
+    _action = (ctx, inObj, _) => action(ctx, inObj);
     return this;
   }
 
@@ -64,7 +65,7 @@ internal class AsyncRuleBuilder<T> : IAsyncRuleBuilder<T>
   public IAsyncRuleBuilder<T> WithPredicate(Func<IEngineContext, T, Task<bool>> predicate)
   {
     if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-    _predicate = (ctx, inObj, token) => predicate(ctx, inObj);
+    _predicate = (ctx, inObj, _) => predicate(ctx, inObj);
     return this;
   }
 

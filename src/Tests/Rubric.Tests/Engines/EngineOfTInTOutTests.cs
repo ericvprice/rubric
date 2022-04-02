@@ -1,3 +1,4 @@
+using System.Linq;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Engines;
@@ -157,20 +158,20 @@ public class EngineOfTInTOutTests
   {
     var engine = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                               .WithPreRule("test")
-                                .WithPredicate((c, i) => true)
-                                .WithAction((c, i) => i.Items.Add("pre"))
+                                .WithPredicate((_, _) => true)
+                                .WithAction((_, i) => i.Items.Add("pre"))
                               .EndRule()
                               .WithRule("test")
-                                .WithPredicate((c, i, o) => true)
-                                .WithAction((c, i, o) =>
+                                .WithPredicate((_, _, _) => true)
+                                .WithAction((_, i, o) =>
                                 {
                                   i.Items.Add("rule");
                                   o.Outputs.Add("rule");
                                 })
                               .EndRule()
                               .WithPostRule("test")
-                                .WithPredicate((c, o) => true)
-                                .WithAction((c, o) => o.Outputs.Add("postrule"))
+                                .WithPredicate((_, _) => true)
+                                .WithAction((_, o) => o.Outputs.Add("postrule"))
                               .EndRule()
                               .Build();
     var input1 = new TestInput();
@@ -410,7 +411,7 @@ public class EngineOfTInTOutTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(new LambdaExceptionHandler(
-      (e, c, i, o, r) => throw new InvalidOperationException()));
+      (_, _, _, _, _) => throw new InvalidOperationException()));
     Assert.Throws<InvalidOperationException>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(3, testInput.Items.Count);
@@ -428,7 +429,7 @@ public class EngineOfTInTOutTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(new LambdaExceptionHandler(
-      (e, c, i, o, r) => throw new InvalidOperationException()));
+      (_, _, _, _, _) => throw new InvalidOperationException()));
     Assert.Throws<InvalidOperationException>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(4, testInput.Items.Count);
@@ -612,26 +613,26 @@ public class EngineOfTInTOutTests
   private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
-                    .WithAction((c, i) =>
+                    .WithAction((_, i) =>
                     {
                       i.Items.Add("testprerule");
-                      if (i.Items.Contains("PreException")) throw new Exception();
+                      if (i.Items.Contains("PreException")) throw new();
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
                   .WithRule("testrule")
-                    .WithAction((c, i, o) =>
+                    .WithAction((_, i, _) =>
                     {
                       i.Items.Add("testrule");
-                      if (i.Items.Contains("Exception")) throw new Exception();
+                      if (i.Items.Contains("Exception")) throw new();
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
                   .WithPostRule("testpostrule")
-                    .WithAction((c, o) =>
+                    .WithAction((_, o) =>
                     {
                       o.Outputs.Add("testpostrule");
-                      if (o.Outputs.Contains("PostException")) throw new Exception();
+                      if (o.Outputs.Contains("PostException")) throw new();
                       o.Outputs.Add("testpostrule2");
                     })
                   .EndRule()
@@ -641,7 +642,7 @@ public class EngineOfTInTOutTests
   private static IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
    => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                 .WithPreRule("testprerule")
-                  .WithAction((c, i) =>
+                  .WithAction((_, i) =>
                   {
                     i.Items.Add("testprerule");
                     if (i.Items.Contains("PreException")) throw new T();
@@ -649,7 +650,7 @@ public class EngineOfTInTOutTests
                   })
                 .EndRule()
                 .WithRule("testrule")
-                  .WithAction((c, i, o) =>
+                  .WithAction((_, i, _) =>
                   {
                     i.Items.Add("testrule");
                     if (i.Items.Contains("Exception")) throw new T();
@@ -657,7 +658,7 @@ public class EngineOfTInTOutTests
                   })
                 .EndRule()
                 .WithPostRule("testpostrule")
-                  .WithAction((c, o) =>
+                  .WithAction((_, o) =>
                   {
                     o.Outputs.Add("testpostrule");
                     if (o.Outputs.Contains("PostException")) throw new T();

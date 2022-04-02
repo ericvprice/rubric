@@ -8,9 +8,9 @@ public class Ruleset<TIn, TOut>
 
   public Ruleset()
   {
-    _preRules = new List<IRule<TIn>>();
-    _rules = new List<IRule<TIn, TOut>>();
-    _postRules = new List<IRule<TOut>>();
+    _preRules = new();
+    _rules = new();
+    _postRules = new();
   }
 
   public IEnumerable<IRule<TIn>> PreRules => _preRules;
@@ -62,7 +62,7 @@ public class Ruleset<T>
 
   public Ruleset()
   {
-    _rules = new List<IRule<T>>();
+    _rules = new();
   }
 
   public IEnumerable<IRule<T>> Rules => _rules;

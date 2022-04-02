@@ -9,9 +9,9 @@ public class AsyncRuleset<TIn, TOut>
 
   public AsyncRuleset()
   {
-    _preprocessingRules = new List<IAsyncRule<TIn>>();
-    _rules = new List<IAsyncRule<TIn, TOut>>();
-    _postprocessingRules = new List<IAsyncRule<TOut>>();
+    _preprocessingRules = new();
+    _rules = new();
+    _postprocessingRules = new();
   }
 
   public IEnumerable<IAsyncRule<TIn>> AsyncPreRules => _preprocessingRules;
@@ -63,7 +63,7 @@ public class AsyncRuleset<T>
 
   public AsyncRuleset()
   {
-    _rules = new List<IAsyncRule<T>>();
+    _rules = new();
   }
 
   public IEnumerable<IAsyncRule<T>> AsyncRules => _rules;

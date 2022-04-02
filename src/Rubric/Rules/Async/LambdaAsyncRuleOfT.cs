@@ -1,9 +1,11 @@
+using System.Threading;
+
 namespace Rubric.Rules.Async;
 
 public class LambdaAsyncRule<T> : IAsyncRule<T>
 {
   private readonly Func<IEngineContext, T, CancellationToken, Task> _body;
-  private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (ctx, o, t) => Task.FromResult(true);
+  private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (_, _, _) => Task.FromResult(true);
 
   public LambdaAsyncRule(
       string name,

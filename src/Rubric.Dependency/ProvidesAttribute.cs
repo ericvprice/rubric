@@ -1,10 +1,9 @@
-namespace Rubric.Dependency
-{
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-  public class ProvidesAttribute : Attribute
-  {
-    public ProvidesAttribute(string name) => Name = name;
+namespace Rubric.Dependency;
 
-    public string Name { get; }
-  }
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public class ProvidesAttribute : Attribute
+{
+  public ProvidesAttribute(string name) => Name = name;
+
+  public string Name { get; }
 }

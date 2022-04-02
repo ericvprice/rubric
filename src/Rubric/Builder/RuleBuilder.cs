@@ -13,14 +13,14 @@ internal class RuleBuilder<TIn, TOut> : IRuleBuilder<TIn, TOut>
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private readonly List<string> _provides;
   private Action<IEngineContext, TIn, TOut> _action;
-  private Func<IEngineContext, TIn, TOut, bool> _predicate = (c, i, o) => true;
+  private Func<IEngineContext, TIn, TOut, bool> _predicate = (_, _, _) => true;
 
   internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
     _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _provides = new() { name };
+    _deps = new();
   }
 
 
@@ -78,8 +78,8 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
   {
     _parentBuilder = engineBuilder;
     _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
-    _provides = new List<string> { name };
-    _deps = new List<string>();
+    _provides = new() { name };
+    _deps = new();
   }
 
 

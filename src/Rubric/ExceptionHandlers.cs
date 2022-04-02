@@ -12,7 +12,7 @@ public static class ExceptionHandlers
   /// <value>A static reusable exception handler.</value>
   public static IExceptionHandler HaltEngine { get; }
       = new LambdaExceptionHandler(
-          (e, c, i, o, r)
+          (e, _, _, _, _)
               => throw new EngineHaltException("Uncaught exception.", e));
 
   /// <summary>
@@ -21,7 +21,7 @@ public static class ExceptionHandlers
   /// <value>A static reusable exception handler.</value>
   public static IExceptionHandler HaltItem { get; }
       = new LambdaExceptionHandler(
-          (e, c, i, o, r)
+          (e, _, _, _, _)
               => throw new ItemHaltException("Uncaught exception.", e));
 
   /// <summary>
@@ -29,13 +29,13 @@ public static class ExceptionHandlers
   /// </summary>
   /// <value>A static reusable exception handler.</value>
   public static IExceptionHandler Throw { get; }
-      = new LambdaExceptionHandler((e, c, i, o, r) => false);
+      = new LambdaExceptionHandler((_, _, _, _, _) => false);
 
   /// <summary>
   ///     Let the exception bubble out of the engine.
   /// </summary>
   /// <value>A static reusable exception handler.</value>
   public static IExceptionHandler Ignore { get; }
-      = new LambdaExceptionHandler((e, c, i, o, r) => true);
+      = new LambdaExceptionHandler((_, _, _, _, _) => true);
 
 }

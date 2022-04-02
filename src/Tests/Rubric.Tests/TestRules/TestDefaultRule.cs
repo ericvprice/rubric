@@ -1,10 +1,7 @@
-namespace Rubric.Tests.TestRules
+namespace Rubric.Tests.TestRules;
+
+public class TestDefaultRule : DefaultRule<TestInput, TestOutput>
 {
-  public class TestDefaultRule : DefaultRule<TestInput, TestOutput>
-  {
-    public override void Apply(IEngineContext context, TestInput input, TestOutput output)
-        => input.InputFlag = output.TestFlag = true;
-  }
-
-
+  public override void Apply(IEngineContext context, TestInput input, TestOutput output)
+    => input.InputFlag = output.TestFlag = true;
 }
