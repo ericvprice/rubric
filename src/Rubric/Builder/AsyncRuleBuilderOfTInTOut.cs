@@ -19,7 +19,7 @@ internal class AsyncRuleBuilder<TIn, TOut> : IAsyncRuleBuilder<TIn, TOut>
   internal AsyncRuleBuilder(AsyncEngineBuilder<TIn, TOut> engineBuilder, string name)
   {
     _parentBuilder = engineBuilder;
-    _name = IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
+    _name = IsNullOrEmpty(name) ? throw new ArgumentNullException(null, nameof(name)) : name;
     _provides = new() { name };
     _deps = new();
   }
@@ -34,7 +34,7 @@ internal class AsyncRuleBuilder<TIn, TOut> : IAsyncRuleBuilder<TIn, TOut>
 
   public IAsyncRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
+    if (IsNullOrEmpty(provides)) throw new ArgumentNullException(nameof(provides));
     _provides.Add(provides);
     return this;
   }
@@ -55,7 +55,7 @@ internal class AsyncRuleBuilder<TIn, TOut> : IAsyncRuleBuilder<TIn, TOut>
 
   public IAsyncRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
-    if (IsNullOrEmpty(dep)) throw new ArgumentException(null, nameof(dep));
+    if (IsNullOrEmpty(dep)) throw new ArgumentNullException(nameof(dep));
     _deps.Add(dep);
     return this;
   }

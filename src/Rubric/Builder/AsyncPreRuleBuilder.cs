@@ -33,7 +33,7 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
 
   public IAsyncPreRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(provides);
+    if (IsNullOrEmpty(provides)) throw new ArgumentNullException(nameof(provides));
     _provides.Add(provides);
     return this;
   }
