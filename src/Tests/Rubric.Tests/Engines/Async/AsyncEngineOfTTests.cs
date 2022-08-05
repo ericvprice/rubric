@@ -703,7 +703,7 @@ public class AsyncEngineOfTTests
                               .Build();
     var input = new TestInput();
     var input2 = new TestInput();
-    await engine.ApplyAsync(new [] { input, input2 }.ToAsyncEnumerable());
+    await engine.ApplyAsync(new[] { input, input2 }.ToAsyncEnumerable());
   }
 
   [Fact]
@@ -852,7 +852,7 @@ public class AsyncEngineOfTTests
   {
     var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaAsyncRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Throw);
+    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input));
     Assert.Null(engine.LastException);
@@ -1022,7 +1022,7 @@ public class AsyncEngineOfTTests
     var engine = new AsyncRuleEngine<TestInput>(
         new IAsyncRule<TestInput>[] { testPreRule },
         false,
-        ExceptionHandlers.Throw
+        ExceptionHandlers.Rethrow
     );
     var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(new[] { input, input2 }));
     Assert.True(input.InputFlag);
@@ -1035,7 +1035,7 @@ public class AsyncEngineOfTTests
   public async Task DoesApplyException()
   {
     var testPreRule = new TestExceptionAsyncPreRule(true);
-    var engine = new AsyncRuleEngine<TestInput>(new AsyncRule<TestInput>[] { testPreRule }, false, ExceptionHandlers.Throw);
+    var engine = new AsyncRuleEngine<TestInput>(new AsyncRule<TestInput>[] { testPreRule }, false, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input));
     Assert.Null(engine.LastException);

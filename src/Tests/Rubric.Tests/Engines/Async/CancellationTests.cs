@@ -1,9 +1,4 @@
-﻿
-
-// ReSharper disable All
-
-namespace Rubric.Tests.Engines.Async;
-
+﻿namespace Rubric.Tests.Engines.Async;
 
 public class CancellationTests
 {

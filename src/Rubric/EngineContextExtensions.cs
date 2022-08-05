@@ -4,7 +4,7 @@ namespace Rubric;
 
 public static class EngineContextExtensions
 {
-  public const string ENGINE_KEY = "_ENGINE";
+  public const string ENGINE_KEY = "__ENGINE";
 
   /// <summary>
   ///     Get the currently executing engine.

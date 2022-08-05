@@ -97,7 +97,7 @@ public class AsyncRuleEngine<T> : IAsyncRuleEngine<T>
                                                     .Select(e => e.ToArray())
                                                     .ToArray();
     Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = handler ?? ExceptionHandlers.Throw;
+    ExceptionHandler = handler ?? ExceptionHandlers.Rethrow;
   }
 
   #endregion

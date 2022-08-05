@@ -142,7 +142,7 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
                     .Select(e => e.ToArray())
                     .ToArray();
     Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Throw;
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
   #endregion

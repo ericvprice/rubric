@@ -52,19 +52,19 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
     preprocessingRules ??= Enumerable.Empty<IRule<TIn>>();
     _preprocessingRules =
         preprocessingRules.ResolveDependencies()
-                        .Select(e => e.ToArray())
-                        .ToArray();
+                          .Select(e => e.ToArray())
+                          .ToArray();
     postprocessingRules ??= Enumerable.Empty<IRule<TOut>>();
     _postprocessingRules
         = postprocessingRules.ResolveDependencies()
-                                .Select(e => e.ToArray())
-                                .ToArray();
+                             .Select(e => e.ToArray())
+                             .ToArray();
     rules ??= Enumerable.Empty<IRule<TIn, TOut>>();
     _rules
         = rules.ResolveDependencies()
-                .Select(e => e.ToArray())
-                .ToArray();
-    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Throw;
+               .Select(e => e.ToArray())
+               .ToArray();
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
     Logger = logger ?? NullLogger.Instance;
   }
 
@@ -99,56 +99,60 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
 
   #endregion
 
-  #region Methods
+  #region Public Methods
 
   ///<inheritdoc/>
   public void Apply(TIn input, TOut output, IEngineContext context = null)
   {
     context = SetupContext(context);
-    try
-    {
+    try {
       ApplyItem(input, output, context);
-
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
-          this.ApplyPostRule(context, rule, output);
+          this.ApplyPostRule(context, rule, output);    
+    } 
+    catch (EngineHaltException)
+    {
+      return;
     }
-    catch (EngineException) { }
   }
 
   ///<inheritdoc/>
   public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
   {
     var ctx = context ?? new EngineContext();
-    foreach (var input in inputs)
-    {
-      try
-      {
-        ApplyItem(input, output, ctx);
-      }
-      catch (ItemHaltException) { }
-      catch (EngineHaltException)
-      {
-        return;
-      }
-    }
     try
     {
+      foreach (var input in inputs)
+          ApplyItem(input, output, ctx);
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
           this.ApplyPostRule(ctx, rule, output);
+    } 
+    catch (EngineHaltException)
+    {
+      return;
     }
-    catch (EngineException) { }
   }
+
+  #endregion
+
+  #region Nonpublic Methods
 
   private void ApplyItem(TIn input, TOut output, IEngineContext ctx)
   {
-    foreach (var set in _preprocessingRules)
-      foreach (var rule in set)
-        this.ApplyPreRule(ctx, rule, input);
-    foreach (var set in _rules)
-      foreach (var rule in set)
-        this.ApplyRule(ctx, rule, input, output);
+    try
+    {
+      foreach (var set in _preprocessingRules)
+        foreach (var rule in set)
+          this.ApplyPreRule(ctx, rule, input);
+      foreach (var set in _rules)
+        foreach (var rule in set)
+          this.ApplyRule(ctx, rule, input, output);
+    } catch (ItemHaltException)
+    {
+      return;
+    }
   }
 
   internal IEngineContext SetupContext(IEngineContext ctx)

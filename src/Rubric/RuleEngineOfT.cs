@@ -39,7 +39,7 @@ public class RuleEngine<T> : IRuleEngine<T>
                     .Select(e => e.ToArray())
                     .ToArray();
     Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Throw;
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
   #endregion

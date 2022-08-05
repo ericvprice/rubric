@@ -23,7 +23,6 @@ internal class AsyncPostRuleBuilder<TIn, TOut> : IAsyncPostRuleBuilder<TIn, TOut
     _deps = new();
   }
 
-
   public IAsyncEngineBuilder<TIn, TOut> EndRule()
   {
     _parentBuilder.AsyncRuleset.AddAsyncPostRule(

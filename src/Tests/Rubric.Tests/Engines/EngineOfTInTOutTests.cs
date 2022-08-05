@@ -349,7 +349,7 @@ public class EngineOfTInTOutTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(ExceptionHandlers.Throw);
+    var engine = GetExceptionEngine(ExceptionHandlers.Rethrow);
     Assert.Throws<Exception>(() => engine.Apply(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(3, testInput.Items.Count);
@@ -559,12 +559,6 @@ public class EngineOfTInTOutTests
     };
     var engine = GetEngineExceptionEngine<ItemHaltException>();
     engine.Apply(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -600,12 +594,7 @@ public class EngineOfTInTOutTests
     };
     var engine = GetEngineExceptionEngine<ItemHaltException>();
     engine.Apply(testInput, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
+    Assert.Null(engine.LastException);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
   }

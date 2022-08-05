@@ -261,7 +261,7 @@ public class AsyncBuilderOfTInTOutTests
           EngineBuilder
              .ForInputAndOutputAsync<TestInput, TestOutput>()
              .WithPostRule("foo")
-                                 .WithAction((Func<IEngineContext, TestOutput, CancellationToken, Task>)null)
+             .WithAction((Func<IEngineContext, TestOutput, CancellationToken, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>

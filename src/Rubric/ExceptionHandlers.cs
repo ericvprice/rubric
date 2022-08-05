@@ -28,7 +28,7 @@ public static class ExceptionHandlers
   ///     Let the exception bubble out of the engine.
   /// </summary>
   /// <value>A static reusable exception handler.</value>
-  public static IExceptionHandler Throw { get; }
+  public static IExceptionHandler Rethrow { get; }
       = new LambdaExceptionHandler((_, _, _, _, _) => false);
 
   /// <summary>
@@ -37,5 +37,4 @@ public static class ExceptionHandlers
   /// <value>A static reusable exception handler.</value>
   public static IExceptionHandler Ignore { get; }
       = new LambdaExceptionHandler((_, _, _, _, _) => true);
-
 }

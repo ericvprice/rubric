@@ -303,7 +303,7 @@ public class ParallelAsyncEngineTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
-    var engine = GetExceptionEngine(ExceptionHandlers.Throw);
+    var engine = GetExceptionEngine(ExceptionHandlers.Rethrow);
     await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
     Assert.Null(engine.LastException);
     Assert.Equal(3, testInput.Items.Count);

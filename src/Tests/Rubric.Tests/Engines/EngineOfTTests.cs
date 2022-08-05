@@ -165,7 +165,7 @@ public class EngineOfTTests
     var input2 = new TestInput();
     var engine = new RuleEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule },
-        ExceptionHandlers.Throw
+        ExceptionHandlers.Rethrow
     );
     var exception = Assert.Throws<Exception>(() => engine.Apply(new[] { input, input2 }));
     Assert.True(input.InputFlag);
@@ -210,7 +210,7 @@ public class EngineOfTTests
   {
     var logger = new TestLogger();
     var ruleSet = new Ruleset<TestInput>();
-    var engine = new RuleEngine<TestInput>(ruleSet, ExceptionHandlers.Throw, logger);
+    var engine = new RuleEngine<TestInput>(ruleSet, ExceptionHandlers.Rethrow, logger);
     Assert.Equal(logger, engine.Logger);
     Assert.Empty(engine.Rules);
   }
@@ -318,7 +318,7 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Throw);
+    var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var exception = Assert.Throws<Exception>(() => engine.Apply(input));
     Assert.Null(engine.LastException);
@@ -355,7 +355,7 @@ public class EngineOfTTests
   public void DoesApplyException()
   {
     var testPreRule = new TestExceptionPreRule(true);
-    var engine = new RuleEngine<TestInput>(new Rule<TestInput>[] { testPreRule }, ExceptionHandlers.Throw);
+    var engine = new RuleEngine<TestInput>(new Rule<TestInput>[] { testPreRule }, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var exception = Assert.Throws<Exception>(() => engine.Apply(input));
     Assert.Null(engine.LastException);
@@ -380,11 +380,11 @@ public class EngineOfTTests
   {
     var logger = new TestLogger();
     var ruleSet = new Ruleset<TestInput>();
-    var engine = new RuleEngine<TestInput>(ruleSet, ExceptionHandlers.Throw, logger);
+    var engine = new RuleEngine<TestInput>(ruleSet, ExceptionHandlers.Rethrow, logger);
     Assert.False(engine.IsAsync);
     Assert.Equal(typeof(TestInput), engine.InputType);
     Assert.Equal(typeof(TestInput), engine.OutputType);
-    Assert.Equal(ExceptionHandlers.Throw, engine.ExceptionHandler);
+    Assert.Equal(ExceptionHandlers.Rethrow, engine.ExceptionHandler);
   }
 
 }

@@ -14,7 +14,7 @@ internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
 
   internal ILogger Logger { get; }
 
-  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Throw;
+  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
   public IPostRuleBuilder<TIn, TOut> WithPostRule(string name)
       => new PostRuleBuilder<TIn, TOut>(this, name);
@@ -61,7 +61,7 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 
   internal ILogger Logger { get; }
 
-  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Throw;
+  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
   public IRuleBuilder<T> WithRule(string name)
       => new RuleBuilder<T>(this, name);

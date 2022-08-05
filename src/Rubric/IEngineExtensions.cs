@@ -5,10 +5,13 @@ using Rubric.Rules.Async;
 
 namespace Rubric;
 
+/// <summary>
+///   Rule application methods shared among multiple engine implementations.
+/// </summary>
 internal static class EngineExtensions
 {
   /// <summary>
-  ///     Apply an async r.  Handle trace logging, exception handling, etc.
+  ///     Apply an async prerule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -44,7 +47,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply an async r.  Handle trace logging, exception handling, etc.
+  ///     Apply an async postrule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -80,7 +83,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply an async r.  Handle trace logging, exception handling, etc.
+  ///     Apply an async rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -117,7 +120,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply a pre-r.  Handle trace logging, exception handling, etc.
+  ///     Apply a pre-rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -149,7 +152,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply a r.  Handle trace logging, exception handling, etc.
+  ///     Apply a rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">Engine.</param>
   /// <param name="ctx">Engine context.</param>
@@ -181,7 +184,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply a post r.  Handle trace logging, exception handling, etc.
+  ///     Apply a postrule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -202,6 +205,10 @@ internal static class EngineExtensions
       r.Apply(ctx, o);
       e.Logger.LogTrace("Finished applying {name}.", r.Name);
     }
+    catch (ItemHaltException)
+    {
+      return;
+    }
     catch (Exception ex)
     {
       if (!HandleException(ex, e, ctx, r, null, o))
@@ -212,7 +219,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///   Consistently handle exceptions after attempting to run a r.
+  ///   Consistently handle exceptions after attempting to run a rule.
   /// </summary>
   /// <param name="ex">The exception.</param>
   /// <param name="e">The e.</param>
@@ -226,6 +233,7 @@ internal static class EngineExtensions
   {
     switch (ex)
     {
+      //Ignore user-requested task cancellation exceptions
       case TaskCanceledException tce:
         if (t == tce.CancellationToken)
         {
