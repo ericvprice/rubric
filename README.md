@@ -1,3 +1,4 @@
+[![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/ericvprice/rubric/actions/workflows/build.yaml)![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 # Rubric
 
 Rubric is a .NET library providing synchronous and asynchronous rule engines.
