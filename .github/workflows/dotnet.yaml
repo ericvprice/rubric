@@ -23,6 +23,4 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml /p:Threshold=95
-
-
+      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml /p:Threshold=95
