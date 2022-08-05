@@ -138,7 +138,7 @@ public class AsyncEngineOfTInTOutTests
                                   return Task.CompletedTask;
                                 })
                               .EndRule();
-    if(parallelizeRules)
+    if (parallelizeRules)
     {
       builder.AsParallel();
     }
@@ -146,7 +146,7 @@ public class AsyncEngineOfTInTOutTests
     var input1 = new TestInput();
     var input2 = new TestInput();
     var output = new TestOutput();
-    if(parallelizeInputs)
+    if (parallelizeInputs)
       await engine.ApplyParallelAsync(new[] { input1, input2 }, output);
     else
       await engine.ApplyAsync(new[] { input1, input2 }, output);
@@ -580,9 +580,7 @@ public class AsyncEngineOfTInTOutTests
     else
       await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
     Assert.Equal(4, testInput.Items.Count);
-    if (parallelizeInputs)
-      Assert.NotEmpty(testInput2.Items);
-    else
+    if (!parallelizeInputs)
       Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
   }
