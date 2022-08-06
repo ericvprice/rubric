@@ -25,6 +25,6 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml /p:Threshold=95
     - name: Package
-      run: dotnet package -configuration Release --no-build
+      run: dotnet pack -configuration Release --no-build
     - name: Push to nuget.org
       run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
