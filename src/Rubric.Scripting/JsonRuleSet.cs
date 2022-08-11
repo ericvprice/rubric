@@ -1,35 +1,25 @@
-using System;
-using Rubric.Rules.Async;
 using static Rubric.Scripting.RuleLoader;
 
-namespace Rubric.Scripting
+namespace Rubric.Scripting;
+
+public class JsonRuleSet<T> : AsyncRuleset<T>
 {
-
-  public class JsonRuleSet<T> : AsyncRuleset<T>
+  public JsonRuleSet(AsyncRulesetModel<T> model) : base()
   {
-    public JsonRuleSet(string ruleGlob) : base()
-    {
-      if (string.IsNullOrWhiteSpace(ruleGlob))
-      {
-        throw new ArgumentException($"'{nameof(ruleGlob)}' cannot be null or whitespace.", nameof(ruleGlob));
-      }
-      AddAsyncRules(LoadJsonFromGlob<T>(ruleGlob));
-    }
+    if (model == null)
+      throw new ArgumentNullException($"'{nameof(model)}' cannot be null.", nameof(model));
+    AddAsyncRules(model.Rules.Select(r => LoadFromModel<T>(r, model.BasePath)));
   }
+}
 
-  public class JsonRuleSet<T, U> : AsyncRuleset<T, U>
+public class JsonRuleSet<T, U> : AsyncRuleset<T, U>
+{
+  public JsonRuleSet(AsyncRulesetModel<T, U> model) : base()
   {
-    public JsonRuleSet(string preRuleGlob, string ruleGlob, string postRuleGlob) : base()
-    {
-      if (string.IsNullOrWhiteSpace(preRuleGlob))
-        throw new ArgumentException($"'{nameof(preRuleGlob)}' cannot be null or whitespace.", nameof(preRuleGlob));
-      if (string.IsNullOrWhiteSpace(ruleGlob))
-        throw new ArgumentException($"'{nameof(ruleGlob)}' cannot be null or whitespace.", nameof(ruleGlob));
-      if (string.IsNullOrWhiteSpace(postRuleGlob))
-        throw new ArgumentException($"'{nameof(postRuleGlob)}' cannot be null or whitespace.", nameof(postRuleGlob));
-      AddAsyncPreRules(LoadJsonFromGlob<T>(preRuleGlob));
-      AddAsyncRules(LoadJsonFromGlob<T, U>(ruleGlob));
-      AddAsyncPostRules(LoadJsonFromGlob<U>(postRuleGlob));
-    }
+    if (model == null)
+      throw new ArgumentNullException($"'{nameof(model)}' cannot be null.", nameof(model));
+    AddAsyncPreRules(model.PreRules.Select(r => LoadFromModel<T>(r, model.BasePath)));
+    AddAsyncRules(model.Rules.Select(r => LoadFromModel<T, U>(r, model.BasePath)));
+    AddAsyncPostRules(model.PostRules.Select(r => LoadFromModel<U>(r, model.BasePath)));
   }
 }

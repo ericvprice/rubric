@@ -1,21 +1,18 @@
-using System;
+namespace Rubric.Scripting;
 
-namespace Rubric.Scripting
+public class RuleModel
 {
-  public class RuleModel
-  {
-    public string[] Provides { get; set; } = Array.Empty<string>();
+  public string[] Provides { get; set; } = Array.Empty<string>();
 
-    public string[] DependsOn { get; set; } = Array.Empty<string>();
+  public string[] DependsOn { get; set; } = Array.Empty<string>();
 
-    public string DoesApply { get; set; } = "return true";
+  public string DoesApply { get; set; } = "return true";
 
-    public string Apply { get; set; } = "return";
+  public string Apply { get; set; } = "return";
 
-    public string DoesApplyScript { get; set; } = null;
+  public string DoesApplyScript { get; set; } = null;
 
-    public string ApplyScript { get; set; } = null;
+  public string ApplyScript { get; set; } = null;
 
-    public string Name { get; set; } = "";
-  }
+  public string Name { get; set; } = "";
 }
