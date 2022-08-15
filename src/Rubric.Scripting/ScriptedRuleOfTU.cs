@@ -1,18 +1,21 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.Extensions.Logging;
-
+﻿using Microsoft.CodeAnalysis.Scripting;
+using static Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript;
+using static Rubric.Scripting.ScriptingHelpers;
 namespace Rubric.Scripting;
 
 public class ScriptedRule<T, U> : IAsyncRule<T, U>
 {
-  private readonly ScriptRunner<bool> _doesApply;
-  private readonly ScriptRunner<object> _apply;
+
+  private static readonly Type CONTEXT_TYPE = typeof(ScriptedRuleContext<T, U>);
+  private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Output, Token);";
+  private const string APPLY_TRAILER = "return Apply(Context, Input, Output, Token);";
+
+  private readonly ScriptRunner<Task<bool>> _doesApply;
+  private readonly ScriptRunner<Task> _apply;
 
   public ScriptedRule(
     string name,
-    string doesApplyScript,
-    string applyScript,
+    string script,
     string[] dependsOn = null,
     string[] provides = null,
     ScriptOptions options = default)
@@ -20,24 +23,15 @@ public class ScriptedRule<T, U> : IAsyncRule<T, U>
     Dependencies = dependsOn ?? new string[] { };
     Provides = provides ?? new string[] { };
     Name = name;
-    options ??= GetDefaultOptions();
-    _doesApply = CSharpScript.Create<bool>(doesApplyScript,
-                                           options,
-                                           globalsType: typeof(ScriptedRuleContext<T, U>))
-                             .CreateDelegate();
-    _apply = CSharpScript.Create(applyScript,
+    options ??= GetDefaultOptions<T, U>();
+    var baseScript = Create<bool>(script.FilterScript(),
                                  options,
-                                 globalsType: typeof(ScriptedRuleContext<T, U>))
-                         .CreateDelegate();
+                                 globalsType: CONTEXT_TYPE);
+    _doesApply = baseScript.ContinueWith<Task<bool>>(DOES_APPLY_TRAILER)
+                           .CreateDelegate();
+    _apply = baseScript.ContinueWith<Task>(APPLY_TRAILER)
+                           .CreateDelegate();
   }
-
-  private ScriptOptions GetDefaultOptions()
-   => ScriptOptions.Default
-                   .WithReferences(typeof(ScriptedRuleContext<T, U>).Assembly)
-                   .WithReferences(typeof(EngineContext).Assembly)
-                   .WithReferences(typeof(ILogger).Assembly)
-                   .WithReferences(typeof(T).Assembly)
-                   .WithReferences(typeof(U).Assembly);
 
   public IEnumerable<string> Dependencies { get; }
 
@@ -46,8 +40,8 @@ public class ScriptedRule<T, U> : IAsyncRule<T, U>
   public string Name { get; }
 
   public async Task Apply(IEngineContext context, T input, U output, CancellationToken t)
-      => await _apply(new ScriptedRuleContext<T, U>(context, input, output, t));
+      => await await _apply(new ScriptedRuleContext<T, U>(context, input, output, t));
 
   public async Task<bool> DoesApply(IEngineContext context, T input, U output, CancellationToken t)
-      => await _doesApply(new ScriptedRuleContext<T, U>(context, input, output, t));
+      => await await _doesApply(new ScriptedRuleContext<T, U>(context, input, output, t));
 }

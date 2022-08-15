@@ -25,25 +25,15 @@ public interface IAsyncEngineBuilder<TIn, TOut>
 
   IAsyncEngineBuilder<TIn, TOut> WithPostRule(IAsyncRule<TOut> rule);
 
+  IAsyncEngineBuilder<TIn, TOut> WithAsyncPreRules(IEnumerable<IAsyncRule<TIn>> rules);
+
+  IAsyncEngineBuilder<TIn, TOut> WithAsyncRules(IEnumerable<IAsyncRule<TIn, TOut>> rules);
+
+  IAsyncEngineBuilder<TIn, TOut> WithAsyncPostRules(IEnumerable<IAsyncRule<TOut>> rules);
+
   IAsyncEngineBuilder<TIn, TOut> AsParallel();
 
   IAsyncRuleEngine<TIn, TOut> Build();
 
   IAsyncEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler ignore);
-}
-
-public interface IAsyncEngineBuilder<T>
-    where T : class
-{
-  IAsyncEngineBuilder<T> WithRule(IRule<T> rule);
-
-  IAsyncRuleBuilder<T> WithRule(string name);
-
-  IAsyncEngineBuilder<T> WithRule(IAsyncRule<T> rule);
-
-  IAsyncEngineBuilder<T> AsParallel();
-
-  IAsyncEngineBuilder<T> WithExceptionHandler(IExceptionHandler ignore);
-
-  IAsyncRuleEngine<T> Build();
 }

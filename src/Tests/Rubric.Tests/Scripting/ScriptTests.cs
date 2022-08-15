@@ -12,8 +12,9 @@ public class ScriptTests
   {
     var rule = new ScriptedRule<TestInput>(
         "test",
-        "return true;",
-        "Input.InputFlag = true;"
+        @"Task<bool> DoesApply(IEngineContext context, TestInput input, CancellationToken t) => Task.FromResult(true);
+          Task Apply(IEngineContext context, TestInput input, CancellationToken t) {input.InputFlag = true; return Task.CompletedTask;}
+        "
     );
     var input = new TestInput();
     var context = new EngineContext();
@@ -30,8 +31,10 @@ public class ScriptTests
   {
     var rule = new ScriptedRule<TestInput, TestOutput>(
         "test",
-        "return Input.InputFlag == true;",
-        "Output.TestFlag = true;"
+        @"
+          Task<bool> DoesApply(IEngineContext context, TestInput input, TestOutput output, CancellationToken t) => Task.FromResult(input.InputFlag);
+          Task Apply(IEngineContext context, TestInput input, TestOutput output, CancellationToken t) { output.TestFlag = true; return Task.CompletedTask; }
+        "
     );
     var input = new TestInput() { InputFlag = true };
     var output = new TestOutput();
@@ -46,9 +49,9 @@ public class ScriptTests
 
 
   [Fact]
-  public async Task RuleSetFromJson()
+  public async Task RuleSetTFromJson()
   {
-    var fileName = "Data\\TestRules.json";
+    var fileName = "Data\\TestRulesT.json";
     var options = new JsonSerializerOptions
     {
       AllowTrailingCommas = true,
@@ -65,5 +68,32 @@ public class ScriptTests
     var input = new TestInput();
     await engine.ApplyAsync(input);
     Assert.True(input.InputFlag);
+  }
+
+  [Fact]
+  public async Task RuleSetTUFromJson()
+  {
+    var fileName = "Data\\TestRulesTU.json";
+    var options = new JsonSerializerOptions
+    {
+      AllowTrailingCommas = true,
+      PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+      ReadCommentHandling = JsonCommentHandling.Skip
+    };
+    var ruleSetModel = JsonSerializer.Deserialize<AsyncRulesetModel<TestInput, TestOutput>>(
+      await File.ReadAllTextAsync(fileName),
+      options);
+    ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+    var ruleset = new JsonRuleSet<TestInput, TestOutput>(ruleSetModel);
+    Assert.Single(ruleset.AsyncPreRules);
+    Assert.Single(ruleset.AsyncRules);
+    Assert.Single(ruleset.AsyncPostRules);
+    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleset, false);
+    var input = new TestInput();
+    var output = new TestOutput();
+    await engine.ApplyAsync(input, output);
+    Assert.True(input.InputFlag);
+    Assert.True(output.TestFlag);
+    Assert.Equal(1, output.Counter);
   }
 }

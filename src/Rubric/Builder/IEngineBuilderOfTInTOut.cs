@@ -1,3 +1,4 @@
+using System.Reflection;
 using Rubric.Rules;
 
 namespace Rubric.Builder;
@@ -18,19 +19,13 @@ public interface IEngineBuilder<TIn, TOut>
 
   IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
 
+  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<IRule<TIn>> rule);
+
+  IEngineBuilder<TIn, TOut> WithRules(IEnumerable<IRule<TIn, TOut>> rule);
+
+  IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rule);
+
   IEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler handler);
 
   IRuleEngine<TIn, TOut> Build();
-}
-
-public interface IEngineBuilder<T>
-    where T : class
-{
-  IRuleBuilder<T> WithRule(string name);
-
-  IEngineBuilder<T> WithRule(IRule<T> rule);
-
-  IEngineBuilder<T> WithExceptionHandler(IExceptionHandler handler);
-
-  IRuleEngine<T> Build();
 }

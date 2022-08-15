@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "rule1": {
+      "name": "rule1",
+      "script": "rule1.csx"
+    },
+    "rule2": {
+      "name": "rule2",
+      "provides": [],
+      "dependsOn": [
+        "rule1"
+      ],
+      "script": "rule2.csx"
+    }
+  }
+}

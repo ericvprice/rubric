@@ -78,48 +78,22 @@ internal class AsyncEngineBuilder<TIn, TOut> : IAsyncEngineBuilder<TIn, TOut>
     ExceptionHandler = handler;
     return this;
   }
-}
 
-internal class AsyncEngineBuilder<T> : IAsyncEngineBuilder<T>
-  where T : class
-{
-  public AsyncEngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
-
-  public ILogger Logger { get; }
-
-  public bool IsParallel { get; private set; }
-
-  internal AsyncRuleset<T> AsyncRuleset { get; } = new();
-
-  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
-
-  public IAsyncRuleEngine<T> Build()
-    => new AsyncRuleEngine<T>(AsyncRuleset, IsParallel, ExceptionHandler, Logger);
-
-  public IAsyncRuleBuilder<T> WithRule(string name)
-    => new AsyncRuleBuilder<T>(this, name);
-
-  public IAsyncEngineBuilder<T> WithRule(IAsyncRule<T> rule)
+  public IAsyncEngineBuilder<TIn, TOut> WithAsyncPreRules(IEnumerable<IAsyncRule<TIn>> rules)
   {
-    AsyncRuleset.AddAsyncRule(rule);
+    AsyncRuleset.AddAsyncPreRules(rules);
     return this;
   }
 
-  public IAsyncEngineBuilder<T> WithRule(IRule<T> rule)
+  public IAsyncEngineBuilder<TIn, TOut> WithAsyncRules(IEnumerable<IAsyncRule<TIn, TOut>> rules)
   {
-    AsyncRuleset.AddAsyncRule(rule.WrapAsync());
+    AsyncRuleset.AddAsyncRules(rules);
     return this;
   }
 
-  public IAsyncEngineBuilder<T> AsParallel()
+  public IAsyncEngineBuilder<TIn, TOut> WithAsyncPostRules(IEnumerable<IAsyncRule<TOut>> rules)
   {
-    IsParallel = true;
-    return this;
-  }
-
-  public IAsyncEngineBuilder<T> WithExceptionHandler(IExceptionHandler handler)
-  {
-    ExceptionHandler = handler;
+    AsyncRuleset.AddAsyncPostRules(rules);
     return this;
   }
 }

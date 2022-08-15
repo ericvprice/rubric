@@ -1,6 +1,6 @@
 namespace Rubric.Rules;
 
-public class Ruleset<TIn, TOut>
+public class Ruleset<TIn, TOut> : IRuleset<TIn, TOut>
 {
   private readonly List<IRule<TOut>> _postRules;
   private readonly List<IRule<TIn>> _preRules;

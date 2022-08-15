@@ -1,0 +1,17 @@
+{
+  "preRules": {
+    "rule3": {
+      "script": "rule3.csx"
+    }
+  },
+  "rules": {
+    "rule4": {
+      "script": "rule4.csx"
+    }
+  },
+  "postRules": {
+    "rule5": {
+      "script": "rule5.csx"
+    }
+  }
+}

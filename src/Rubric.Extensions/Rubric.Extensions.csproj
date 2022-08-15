@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Eric Price</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>0.9.0</Version>
+    <AssemblyVersion>0.9.0</AssemblyVersion>
+    <FileVersion>0.9.0</FileVersion>
+    <Authors>Eric Price</Authors>
+    <Product>Rubric.Extensions</Product>
+    <Description>Dependency injection for Rubric library.</Description>
+    <Copyright>Copyright © 2022</Copyright>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rubric\Rubric.csproj" />
+    <ProjectReference Include="..\Rubric.Scripting\Rubric.Scripting.csproj" />
+  </ItemGroup>
+</Project>
