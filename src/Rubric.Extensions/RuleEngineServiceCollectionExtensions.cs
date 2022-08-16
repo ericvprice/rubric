@@ -18,6 +18,7 @@ public static class RuleEngineServiceCollectionExtensions
   {
     var model = new AsyncRulesetModel<T>();
     configuration.Bind(section, model);
+    model.BasePath = configuration.GetValue<string>(HostDefaults.ContentRootKey);
     var ruleSet = new JsonRuleSet<T>(model);
     foreach (var rule in ruleSet.AsyncRules)
       services.AddSingleton(typeof(IAsyncRule<T>), rule);
@@ -69,8 +70,8 @@ public static class RuleEngineServiceCollectionExtensions
              .AddRules<U>(assembly, includes, excludes);
     if (typeof(U).Assembly == typeof(T).Assembly) return services;
     assembly = typeof(U).Assembly;
-    foreach (var type in typeof(U).Assembly.GetTypes<IRule<T, U>>(includes, excludes))        
-          services.AddSingleton(typeof(IRule<T, U>), type);
+    foreach (var type in typeof(U).Assembly.GetTypes<IRule<T, U>>(includes, excludes))
+      services.AddSingleton(typeof(IRule<T, U>), type);
     services.AddRules<T>(assembly, includes, excludes)
              .AddRules<U>(assembly, includes, excludes);
     return services;
@@ -123,7 +124,7 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
-  public static IServiceCollection AddRuleEngine<T,U>(
+  public static IServiceCollection AddRuleEngine<T, U>(
     this IServiceCollection services,
     Action<IEngineBuilder<T, U>> action = null)
     where T : class

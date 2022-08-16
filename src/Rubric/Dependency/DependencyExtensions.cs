@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace Rubric.Dependency;
 
 /// <summary>
@@ -5,6 +7,28 @@ namespace Rubric.Dependency;
 /// </summary>
 public static class DependencyExtensions
 {
+
+  private static readonly ConcurrentDictionary<Type, string[]> _dependsCache = new();
+
+  private static readonly ConcurrentDictionary<Type, string[]> _providesCache = new();
+
+  public static string[] GetDependencies(Type t) 
+    => _dependsCache.GetOrAdd(
+                      t,
+                      t => t.GetCustomAttributes(true)
+                            .OfType<DependsOnAttribute>()
+                            .Select(d => d.Name)
+                            .ToArray());
+
+  public static string[] GetProvides(Type t)
+    => _providesCache.GetOrAdd(
+                      t,
+                      t => t.GetCustomAttributes(true)
+                            .OfType<ProvidesAttribute>()
+                            .Select(d => d.Name)
+                            .Append(t.FullName)
+                            .ToArray());
+
   public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies)
       where T : class, IDependency
   {

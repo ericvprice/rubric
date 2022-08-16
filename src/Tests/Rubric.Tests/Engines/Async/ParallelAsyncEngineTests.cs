@@ -1,5 +1,4 @@
 using Rubric.Tests.TestRules.Async;
-using System.Linq;
 
 namespace Rubric.Tests.Engines.Async;
 

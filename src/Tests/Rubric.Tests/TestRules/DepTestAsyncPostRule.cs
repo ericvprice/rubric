@@ -1,13 +1,15 @@
 using Rubric.Dependency;
 
-namespace Rubric.Tests.DependencyRules.TypeAttribute;
+namespace Rubric.Tests.TestRules;
 
-[DependsOn(typeof(DepTestAsyncPostRule))]
-public class DepTestAsyncPostRule2 : AsyncRule<TestOutput>
+[DependsOn("dep1")]
+[DependsOn("dep2")]
+[Provides("dep3")]
+public class DepTestAsyncPostRule : AsyncRule<TestOutput>
 {
   private readonly bool _shouldApply;
 
-  public DepTestAsyncPostRule2(bool shouldApply) => _shouldApply = shouldApply;
+  public DepTestAsyncPostRule(bool shouldApply) => _shouldApply = shouldApply;
 
   public override Task Apply(IEngineContext context, TestOutput obj, CancellationToken token)
   {

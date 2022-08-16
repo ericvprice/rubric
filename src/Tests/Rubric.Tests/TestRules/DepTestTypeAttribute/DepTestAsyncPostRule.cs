@@ -1,4 +1,4 @@
-namespace Rubric.Tests.DependencyRules.TypeAttribute;
+namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 public class DepTestAsyncPostRule : AsyncRule<TestOutput>
 {

@@ -1,10 +1,9 @@
-using Rubric.Tests.DependencyRules.TypeAttribute;
 using Rubric.Tests.TestRules;
-using System.Linq;
+using Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 namespace Rubric.Tests.Builders;
 
-public class BuilderTests
+public class BuilderOfTInTOutTests
 {
   [Fact]
   public void EmptyEngineConstruction()
@@ -308,11 +307,11 @@ public class BuilderTests
   public void TypeAttributeDependency()
   {
     var engine = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
-                              .WithPreRule(new DepTestPreRule(true))
+                              .WithPreRule(new TestRules.DepTestTypeAttribute.DepTestPreRule(true))
                               .WithPreRule(new DepTestPreRule2(true))
-                              .WithRule(new DepTestRule(true))
+                              .WithRule(new TestRules.DepTestTypeAttribute.DepTestRule(true))
                               .WithRule(new DepTestRule2(true))
-                              .WithPostRule(new DepTestPostRule(true))
+                              .WithPostRule(new TestRules.DepTestTypeAttribute.DepTestPostRule(true))
                               .WithPostRule(new DepTestPostRule2(true))
                               .Build();
     Assert.NotNull(engine);

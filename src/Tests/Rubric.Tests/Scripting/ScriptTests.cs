@@ -1,7 +1,6 @@
 using Rubric.Extensions.Serialization;
 using Rubric.Rules.Scripted;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 
 namespace Rubric.Tests.Scripting;

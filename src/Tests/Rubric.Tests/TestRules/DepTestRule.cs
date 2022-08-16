@@ -1,6 +1,6 @@
 ﻿using Rubric.Dependency;
 
-namespace Rubric.Tests.DependencyRules;
+namespace Rubric.Tests.TestRules;
 
 [DependsOn("dep1")]
 [DependsOn("dep2")]

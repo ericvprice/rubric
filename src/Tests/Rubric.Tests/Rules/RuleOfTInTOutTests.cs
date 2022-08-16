@@ -1,10 +1,8 @@
-using Rubric.Tests.DependencyRules;
 using Rubric.Tests.TestRules;
-using System.Linq;
 
 namespace Rubric.Tests.Rules;
 
-public class RuleTests
+public class RuleOfTInTOutTests
 {
   [Theory]
   [InlineData(true)]
@@ -72,6 +70,6 @@ public class RuleTests
     var provides = rule.Provides.ToList();
     Assert.Contains("dep3", provides);
     Assert.Contains(typeof(DepTestRule).FullName, provides);
-    Assert.Equal(2, provides.Count);
+    Assert.Equal(3, provides.Count);
   }
 }

@@ -1,10 +1,8 @@
-﻿using Rubric.Tests.DependencyRules;
-using Rubric.Tests.TestRules;
-using System.Linq;
+﻿using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Rules;
 
-public class SingleTypeRuleTests
+public class RuleOfTTests
 {
   [Theory]
   [InlineData(true)]
@@ -69,6 +67,6 @@ public class SingleTypeRuleTests
     var provides = rule.Provides.ToList();
     Assert.Contains("dep3", provides);
     Assert.Contains(typeof(DepTestPreRule).FullName, provides);
-    Assert.Equal(2, provides.Count);
+    Assert.Equal(3, provides.Count);
   }
 }

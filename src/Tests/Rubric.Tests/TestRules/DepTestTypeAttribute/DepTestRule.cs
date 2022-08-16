@@ -1,6 +1,6 @@
 ﻿using Rubric.Dependency;
 
-namespace Rubric.Tests.DependencyRules.TypeAttribute;
+namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 internal class DepTestRule : Rule<TestInput, TestOutput>
 {

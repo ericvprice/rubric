@@ -1,11 +1,14 @@
-﻿namespace Rubric.Tests.DependencyRules.TypeAttribute;
+using Rubric.Dependency;
 
-public class DepTestPreRule : Rule<TestInput>
+namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
+
+[DependsOn(typeof(DepTestPreRule))]
+public class DepTestPreRule2 : Rule<TestInput>
 {
   private readonly bool _flagValue;
   private readonly bool _shouldApply;
 
-  public DepTestPreRule(bool shouldApply, bool flagValue = true)
+  public DepTestPreRule2(bool shouldApply, bool flagValue = true)
   {
     _flagValue = flagValue;
     _shouldApply = shouldApply;

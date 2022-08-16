@@ -1,10 +1,9 @@
-using Rubric.Tests.DependencyRules;
+using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
-using System.Linq;
 
 namespace Rubric.Tests.Rules.Async;
 
-public class AsyncRuleTests
+public class AsyncRuleOfTInTOutTests
 {
   [Theory]
   [InlineData(true)]
@@ -74,6 +73,6 @@ public class AsyncRuleTests
     var provides = rule.Provides.ToList();
     Assert.Contains("dep3", provides);
     Assert.Contains(typeof(DepTestAsyncRule).FullName, provides);
-    Assert.Equal(2, provides.Count);
+    Assert.Equal(3, provides.Count);
   }
 }

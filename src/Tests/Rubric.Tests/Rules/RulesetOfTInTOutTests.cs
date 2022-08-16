@@ -3,7 +3,7 @@ using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Rules;
 
-public class RulesetTests
+public class RulesetOfTInTOutTests
 {
   [Fact]
   public void AddPostRule()

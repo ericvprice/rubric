@@ -3,7 +3,7 @@ using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Rules;
 
-public class SingleTypeRulesetTests
+public class RulesetOfTTests
 {
 
   [Fact]

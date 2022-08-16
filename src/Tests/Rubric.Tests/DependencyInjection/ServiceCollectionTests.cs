@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rubric.Extensions;
+using Rubric.Extensions.Serialization;
 using Rubric.Tests.TestAssembly;
 using Rubric.Tests.TestAssembly2;
 
@@ -32,6 +33,48 @@ public class ServiceCollectionTests
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Single(result.Rules);
+    Assert.Single(result.PostRules);
+    Assert.False(result.IsAsync);
+  }
+
+  [Fact]
+
+  public void LoadSyncFromAssemblyTInTOutIncludes()
+  {
+    var services = new ServiceCollection();
+    services.AddRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
+            .AddRules<TestAssemblyInput, TestAssemblyOutput>(
+              includes: new[]
+              {
+                "TestInputOutputRule"
+              }
+            );
+    var provider = services.BuildServiceProvider();
+    var result = provider.GetService<IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
+    Assert.NotNull(result);
+    Assert.Empty(result.PreRules);
+    Assert.Single(result.Rules);
+    Assert.Empty(result.PostRules);
+    Assert.False(result.IsAsync);
+  }
+
+  [Fact]
+
+  public void LoadSyncFromAssemblyTInTOutExcludes()
+  {
+    var services = new ServiceCollection();
+    services.AddRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
+            .AddRules<TestAssemblyInput, TestAssemblyOutput>(
+              excludes: new[]
+              {
+                "TestInputOutputRule"
+              }
+            );
+    var provider = services.BuildServiceProvider();
+    var result = provider.GetService<IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
+    Assert.NotNull(result);
+    Assert.Single(result.PreRules);
+    Assert.Empty(result.Rules);
     Assert.Single(result.PostRules);
     Assert.False(result.IsAsync);
   }
@@ -97,4 +140,15 @@ public class ServiceCollectionTests
     Assert.False(result.IsAsync);
   }
 
+  [Fact]
+  public void ThrowsOnNullParameters()
+  {
+    Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddAsyncRuleEngine<TestInput>(null));
+    Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddAsyncRuleEngine<TestInput, TestOutput>(null));
+    Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddRuleEngine<TestInput>(null));
+    Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddRuleEngine<TestInput, TestOutput>(null));
+    Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput>(null));
+    Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput, TestOutput>(null));
+    Assert.Throws<ArgumentNullException>(() => AssemblyHelper.GetTypes<TestInput>(null));
+  }
 }

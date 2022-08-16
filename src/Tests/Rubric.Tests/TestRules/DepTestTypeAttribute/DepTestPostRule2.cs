@@ -1,6 +1,6 @@
 using Rubric.Dependency;
 
-namespace Rubric.Tests.DependencyRules.TypeAttribute;
+namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 [DependsOn("dep1")]
 [DependsOn(typeof(DepTestPostRule))]

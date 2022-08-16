@@ -1,7 +1,6 @@
-using Rubric.Tests.DependencyRules.TypeAttribute;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
-using System.Linq;
+using Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 namespace Rubric.Tests.Builders;
 
@@ -395,11 +394,11 @@ public class AsyncBuilderOfTInTOutTests
   public void TypeAttributeDependency()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule(new DepTestAsyncPreRule(true))
+                              .WithPreRule(new TestRules.DepTestTypeAttribute.DepTestAsyncPreRule(true))
                               .WithPreRule(new DepTestAsyncPreRule2(true))
-                              .WithRule(new DepTestAsyncRule(true))
+                              .WithRule(new TestRules.DepTestTypeAttribute.DepTestAsyncRule(true))
                               .WithRule(new DepTestAsyncRule2(true))
-                              .WithPostRule(new DepTestAsyncPostRule(true))
+                              .WithPostRule(new TestRules.DepTestTypeAttribute.DepTestAsyncPostRule(true))
                               .WithPostRule(new DepTestAsyncPostRule2(true))
                               .Build();
     Assert.NotNull(engine);

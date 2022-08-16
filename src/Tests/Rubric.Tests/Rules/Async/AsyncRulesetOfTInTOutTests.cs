@@ -2,7 +2,7 @@ using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Rules.Async;
 
-public class AyncRulesetTests
+public class AsyncRulesetOfTInTOutTests
 {
   [Fact]
   public void AddAsyncPostRule()

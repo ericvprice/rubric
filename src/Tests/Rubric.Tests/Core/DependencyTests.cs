@@ -1,5 +1,4 @@
 using Rubric.Dependency;
-using System.Linq;
 
 namespace Rubric.Tests.Core;
 

@@ -1,5 +1,10 @@
-namespace Rubric.Tests.DependencyRules.TypeAttribute;
+using Rubric.Dependency;
 
+namespace Rubric.Tests.TestRules;
+
+[DependsOn("dep1")]
+[DependsOn("dep2")]
+[Provides("dep3")]
 internal class DepTestAsyncRule : AsyncRule<TestInput, TestOutput>
 {
   private readonly bool _expected;

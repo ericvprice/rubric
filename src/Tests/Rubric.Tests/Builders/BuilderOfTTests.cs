@@ -1,9 +1,8 @@
 using Rubric.Tests.TestRules;
-using System.Linq;
 
 namespace Rubric.Tests.Builders;
 
-public class SingleTypeBuilderTests
+public class BuilderOfTTests
 {
   [Fact]
   public void EmptyEngineConstruction()

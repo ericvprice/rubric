@@ -1,8 +1,10 @@
 ﻿using Rubric.Dependency;
 
-namespace Rubric.Tests.DependencyRules.TypeAttribute;
+namespace Rubric.Tests.TestRules;
 
-[Provides("dep1")]
+[DependsOn("dep1")]
+[DependsOn("dep2")]
+[Provides("dep3")]
 public class DepTestPostRule : Rule<TestOutput>
 {
   private readonly bool _shouldApply;

@@ -1,17 +1,15 @@
 using Rubric.Dependency;
 
-namespace Rubric.Tests.DependencyRules;
+namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
-[DependsOn("dep1")]
-[DependsOn("dep2")]
-[Provides("dep3")]
-internal class DepTestAsyncRule : AsyncRule<TestInput, TestOutput>
+[DependsOn(typeof(DepTestAsyncRule))]
+internal class DepTestAsyncRule2 : AsyncRule<TestInput, TestOutput>
 {
   private readonly bool _expected;
 
   private readonly bool _flagValue;
 
-  public DepTestAsyncRule(bool expected, bool flagValue = true)
+  public DepTestAsyncRule2(bool expected, bool flagValue = true)
   {
     _expected = expected;
     _flagValue = flagValue;
