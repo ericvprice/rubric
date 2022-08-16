@@ -6,7 +6,6 @@ using Rubric.Extensions;
 using Rubric.Extensions.Serialization;
 using Rubric.Rules;
 using Rubric.Rules.Async;
-using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -49,7 +48,7 @@ public static class RuleEngineServiceCollectionExtensions
       string[] includes = null,
       string[] excludes = null)
   {
-    assembly ??= Assembly.GetCallingAssembly();
+    assembly ??= typeof(T).Assembly;
     foreach (var type in assembly.GetTypes<IRule<T>>(includes, excludes))
       services.AddSingleton(typeof(IRule<T>), type);
     return services;
@@ -61,13 +60,20 @@ public static class RuleEngineServiceCollectionExtensions
     string[] includes = null,
     string[] excludes = null)
   {
-    assembly ??= Assembly.GetCallingAssembly();
+    assembly ??= typeof(T).Assembly;
     includes ??= new string[] { };
     excludes ??= new string[] { };
     foreach (var type in assembly.GetTypes<IRule<T, U>>(includes, excludes))
       services.AddSingleton(typeof(IRule<T, U>), type);
-    return services.AddRules<T>(assembly, includes, excludes)
-                   .AddRules<U>(assembly, includes, excludes);
+    services.AddRules<T>(assembly, includes, excludes)
+             .AddRules<U>(assembly, includes, excludes);
+    if (typeof(U).Assembly == typeof(T).Assembly) return services;
+    assembly = typeof(U).Assembly;
+    foreach (var type in typeof(U).Assembly.GetTypes<IRule<T, U>>(includes, excludes))        
+          services.AddSingleton(typeof(IRule<T, U>), type);
+    services.AddRules<T>(assembly, includes, excludes)
+             .AddRules<U>(assembly, includes, excludes);
+    return services;
   }
 
   public static IServiceCollection AddAsyncRules<T>(
@@ -76,7 +82,7 @@ public static class RuleEngineServiceCollectionExtensions
        string[] includes = null,
        string[] excludes = null)
   {
-    assembly ??= Assembly.GetCallingAssembly();
+    assembly ??= typeof(T).Assembly;
     foreach (var type in assembly.GetTypes<IAsyncRule<T>>(includes, excludes))
       services.AddSingleton(typeof(IAsyncRule<T>), type);
     return services;
@@ -88,13 +94,20 @@ public static class RuleEngineServiceCollectionExtensions
     string[] includes = null,
     string[] excludes = null)
   {
-    assembly ??= Assembly.GetCallingAssembly();
+    assembly ??= typeof(T).Assembly;
     includes ??= new string[] { };
     excludes ??= new string[] { };
     foreach (var type in assembly.GetTypes<IAsyncRule<T, U>>(includes, excludes))
       services.AddSingleton(typeof(IAsyncRule<T, U>), type);
-    return services.AddRules<T>(assembly, includes, excludes)
-                   .AddRules<U>(assembly, includes, excludes);
+    services.AddAsyncRules<T>(assembly, includes, excludes)
+            .AddAsyncRules<U>(assembly, includes, excludes);
+    if (typeof(T).Assembly == typeof(U).Assembly) return services;
+    assembly = typeof(U).Assembly;
+    foreach (var type in assembly.GetTypes<IAsyncRule<T, U>>(includes, excludes))
+      services.AddSingleton(typeof(IAsyncRule<T, U>), type);
+    services.AddAsyncRules<T>(assembly, includes, excludes)
+            .AddAsyncRules<U>(assembly, includes, excludes);
+    return services;
   }
 
   public static IServiceCollection AddRuleEngine<T>(
@@ -103,11 +116,24 @@ public static class RuleEngineServiceCollectionExtensions
       where T : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
-    services.AddOptions();
     var builder = EngineBuilder.ForInput<T>();
     action?.Invoke(builder);
     services.AddSingleton(typeof(IEngineBuilder<T>), builder);
     services.AddSingleton<IRuleEngine<T>, DefaultRuleEngine<T>>();
+    return services;
+  }
+
+  public static IServiceCollection AddRuleEngine<T,U>(
+    this IServiceCollection services,
+    Action<IEngineBuilder<T, U>> action = null)
+    where T : class
+    where U : class
+  {
+    if (services is null) throw new ArgumentNullException(nameof(services));
+    var builder = EngineBuilder.ForInputAndOutput<T, U>();
+    action?.Invoke(builder);
+    services.AddSingleton(typeof(IEngineBuilder<T, U>), builder);
+    services.AddSingleton<IRuleEngine<T, U>, DefaultRuleEngine<T, U>>();
     return services;
   }
 

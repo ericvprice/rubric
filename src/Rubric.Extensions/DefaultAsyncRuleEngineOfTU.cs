@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Rubric.Builder;
 using Rubric.Rules.Async;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Rubric.Extensions;
 
+[ExcludeFromCodeCoverage]
 internal class DefaultAsyncRuleEngine<T, U> : IAsyncRuleEngine<T, U> where T : class where U : class
 {
   private readonly IAsyncRuleEngine<T, U> _instance;

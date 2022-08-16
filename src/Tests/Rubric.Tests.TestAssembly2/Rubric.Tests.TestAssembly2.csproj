@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Rubric\Rubric.csproj" />
+    <ProjectReference Include="..\Rubric.Tests.TestAssembly\Rubric.Tests.TestAssembly.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace Rubric.Extensions;
 
 public static class AssemblyHelper

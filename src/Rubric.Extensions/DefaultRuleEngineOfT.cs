@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Rubric.Builder;
 using Rubric.Rules;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Rubric.Extensions;
 
+[ExcludeFromCodeCoverage]
 internal class DefaultRuleEngine<T> : IRuleEngine<T> where T : class
 {
   private readonly IRuleEngine<T> _instance;
