@@ -1,17 +1,14 @@
-namespace Rubric.Rules;
+using Rubric.Rules;
+
+namespace Rubric.Rulesets;
 
 public class Ruleset<TIn, TOut> : IRuleset<TIn, TOut>
 {
-  private readonly List<IRule<TOut>> _postRules;
-  private readonly List<IRule<TIn>> _preRules;
-  private readonly List<IRule<TIn, TOut>> _rules;
+  private readonly List<IRule<TOut>> _postRules = new();
+  private readonly List<IRule<TIn>> _preRules = new();
+  private readonly List<IRule<TIn, TOut>> _rules = new();
 
-  public Ruleset()
-  {
-    _preRules = new();
-    _rules = new();
-    _postRules = new();
-  }
+  public Ruleset() { }
 
   public IEnumerable<IRule<TIn>> PreRules => _preRules;
 
@@ -50,30 +47,6 @@ public class Ruleset<TIn, TOut> : IRuleset<TIn, TOut>
   }
 
   public virtual void AddRules(IEnumerable<IRule<TIn, TOut>> rules)
-  {
-    if (rules == null) throw new ArgumentNullException(nameof(rules));
-    _rules.AddRange(rules);
-  }
-}
-
-public class Ruleset<T>
-{
-  private readonly List<IRule<T>> _rules;
-
-  public Ruleset()
-  {
-    _rules = new();
-  }
-
-  public IEnumerable<IRule<T>> Rules => _rules;
-
-  public virtual void AddRule(IRule<T> rule)
-  {
-    if (rule == null) throw new ArgumentNullException(nameof(rule));
-    _rules.Add(rule);
-  }
-
-  public virtual void AddRules(IEnumerable<IRule<T>> rules)
   {
     if (rules == null) throw new ArgumentNullException(nameof(rules));
     _rules.AddRange(rules);

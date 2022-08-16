@@ -1,14 +1,47 @@
-﻿using System;
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Rubric;
 using Rubric.Builder;
+using Rubric.Extensions;
+using Rubric.Extensions.Serialization;
 using Rubric.Rules;
 using Rubric.Rules.Async;
+using System.Reflection;
 
-namespace Rubric.Extensions;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class RuleEngineExtensions
+public static class RuleEngineServiceCollectionExtensions
 {
+  public static IServiceCollection AddScriptedRules<T>(
+      this IServiceCollection services,
+      IConfiguration configuration,
+      string section)
+  {
+    var model = new AsyncRulesetModel<T>();
+    configuration.Bind(section, model);
+    var ruleSet = new JsonRuleSet<T>(model);
+    foreach (var rule in ruleSet.AsyncRules)
+      services.AddSingleton(typeof(IAsyncRule<T>), rule);
+    return services;
+  }
+
+  public static IServiceCollection AddScriptedRules<T, U>(
+      this IServiceCollection services,
+      IConfiguration configuration,
+      string section)
+  {
+    var model = new AsyncRulesetModel<T, U>();
+    configuration.Bind(section, model);
+    model.BasePath = configuration.GetValue<string>(HostDefaults.ContentRootKey);
+    var ruleSet = new JsonRuleSet<T, U>(model);
+    foreach (var rule in ruleSet.AsyncPreRules)
+      services.AddSingleton(typeof(IAsyncRule<T>), rule);
+    foreach (var rule in ruleSet.AsyncRules)
+      services.AddSingleton(typeof(IAsyncRule<T, U>), rule);
+    foreach (var rule in ruleSet.AsyncPostRules)
+      services.AddSingleton(typeof(IAsyncRule<U>), rule);
+    return services;
+  }
 
   public static IServiceCollection AddRules<T>(
       this IServiceCollection services,

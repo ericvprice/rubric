@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
+using Rubric.Rulesets;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Engines;
@@ -342,7 +343,7 @@ public class EngineOfTTests
   [Fact]
   public void ApplyExceptionHandlerIgnore()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new ());
+    var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Ignore);
     var input = new TestInput();

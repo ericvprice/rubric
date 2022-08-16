@@ -1,8 +1,9 @@
-using static Rubric.Scripting.RuleLoader;
+using Rubric.Rules.Async;
+using static Rubric.Extensions.Serialization.RuleLoader;
 
-namespace Rubric.Scripting;
+namespace Rubric.Extensions.Serialization;
 
-public class JsonRuleSet<T, U> : AsyncRuleset<T, U>
+internal class JsonRuleSet<T, U> : AsyncRuleset<T, U>
 {
   public JsonRuleSet(AsyncRulesetModel<T, U> model) : base()
   {

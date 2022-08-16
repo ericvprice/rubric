@@ -1,9 +1,9 @@
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rules.Async;
+using Rubric.Rulesets;
 
 namespace Rubric;
 
@@ -36,7 +36,7 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">A logger.</param>
   public AsyncRuleEngine(
-      AsyncRuleset<TIn, TOut> ruleSet,
+      IAsyncRuleset<TIn, TOut> ruleSet,
       bool isParallel = false,
       IExceptionHandler exceptionHandler = null,
       ILogger logger = null
@@ -57,7 +57,7 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// /// <param name="logger">An optional logger.</param>
   public AsyncRuleEngine(
-      Ruleset<TIn, TOut> ruleSet,
+      IRuleset<TIn, TOut> ruleSet,
       bool isParallel = false,
       IExceptionHandler exceptionHandler = null,
       ILogger logger = null

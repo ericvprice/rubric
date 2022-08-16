@@ -1,12 +1,14 @@
 ﻿using Microsoft.CodeAnalysis.Scripting;
+using Rubric.Rules.Async;
 using static Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript;
-using static Rubric.Scripting.ScriptingHelpers;
-namespace Rubric.Scripting;
+using static Rubric.Rules.Scripted.ScriptingHelpers;
 
-public class ScriptedRule<T, U> : IAsyncRule<T, U>
+namespace Rubric.Rules.Scripted;
+
+public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
 {
 
-  private static readonly Type CONTEXT_TYPE = typeof(ScriptedRuleContext<T, U>);
+  private static readonly Type CONTEXT_TYPE = typeof(ScriptedRuleContext<TIn, TOut>);
   private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Output, Token);";
   private const string APPLY_TRAILER = "return Apply(Context, Input, Output, Token);";
 
@@ -23,7 +25,7 @@ public class ScriptedRule<T, U> : IAsyncRule<T, U>
     Dependencies = dependsOn ?? new string[] { };
     Provides = provides ?? new string[] { };
     Name = name;
-    options ??= GetDefaultOptions<T, U>();
+    options ??= GetDefaultOptions<TIn, TOut>();
     var baseScript = Create<bool>(script.FilterScript(),
                                  options,
                                  globalsType: CONTEXT_TYPE);
@@ -39,9 +41,9 @@ public class ScriptedRule<T, U> : IAsyncRule<T, U>
 
   public string Name { get; }
 
-  public async Task Apply(IEngineContext context, T input, U output, CancellationToken t)
-      => await await _apply(new ScriptedRuleContext<T, U>(context, input, output, t));
+  public async Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken t)
+      => await await _apply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t));
 
-  public async Task<bool> DoesApply(IEngineContext context, T input, U output, CancellationToken t)
-      => await await _doesApply(new ScriptedRuleContext<T, U>(context, input, output, t));
+  public async Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken t)
+      => await await _doesApply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t));
 }

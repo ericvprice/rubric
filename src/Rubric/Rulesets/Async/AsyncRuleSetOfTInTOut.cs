@@ -1,6 +1,6 @@
 namespace Rubric.Rules.Async;
 
-public class AsyncRuleset<TIn, TOut>
+public class AsyncRuleset<TIn, TOut> : IAsyncRuleset<TIn, TOut>
 {
   private readonly List<IAsyncRule<TOut>> _postprocessingRules;
   private readonly List<IAsyncRule<TIn>> _preprocessingRules;
@@ -51,30 +51,6 @@ public class AsyncRuleset<TIn, TOut>
   }
 
   public void AddAsyncRules(IEnumerable<IAsyncRule<TIn, TOut>> rules)
-  {
-    if (rules == null) throw new ArgumentNullException(nameof(rules));
-    _rules.AddRange(rules);
-  }
-}
-
-public class AsyncRuleset<T>
-{
-  private readonly List<IAsyncRule<T>> _rules;
-
-  public AsyncRuleset()
-  {
-    _rules = new();
-  }
-
-  public IEnumerable<IAsyncRule<T>> AsyncRules => _rules;
-
-  public void AddAsyncRule(IAsyncRule<T> rule)
-  {
-    if (rule == null) throw new ArgumentNullException(nameof(rule));
-    _rules.Add(rule);
-  }
-
-  public void AddAsyncRules(IEnumerable<IAsyncRule<T>> rules)
   {
     if (rules == null) throw new ArgumentNullException(nameof(rules));
     _rules.AddRange(rules);

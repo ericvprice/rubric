@@ -1,7 +1,8 @@
+using Rubric.Extensions.Serialization;
+using Rubric.Rules.Scripted;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Rubric.Scripting;
 
 namespace Rubric.Tests.Scripting;
 
@@ -12,7 +13,8 @@ public class ScriptTests
   {
     var rule = new ScriptedRule<TestInput>(
         "test",
-        @"Task<bool> DoesApply(IEngineContext context, TestInput input, CancellationToken t) => Task.FromResult(true);
+        @"using Rubric.Tests;
+          Task<bool> DoesApply(IEngineContext context, TestInput input, CancellationToken t) => Task.FromResult(true);
           Task Apply(IEngineContext context, TestInput input, CancellationToken t) {input.InputFlag = true; return Task.CompletedTask;}
         "
     );
@@ -32,6 +34,7 @@ public class ScriptTests
     var rule = new ScriptedRule<TestInput, TestOutput>(
         "test",
         @"
+          using Rubric.Tests;
           Task<bool> DoesApply(IEngineContext context, TestInput input, TestOutput output, CancellationToken t) => Task.FromResult(input.InputFlag);
           Task Apply(IEngineContext context, TestInput input, TestOutput output, CancellationToken t) { output.TestFlag = true; return Task.CompletedTask; }
         "

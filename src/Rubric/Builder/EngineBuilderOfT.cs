@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Rules;
+using Rubric.Rulesets;
 
 namespace Rubric.Builder;
 
@@ -9,7 +10,7 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 {
   internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
-  internal Ruleset<T> Ruleset { get; } = new();
+  internal IRuleset<T> Ruleset { get; } = new Ruleset<T>();
 
   internal ILogger Logger { get; }
 

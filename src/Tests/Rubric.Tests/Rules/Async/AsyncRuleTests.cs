@@ -1,6 +1,6 @@
-using System.Linq;
 using Rubric.Tests.DependencyRules;
 using Rubric.Tests.TestRules.Async;
+using System.Linq;
 
 namespace Rubric.Tests.Rules.Async;
 

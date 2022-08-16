@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Rules;
+using Rubric.Rulesets;
 
 namespace Rubric;
 
@@ -29,8 +30,8 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger</param>
   public RuleEngine(Ruleset<TIn, TOut> ruleset,
-                     IExceptionHandler exceptionHandler = null,
-                     ILogger logger = null)
+                    IExceptionHandler exceptionHandler = null,
+                    ILogger logger = null)
       : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, exceptionHandler, logger) { }
 
   /// <summary>
@@ -105,12 +106,13 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
   public void Apply(TIn input, TOut output, IEngineContext context = null)
   {
     context = SetupContext(context);
-    try {
+    try
+    {
       ApplyItem(input, output, context);
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
-          this.ApplyPostRule(context, rule, output);    
-    } 
+          this.ApplyPostRule(context, rule, output);
+    }
     catch (EngineHaltException)
     {
       return;
@@ -124,11 +126,11 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
     try
     {
       foreach (var input in inputs)
-          ApplyItem(input, output, ctx);
+        ApplyItem(input, output, ctx);
       foreach (var set in _postprocessingRules)
         foreach (var rule in set)
           this.ApplyPostRule(ctx, rule, output);
-    } 
+    }
     catch (EngineHaltException)
     {
       return;
@@ -149,7 +151,8 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
       foreach (var set in _rules)
         foreach (var rule in set)
           this.ApplyRule(ctx, rule, input, output);
-    } catch (ItemHaltException)
+    }
+    catch (ItemHaltException)
     {
       return;
     }

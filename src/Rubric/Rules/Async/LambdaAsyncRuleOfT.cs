@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace Rubric.Rules.Async;
 
 public class LambdaAsyncRule<T> : IAsyncRule<T>

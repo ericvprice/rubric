@@ -1,7 +1,7 @@
-using System.Linq;
 using Rubric.Tests.DependencyRules.TypeAttribute;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
+using System.Linq;
 
 namespace Rubric.Tests.Builders;
 

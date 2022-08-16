@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Rules;
+using Rubric.Rulesets;
 
 namespace Rubric;
 
@@ -17,9 +18,9 @@ public class RuleEngine<T> : IRuleEngine<T>
 
   #region Constructors
 
-  public RuleEngine(Ruleset<T> ruleset,
-                      IExceptionHandler uncaughtExceptionHandler = null,
-                      ILogger logger = null)
+  public RuleEngine(IRuleset<T> ruleset,
+                    IExceptionHandler uncaughtExceptionHandler = null,
+                    ILogger logger = null)
       : this(ruleset.Rules, uncaughtExceptionHandler, logger) { }
 
   /// <summary>

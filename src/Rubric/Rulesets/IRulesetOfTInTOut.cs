@@ -1,9 +1,6 @@
-namespace Rubric.Rules;
+using Rubric.Rules;
 
-public interface IRuleset<TIn>
-{
-  IEnumerable<IRule<TIn>> Rules { get; }
-}
+namespace Rubric.Rulesets;
 
 public interface IRuleset<TIn, TOut>
 {

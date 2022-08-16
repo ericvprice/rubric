@@ -1,5 +1,6 @@
-using System.Linq;
+using Rubric.Rulesets;
 using Rubric.Tests.TestRules;
+using System.Linq;
 
 namespace Rubric.Tests.Engines;
 

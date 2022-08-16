@@ -1,7 +1,9 @@
 ﻿using Microsoft.CodeAnalysis.Scripting;
-using static Rubric.Scripting.ScriptingHelpers;
+using Rubric.Rules.Async;
 using static Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript;
-namespace Rubric.Scripting;
+using static Rubric.Rules.Scripted.ScriptingHelpers;
+
+namespace Rubric.Rules.Scripted;
 
 public class ScriptedRule<T> : IAsyncRule<T>
 {

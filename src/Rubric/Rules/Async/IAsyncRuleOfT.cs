@@ -1,4 +1,3 @@
-using System.Threading;
 using Rubric.Dependency;
 
 namespace Rubric.Rules.Async;

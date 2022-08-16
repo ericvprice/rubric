@@ -1,4 +1,4 @@
-namespace Rubric.Scripting;
+namespace Rubric.Extensions.Serialization;
 
 public class AsyncRulesetModel<T, U> : AsyncRulesetModel<T>
 {

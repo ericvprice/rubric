@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Rubric\Rubric.csproj" />
-    <ProjectReference Include="..\..\Rubric.Scripting\Rubric.Scripting.csproj" />
+    <ProjectReference Include="..\..\Rubric.Extensions\Rubric.Extensions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\*.*" CopyToOutputDirectory="PreserveNewest" />

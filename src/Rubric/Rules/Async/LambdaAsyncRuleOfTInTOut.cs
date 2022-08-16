@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace Rubric.Rules.Async;
+﻿namespace Rubric.Rules.Async;
 
 public class LambdaAsyncRule<TIn, TOut> : IAsyncRule<TIn, TOut>
 {

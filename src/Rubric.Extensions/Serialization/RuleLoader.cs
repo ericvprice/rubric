@@ -1,11 +1,13 @@
+using Rubric.Rules.Async;
+using Rubric.Rules.Scripted;
 using System.IO;
 
-namespace Rubric.Scripting;
+namespace Rubric.Extensions.Serialization;
 
-public static class RuleLoader
+internal static class RuleLoader
 {
 
-  public static IAsyncRule<X> LoadFromModel<X>(RuleModel model, string basePath)
+  internal static IAsyncRule<X> LoadFromModel<X>(RuleModel model, string basePath)
    => new ScriptedRule<X>
       (
         model.Name,
@@ -14,7 +16,7 @@ public static class RuleLoader
         model.Provides
       );
 
-  public static IAsyncRule<X, Y> LoadFromModel<X, Y>(RuleModel model, string basePath)
+  internal static IAsyncRule<X, Y> LoadFromModel<X, Y>(RuleModel model, string basePath)
     => new ScriptedRule<X, Y>(
           model.Name,
           File.ReadAllText(Path.Combine(basePath, model.Script)),

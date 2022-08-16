@@ -1,8 +1,7 @@
-namespace Rubric.Scripting;
+namespace Rubric.Rules.Scripted;
 
 public class ScriptedRuleContext<T>
 {
-
   public ScriptedRuleContext(IEngineContext context, T input, CancellationToken t)
   {
     Input = input;

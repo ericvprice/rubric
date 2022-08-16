@@ -1,9 +1,9 @@
-using System.IO;
-using System.Text;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Text;
 
-namespace Rubric.Scripting;
+namespace Rubric.Rules.Scripted;
 
 internal static class ScriptingHelpers
 {
