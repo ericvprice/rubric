@@ -25,11 +25,7 @@ internal class DefaultAsyncRuleEngine<T> : IAsyncRuleEngine<T> where T : class
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException
-  {
-    get => _instance.LastException;
-    set => _instance.LastException = value;
-  }
+  public EngineException LastException => _instance.LastException;
 
   public bool IsParallel => _instance.IsParallel;
 

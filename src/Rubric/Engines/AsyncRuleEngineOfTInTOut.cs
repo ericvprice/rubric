@@ -5,9 +5,9 @@ using Rubric.Rules;
 using Rubric.Rules.Async;
 using Rubric.Rulesets;
 
-namespace Rubric;
+namespace Rubric.Engines;
 
-public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
+public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, TOut>
     where TIn : class
     where TOut : class
 {
@@ -151,25 +151,19 @@ public class AsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut>
 
   public bool IsParallel { get; internal set; }
 
-  public bool IsAsync => true;
+  public override bool IsAsync => true;
 
   /// <inheritdoc />
-  public Type InputType => typeof(TIn);
+  public override Type InputType => typeof(TIn);
 
   /// <inheritdoc />
-  public Type OutputType => typeof(TOut);
-
-  public IExceptionHandler ExceptionHandler { get; }
+  public override Type OutputType => typeof(TOut);
 
   public IEnumerable<IAsyncRule<TIn>> PreRules => _preRules.SelectMany(_ => _);
 
   public IEnumerable<IAsyncRule<TIn, TOut>> Rules => _rules.SelectMany(_ => _);
 
   public IEnumerable<IAsyncRule<TOut>> PostRules => _postRules.SelectMany(_ => _);
-
-  public ILogger Logger { get; }
-
-  public EngineException LastException { get; set; }
 
   #endregion
 

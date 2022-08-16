@@ -1,4 +1,5 @@
 ﻿global using Rubric.Builder;
+global using Rubric.Engines;
 global using Rubric.Rules;
 global using Rubric.Rules.Async;
 global using System;

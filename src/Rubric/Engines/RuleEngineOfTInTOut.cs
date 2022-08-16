@@ -4,9 +4,9 @@ using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rulesets;
 
-namespace Rubric;
+namespace Rubric.Engines;
 
-public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
+public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     where TIn : class
     where TOut : class
 {
@@ -73,30 +73,26 @@ public class RuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut>
 
   #region Properties
 
+  /// <inheritdoc />
   public IEnumerable<IRule<TIn>> PreRules
       => _preprocessingRules.SelectMany(_ => _);
 
+  /// <inheritdoc />
   public IEnumerable<IRule<TIn, TOut>> Rules
       => _rules.SelectMany(_ => _);
 
+  /// <inheritdoc />
   public IEnumerable<IRule<TOut>> PostRules
       => _postprocessingRules.SelectMany(_ => _);
 
   /// <inheritdoc />
-  public ILogger Logger { get; }
+  public override bool IsAsync => false;
 
   /// <inheritdoc />
-  public bool IsAsync => false;
+  public override Type InputType => typeof(TIn);
 
   /// <inheritdoc />
-  public Type InputType => typeof(TIn);
-
-  /// <inheritdoc />
-  public Type OutputType => typeof(TOut);
-
-  public IExceptionHandler ExceptionHandler { get; }
-
-  public EngineException LastException { get; set; }
+  public override Type OutputType => typeof(TOut);
 
   #endregion
 

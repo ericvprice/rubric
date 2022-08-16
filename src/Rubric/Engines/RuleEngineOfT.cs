@@ -4,9 +4,9 @@ using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rulesets;
 
-namespace Rubric;
+namespace Rubric.Engines;
 
-public class RuleEngine<T> : IRuleEngine<T>
+public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     where T : class
 {
 
@@ -51,21 +51,13 @@ public class RuleEngine<T> : IRuleEngine<T>
       => _rules.SelectMany(_ => _);
 
   /// <inheritdoc />
-  public ILogger Logger { get; }
+  public override bool IsAsync => false;
 
   /// <inheritdoc />
-  public bool IsAsync => false;
+  public override Type InputType => typeof(T);
 
   /// <inheritdoc />
-  public Type InputType => typeof(T);
-
-  /// <inheritdoc />
-  public Type OutputType => typeof(T);
-
-  /// <inheritdoc />
-  public IExceptionHandler ExceptionHandler { get; }
-
-  public EngineException LastException { get; set; }
+  public override Type OutputType => typeof(T);
 
   #endregion
 

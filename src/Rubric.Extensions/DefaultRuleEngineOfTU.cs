@@ -30,7 +30,7 @@ internal class DefaultRuleEngine<T, U> : IRuleEngine<T, U> where T : class where
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException { get => _instance.LastException; set => _instance.LastException = value; }
+  public EngineException LastException => _instance.LastException;
 
   public IEnumerable<IRule<T>> PreRules => _instance.PreRules;
 

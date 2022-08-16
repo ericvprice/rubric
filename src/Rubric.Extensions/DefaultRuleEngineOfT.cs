@@ -25,7 +25,7 @@ internal class DefaultRuleEngine<T> : IRuleEngine<T> where T : class
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException { get => _instance.LastException; set => _instance.LastException = value; }
+  public EngineException LastException => _instance.LastException;
 
   public void Apply(T input, IEngineContext context = null)
     => _instance.Apply(input, context);

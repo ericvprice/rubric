@@ -30,7 +30,7 @@ internal class DefaultAsyncRuleEngine<T, U> : IAsyncRuleEngine<T, U> where T : c
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException { get => _instance.LastException; set => _instance.LastException = value; }
+  public EngineException LastException => _instance.LastException;
 
   public IEnumerable<IAsyncRule<T>> PreRules => _instance.PreRules;
 
@@ -38,11 +38,7 @@ internal class DefaultAsyncRuleEngine<T, U> : IAsyncRuleEngine<T, U> where T : c
 
   public IEnumerable<IAsyncRule<T, U>> Rules => _instance.Rules;
 
-  public bool IsParllel => _instance.IsParallel;
-
-  public bool IsParallel => throw new NotImplementedException();
-
-  EngineException IRuleEngine.LastException { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+  public bool IsParallel => _instance.IsParallel;
 
   public Task ApplyAsync(T input, U output, IEngineContext context = null, CancellationToken token = default)
     => _instance.ApplyAsync(input, output, context, token);
