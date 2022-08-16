@@ -2,9 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -26,3 +26,5 @@ jobs:
       run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml /p:Threshold=95
     - name: Package
       run: dotnet pack --configuration Release --no-build --output .
+    - name: Push to nuget.org
+      run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json

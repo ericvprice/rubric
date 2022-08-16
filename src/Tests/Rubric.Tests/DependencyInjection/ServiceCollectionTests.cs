@@ -22,6 +22,21 @@ public class ServiceCollectionTests
   }
 
   [Fact]
+  public void LoadSyncFromAssemblyTWithBuilder()
+  {
+    var services = new ServiceCollection();
+    services.AddRuleEngine<TestAssemblyInput>(b => b.WithRule("foo")
+                                                    .WithAction((_, _) => { })
+                                                    .EndRule())
+            .AddRules<TestAssemblyInput>();
+    var provider = services.BuildServiceProvider();
+    var result = provider.GetService<IRuleEngine<TestAssemblyInput>>();
+    Assert.NotNull(result);
+    Assert.Equal(2, result.Rules.Count());
+    Assert.False(result.IsAsync);
+  }
+
+  [Fact]
 
   public void LoadSyncFromAssemblyTInTOut()
   {
@@ -33,6 +48,23 @@ public class ServiceCollectionTests
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Single(result.Rules);
+    Assert.Single(result.PostRules);
+    Assert.False(result.IsAsync);
+  }
+
+  [Fact]
+  public void LoadSyncFromAssemblyTInTOutWithBuilder()
+  {
+    var services = new ServiceCollection();
+    services.AddRuleEngine<TestAssemblyInput, TestAssemblyOutput>(
+              b => b.WithRule("foo").WithAction((_, _, _) => { }).EndRule()
+            )
+            .AddRules<TestAssemblyInput, TestAssemblyOutput>();
+    var provider = services.BuildServiceProvider();
+    var result = provider.GetService<IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
+    Assert.NotNull(result);
+    Assert.Single(result.PreRules);
+    Assert.Equal(2, result.Rules.Count());
     Assert.Single(result.PostRules);
     Assert.False(result.IsAsync);
   }
@@ -93,6 +125,23 @@ public class ServiceCollectionTests
   }
 
   [Fact]
+  public void LoadAsyncFromAssemblyTWithBuilder()
+  {
+    var services = new ServiceCollection();
+    services.AddAsyncRuleEngine<TestAssemblyInput>(
+              b => b.WithRule("foo")
+                    .WithAction((_, _, _) => Task.CompletedTask)
+                    .EndRule()
+            )
+            .AddAsyncRules<TestAssemblyInput>();
+    var provider = services.BuildServiceProvider();
+    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput>>();
+    Assert.NotNull(result);
+    Assert.Equal(2, result.Rules.Count());
+    Assert.True(result.IsAsync);
+  }
+
+  [Fact]
 
   public void LoadAsyncFromAssemblyTInTOut()
   {
@@ -104,6 +153,26 @@ public class ServiceCollectionTests
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Single(result.Rules);
+    Assert.Single(result.PostRules);
+    Assert.True(result.IsAsync);
+  }
+
+  [Fact]
+
+  public void LoadAsyncFromAssemblyTInTOutWithbuilder()
+  {
+    var services = new ServiceCollection();
+    services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>(
+              b => b.WithRule("foo")
+                    .WithAction((_, _, _) => Task.CompletedTask)
+                    .EndRule()
+            )
+            .AddAsyncRules<TestAssemblyInput, TestAssemblyOutput>();
+    var provider = services.BuildServiceProvider();
+    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
+    Assert.NotNull(result);
+    Assert.Single(result.PreRules);
+    Assert.Equal(2, result.Rules.Count());
     Assert.Single(result.PostRules);
     Assert.True(result.IsAsync);
   }
