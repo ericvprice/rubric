@@ -159,7 +159,7 @@ public class ServiceCollectionTests
 
   [Fact]
 
-  public void LoadAsyncFromAssemblyTInTOutWithbuilder()
+  public void LoadAsyncFromAssemblyTInTOutWithBuilder()
   {
     var services = new ServiceCollection();
     services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>(
@@ -209,6 +209,8 @@ public class ServiceCollectionTests
     Assert.False(result.IsAsync);
   }
 
+
+
   [Fact]
   public void ThrowsOnNullParameters()
   {
@@ -217,7 +219,7 @@ public class ServiceCollectionTests
     Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddRuleEngine<TestInput>(null));
     Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddRuleEngine<TestInput, TestOutput>(null));
     Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput>(null));
-    Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput, TestOutput>(null));
+    Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput, TestOutput>(null, null));
     Assert.Throws<ArgumentNullException>(() => AssemblyHelper.GetTypes<TestInput>(null));
   }
 }

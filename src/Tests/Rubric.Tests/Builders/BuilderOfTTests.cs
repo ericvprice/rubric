@@ -46,7 +46,6 @@ public class BuilderOfTTests
     var engine = EngineBuilder.ForInput<TestInput>()
                               .WithRule(new TestPreRule(true))
                               .WithRule("test")
-                              .WithPredicate((_, _) => true)
                               .WithAction((_, _) => { })
                               .ThatProvides("test1")
                               .EndRule()
@@ -61,6 +60,7 @@ public class BuilderOfTTests
     var rule = engine.Rules.ElementAt(1);
     Assert.Equal("test", rule.Name);
     Assert.Contains("test1", rule.Provides);
+    Assert.True(rule.DoesApply(null, null));
     rule = engine.Rules.ElementAt(2);
     Assert.Contains(typeof(TestPreRule).FullName, rule.Dependencies);
     Assert.Contains("test1", rule.Dependencies);

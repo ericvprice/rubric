@@ -1,7 +1,7 @@
 {
   "preRules": {
-    "rule3": {
-      "script": "rule3.csx"
+    "rule7": {
+      "script": "rule7.csx"
     }
   },
   "rules": {

@@ -17,9 +17,9 @@ public class ScriptedRule<T> : IAsyncRule<T>
   public ScriptedRule(
     string name,
     string script,
+    ScriptOptions options = null,
     string[] dependsOn = null,
-    string[] provides = null,
-    ScriptOptions options = default
+    string[] provides = null
   )
   {
     Name = name;

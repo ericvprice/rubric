@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Scripting;
 using Rubric.Extensions.Serialization;
 using Rubric.Rules.Scripted;
 using System.IO;
@@ -86,7 +87,8 @@ public class ScriptTests
       await File.ReadAllTextAsync(fileName),
       options);
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
-    var ruleset = new JsonRuleSet<TestInput, TestOutput>(ruleSetModel);
+    var scriptOptions = ScriptingHelpers.GetDefaultOptions<TestInput, TestOutput>();
+    var ruleset = new JsonRuleSet<TestInput, TestOutput>(ruleSetModel, scriptOptions);
     Assert.Single(ruleset.AsyncPreRules);
     Assert.Single(ruleset.AsyncRules);
     Assert.Single(ruleset.AsyncPostRules);

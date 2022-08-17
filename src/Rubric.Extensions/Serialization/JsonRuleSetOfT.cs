@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Scripting;
 using Rubric.Rules.Async;
 using static Rubric.Extensions.Serialization.RuleLoader;
 
@@ -5,7 +6,7 @@ namespace Rubric.Extensions.Serialization;
 
 internal class JsonRuleSet<T> : AsyncRuleset<T>
 {
-  public JsonRuleSet(AsyncRulesetModel<T> model) : base()
+  public JsonRuleSet(AsyncRulesetModel<T> model, ScriptOptions options = null) : base()
   {
     if (model == null)
       throw new ArgumentNullException($"'{nameof(model)}' cannot be null.", nameof(model));
@@ -13,7 +14,7 @@ internal class JsonRuleSet<T> : AsyncRuleset<T>
                        .Select(r =>
                           {
                             r.Value.Name = r.Key;
-                            return LoadFromModel<T>(r.Value, model.BasePath);
+                            return LoadFromModel<T>(r.Value, model.BasePath, options);
                           }));
   }
 }

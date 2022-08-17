@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubric.Tests.TestAssembly",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubric.Tests.TestAssembly2", "Tests\Rubric.Tests.TestAssembly2\Rubric.Tests.TestAssembly2.csproj", "{DADDC97C-DF05-4451-BE7C-1FDE6E2A37E1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{64F8FA9B-3C8B-43EF-941B-D5CB1970D315}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubric.TestAssembly3", "Tests\Rubric.TestAssembly3\Rubric.TestAssembly3.csproj", "{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,11 +87,26 @@ Global
 		{DADDC97C-DF05-4451-BE7C-1FDE6E2A37E1}.Release|x64.Build.0 = Release|Any CPU
 		{DADDC97C-DF05-4451-BE7C-1FDE6E2A37E1}.Release|x86.ActiveCfg = Release|Any CPU
 		{DADDC97C-DF05-4451-BE7C-1FDE6E2A37E1}.Release|x86.Build.0 = Release|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Debug|x64.Build.0 = Debug|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Debug|x86.Build.0 = Debug|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x64.ActiveCfg = Release|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x64.Build.0 = Release|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x86.ActiveCfg = Release|Any CPU
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB3DC291-BC69-48E6-A3B2-8C59F0AC1D3B}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3} = {64F8FA9B-3C8B-43EF-941B-D5CB1970D315}
 	EndGlobalSection
 EndGlobal

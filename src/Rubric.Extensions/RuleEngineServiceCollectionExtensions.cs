@@ -1,25 +1,44 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Rubric;
 using Rubric.Builder;
 using Rubric.Extensions;
 using Rubric.Extensions.Serialization;
 using Rubric.Rules;
 using Rubric.Rules.Async;
+using Rubric.Rules.Scripted;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class RuleEngineServiceCollectionExtensions
 {
+  internal static ScriptOptions GetDefaultOptions<T>()
+   => ScriptOptions.Default
+           .WithReferences(typeof(ScriptedRuleContext<T>).Assembly,
+                           typeof(EngineContext).Assembly,
+                           typeof(ILogger).Assembly,
+                           typeof(T).Assembly)
+           .AddImports("Rubric",
+                       "System.Threading",
+                       "System.Threading.Tasks");
+
+  internal static ScriptOptions GetDefaultOptions<T, U>()
+    => GetDefaultOptions<T>().WithReferences(typeof(U).Assembly);
+
   public static IServiceCollection AddScriptedRules<T>(
       this IServiceCollection services,
       IConfiguration configuration,
-      string section)
+      string section,
+      Action<ScriptOptions> setupAction = null)
   {
     var model = new AsyncRulesetModel<T>();
+    var options = GetDefaultOptions<T>();
+    setupAction?.Invoke(options);
     configuration.Bind(section, model);
     model.BasePath = configuration.GetValue<string>(HostDefaults.ContentRootKey);
-    var ruleSet = new JsonRuleSet<T>(model);
+    var ruleSet = new JsonRuleSet<T>(model, options);
     foreach (var rule in ruleSet.AsyncRules)
       services.AddSingleton(typeof(IAsyncRule<T>), rule);
     return services;
@@ -28,12 +47,15 @@ public static class RuleEngineServiceCollectionExtensions
   public static IServiceCollection AddScriptedRules<T, U>(
       this IServiceCollection services,
       IConfiguration configuration,
-      string section)
+      string section,
+      Action<ScriptOptions> setupAction = null)
   {
     var model = new AsyncRulesetModel<T, U>();
     configuration.Bind(section, model);
     model.BasePath = configuration.GetValue<string>(HostDefaults.ContentRootKey);
-    var ruleSet = new JsonRuleSet<T, U>(model);
+    var options = GetDefaultOptions<T, U>();
+    setupAction?.Invoke(options);
+    var ruleSet = new JsonRuleSet<T, U>(model, options);
     foreach (var rule in ruleSet.AsyncPreRules)
       services.AddSingleton(typeof(IAsyncRule<T>), rule);
     foreach (var rule in ruleSet.AsyncRules)

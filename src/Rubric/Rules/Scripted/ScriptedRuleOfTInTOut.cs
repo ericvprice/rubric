@@ -18,9 +18,9 @@ public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
   public ScriptedRule(
     string name,
     string script,
+    ScriptOptions options = null,
     string[] dependsOn = null,
-    string[] provides = null,
-    ScriptOptions options = default)
+    string[] provides = null)
   {
     Dependencies = dependsOn ?? new string[] { };
     Provides = provides ?? new string[] { };
