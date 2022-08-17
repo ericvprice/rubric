@@ -6,15 +6,15 @@ using System.Diagnostics.CodeAnalysis;
 namespace Rubric.Extensions;
 
 [ExcludeFromCodeCoverage]
-internal class DefaultRuleEngine<T, U> : IRuleEngine<T, U> where T : class where U : class
+internal class DefaultRuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut> where TIn : class where TOut : class
 {
-  private readonly IRuleEngine<T, U> _instance;
+  private readonly IRuleEngine<TIn, TOut> _instance;
 
   public DefaultRuleEngine(
-    IEngineBuilder<T, U> builder,
-    IEnumerable<IRule<T>> preRules,
-    IEnumerable<IRule<T, U>> rules,
-    IEnumerable<IRule<U>> postRules
+    IEngineBuilder<TIn, TOut> builder,
+    IEnumerable<IRule<TIn>> preRules,
+    IEnumerable<IRule<TIn, TOut>> rules,
+    IEnumerable<IRule<TOut>> postRules
   ) => _instance = builder.WithPreRules(preRules)
                           .WithRules(rules)
                           .WithPostRules(postRules)
@@ -32,15 +32,15 @@ internal class DefaultRuleEngine<T, U> : IRuleEngine<T, U> where T : class where
 
   public EngineException LastException => _instance.LastException;
 
-  public IEnumerable<IRule<T>> PreRules => _instance.PreRules;
+  public IEnumerable<IRule<TIn>> PreRules => _instance.PreRules;
 
-  public IEnumerable<IRule<U>> PostRules => _instance.PostRules;
+  public IEnumerable<IRule<TOut>> PostRules => _instance.PostRules;
 
-  public IEnumerable<IRule<T, U>> Rules => _instance.Rules;
+  public IEnumerable<IRule<TIn, TOut>> Rules => _instance.Rules;
 
-  public void Apply(T input, U output, IEngineContext context = null)
+  public void Apply(TIn input, TOut output, IEngineContext context = null)
     => _instance.Apply(input, output, context);
 
-  public void Apply(IEnumerable<T> inputs, U output, IEngineContext context = null)
+  public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
     => _instance.Apply(inputs, output, context);
 }

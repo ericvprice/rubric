@@ -6,8 +6,6 @@ public class Ruleset<T> : IRuleset<T> where T : class
 {
   private readonly List<IRule<T>> _rules = new();
 
-  public Ruleset() { }
-
   public IEnumerable<IRule<T>> Rules => _rules;
 
   public virtual void AddRule(IRule<T> rule)

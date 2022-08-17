@@ -17,15 +17,14 @@ internal static class ScriptingHelpers
                         "System.Threading",
                         "System.Threading.Tasks");
 
-  internal static ScriptOptions GetDefaultOptions<T, U>()
-    => GetDefaultOptions<T>().WithReferences(typeof(U).Assembly);
+  internal static ScriptOptions GetDefaultOptions<TIn, TOut>()
+    => GetDefaultOptions<TIn>().WithReferences(typeof(TOut).Assembly);
 
   internal static string FilterScript(this string script)
   {
     using var sr = new StringReader(script);
-    string line;
     var output = new StringBuilder();
-    while ((line = sr.ReadLine()) != null)
+    while (sr.ReadLine() is { } line)
     {
       if (!line.Trim().StartsWith("#r"))
         output.Append(line);

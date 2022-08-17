@@ -207,7 +207,6 @@ internal static class EngineExtensions
     }
     catch (ItemHaltException)
     {
-      return;
     }
     catch (Exception ex)
     {

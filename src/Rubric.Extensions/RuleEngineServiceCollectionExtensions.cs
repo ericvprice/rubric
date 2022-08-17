@@ -24,8 +24,8 @@ public static class RuleEngineServiceCollectionExtensions
                        "System.Threading",
                        "System.Threading.Tasks");
 
-  internal static ScriptOptions GetDefaultOptions<T, U>()
-    => GetDefaultOptions<T>().WithReferences(typeof(U).Assembly);
+  internal static ScriptOptions GetDefaultOptions<TIn, TOut>()
+    => GetDefaultOptions<TIn>().WithReferences(typeof(TOut).Assembly);
 
   public static IServiceCollection AddScriptedRules<T>(
       this IServiceCollection services,
@@ -44,24 +44,24 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
-  public static IServiceCollection AddScriptedRules<T, U>(
+  public static IServiceCollection AddScriptedRules<TIn, TOut>(
       this IServiceCollection services,
       IConfiguration configuration,
       string section,
       Action<ScriptOptions> setupAction = null)
   {
-    var model = new AsyncRulesetModel<T, U>();
+    var model = new AsyncRulesetModel<TIn, TOut>();
     configuration.Bind(section, model);
     model.BasePath = configuration.GetValue<string>(HostDefaults.ContentRootKey);
-    var options = GetDefaultOptions<T, U>();
+    var options = GetDefaultOptions<TIn, TOut>();
     setupAction?.Invoke(options);
-    var ruleSet = new JsonRuleSet<T, U>(model, options);
+    var ruleSet = new JsonRuleSet<TIn, TOut>(model, options);
     foreach (var rule in ruleSet.AsyncPreRules)
-      services.AddSingleton(typeof(IAsyncRule<T>), rule);
+      services.AddSingleton(typeof(IAsyncRule<TIn>), rule);
     foreach (var rule in ruleSet.AsyncRules)
-      services.AddSingleton(typeof(IAsyncRule<T, U>), rule);
+      services.AddSingleton(typeof(IAsyncRule<TIn, TOut>), rule);
     foreach (var rule in ruleSet.AsyncPostRules)
-      services.AddSingleton(typeof(IAsyncRule<U>), rule);
+      services.AddSingleton(typeof(IAsyncRule<TOut>), rule);
     return services;
   }
 
@@ -77,25 +77,25 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
-  public static IServiceCollection AddRules<T, U>(
+  public static IServiceCollection AddRules<TIn, TOut>(
     this IServiceCollection services,
     Assembly assembly = null,
     string[] includes = null,
     string[] excludes = null)
   {
-    assembly ??= typeof(T).Assembly;
+    assembly ??= typeof(TIn).Assembly;
     includes ??= new string[] { };
     excludes ??= new string[] { };
-    foreach (var type in assembly.GetTypes<IRule<T, U>>(includes, excludes))
-      services.AddSingleton(typeof(IRule<T, U>), type);
-    services.AddRules<T>(assembly, includes, excludes)
-             .AddRules<U>(assembly, includes, excludes);
-    if (typeof(U).Assembly == typeof(T).Assembly) return services;
-    assembly = typeof(U).Assembly;
-    foreach (var type in typeof(U).Assembly.GetTypes<IRule<T, U>>(includes, excludes))
-      services.AddSingleton(typeof(IRule<T, U>), type);
-    services.AddRules<T>(assembly, includes, excludes)
-             .AddRules<U>(assembly, includes, excludes);
+    foreach (var type in assembly.GetTypes<IRule<TIn, TOut>>(includes, excludes))
+      services.AddSingleton(typeof(IRule<TIn, TOut>), type);
+    services.AddRules<TIn>(assembly, includes, excludes)
+             .AddRules<TOut>(assembly, includes, excludes);
+    if (typeof(TOut).Assembly == typeof(TIn).Assembly) return services;
+    assembly = typeof(TOut).Assembly;
+    foreach (var type in typeof(TOut).Assembly.GetTypes<IRule<TIn, TOut>>(includes, excludes))
+      services.AddSingleton(typeof(IRule<TIn, TOut>), type);
+    services.AddRules<TIn>(assembly, includes, excludes)
+             .AddRules<TOut>(assembly, includes, excludes);
     return services;
   }
 
@@ -111,25 +111,25 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
-  public static IServiceCollection AddAsyncRules<T, U>(
+  public static IServiceCollection AddAsyncRules<TIn, TOut>(
     this IServiceCollection services,
     Assembly assembly = null,
     string[] includes = null,
     string[] excludes = null)
   {
-    assembly ??= typeof(T).Assembly;
+    assembly ??= typeof(TIn).Assembly;
     includes ??= new string[] { };
     excludes ??= new string[] { };
-    foreach (var type in assembly.GetTypes<IAsyncRule<T, U>>(includes, excludes))
-      services.AddSingleton(typeof(IAsyncRule<T, U>), type);
-    services.AddAsyncRules<T>(assembly, includes, excludes)
-            .AddAsyncRules<U>(assembly, includes, excludes);
-    if (typeof(T).Assembly == typeof(U).Assembly) return services;
-    assembly = typeof(U).Assembly;
-    foreach (var type in assembly.GetTypes<IAsyncRule<T, U>>(includes, excludes))
-      services.AddSingleton(typeof(IAsyncRule<T, U>), type);
-    services.AddAsyncRules<T>(assembly, includes, excludes)
-            .AddAsyncRules<U>(assembly, includes, excludes);
+    foreach (var type in assembly.GetTypes<IAsyncRule<TIn, TOut>>(includes, excludes))
+      services.AddSingleton(typeof(IAsyncRule<TIn, TOut>), type);
+    services.AddAsyncRules<TIn>(assembly, includes, excludes)
+            .AddAsyncRules<TOut>(assembly, includes, excludes);
+    if (typeof(TIn).Assembly == typeof(TOut).Assembly) return services;
+    assembly = typeof(TOut).Assembly;
+    foreach (var type in assembly.GetTypes<IAsyncRule<TIn, TOut>>(includes, excludes))
+      services.AddSingleton(typeof(IAsyncRule<TIn, TOut>), type);
+    services.AddAsyncRules<TIn>(assembly, includes, excludes)
+            .AddAsyncRules<TOut>(assembly, includes, excludes);
     return services;
   }
 
@@ -146,17 +146,17 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
-  public static IServiceCollection AddRuleEngine<T, U>(
+  public static IServiceCollection AddRuleEngine<TIn, TOut>(
     this IServiceCollection services,
-    Action<IEngineBuilder<T, U>> action = null)
-    where T : class
-    where U : class
+    Action<IEngineBuilder<TIn, TOut>> action = null)
+    where TIn : class
+    where TOut : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
-    var builder = EngineBuilder.ForInputAndOutput<T, U>();
+    var builder = EngineBuilder.ForInputAndOutput<TIn, TOut>();
     action?.Invoke(builder);
-    services.AddSingleton(typeof(IEngineBuilder<T, U>), builder);
-    services.AddSingleton<IRuleEngine<T, U>, DefaultRuleEngine<T, U>>();
+    services.AddSingleton(typeof(IEngineBuilder<TIn, TOut>), builder);
+    services.AddSingleton<IRuleEngine<TIn, TOut>, DefaultRuleEngine<TIn, TOut>>();
     return services;
   }
 
@@ -170,17 +170,17 @@ public static class RuleEngineServiceCollectionExtensions
                    .AddSingleton<IAsyncRuleEngine<T>, DefaultAsyncRuleEngine<T>>();
   }
 
-  public static IServiceCollection AddAsyncRuleEngine<T, U>(
+  public static IServiceCollection AddAsyncRuleEngine<TIn, TOut>(
     this IServiceCollection services,
-    Action<IAsyncEngineBuilder<T, U>> action = null)
-      where T : class
-      where U : class
+    Action<IAsyncEngineBuilder<TIn, TOut>> action = null)
+      where TIn : class
+      where TOut : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
-    var builder = EngineBuilder.ForInputAndOutputAsync<T, U>();
+    var builder = EngineBuilder.ForInputAndOutputAsync<TIn, TOut>();
     action?.Invoke(builder);
-    return services.AddSingleton(typeof(IAsyncEngineBuilder<T, U>), builder)
-                   .AddSingleton<IAsyncRuleEngine<T, U>, DefaultAsyncRuleEngine<T, U>>();
+    return services.AddSingleton(typeof(IAsyncEngineBuilder<TIn, TOut>), builder)
+                   .AddSingleton<IAsyncRuleEngine<TIn, TOut>, DefaultAsyncRuleEngine<TIn, TOut>>();
   }
 
 

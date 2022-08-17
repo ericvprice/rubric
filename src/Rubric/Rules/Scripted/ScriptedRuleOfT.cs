@@ -7,7 +7,7 @@ namespace Rubric.Rules.Scripted;
 
 public class ScriptedRule<T> : IAsyncRule<T>
 {
-  private static readonly Type CONTEXT_TYPE = typeof(ScriptedRuleContext<T>);
+  private static readonly Type _contextType = typeof(ScriptedRuleContext<T>);
   private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Token);";
   private const string APPLY_TRAILER = "return Apply(Context, Input, Token);";
 
@@ -23,12 +23,12 @@ public class ScriptedRule<T> : IAsyncRule<T>
   )
   {
     Name = name;
-    Provides = provides?.Append(Name).ToArray() ?? new string[] { Name };
+    Provides = provides?.Append(Name).ToArray() ?? new [] { Name };
     Dependencies = dependsOn ?? new string[] { };
     options ??= GetDefaultOptions<T>();
     var baseCode = Create<bool>(script.FilterScript(),
                                 options,
-                                globalsType: CONTEXT_TYPE);
+                                globalsType: _contextType);
     _doesApply = baseCode.ContinueWith<Task<bool>>(DOES_APPLY_TRAILER)
                          .CreateDelegate();
     _apply = baseCode.ContinueWith<Task>(APPLY_TRAILER)
@@ -42,8 +42,8 @@ public class ScriptedRule<T> : IAsyncRule<T>
   public string Name { get; }
 
   public async Task Apply(IEngineContext context, T input, CancellationToken t)
-      => await await _apply(new ScriptedRuleContext<T>(context, input, t));
+      => await await _apply(new ScriptedRuleContext<T>(context, input, t), t);
 
   public async Task<bool> DoesApply(IEngineContext context, T input, CancellationToken t)
-      => await await _doesApply(new ScriptedRuleContext<T>(context, input, t));
+      => await await _doesApply(new ScriptedRuleContext<T>(context, input, t), t);
 }

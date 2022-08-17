@@ -4,6 +4,7 @@ using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 using Rubric.Rulesets;
+using Rubric.Rulesets.Async;
 
 namespace Rubric.Engines;
 

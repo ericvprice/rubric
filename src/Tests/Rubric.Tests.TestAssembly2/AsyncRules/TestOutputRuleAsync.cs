@@ -1,4 +1,4 @@
-﻿namespace Rubric.Tests.TestAssembly2.TestRules;
+﻿namespace Rubric.Tests.TestAssembly2.AsyncRules;
 
 internal class TestOutputRuleAsync : DefaultAsyncRule<TestAssemblyOutput2>
 {

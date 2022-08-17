@@ -1,4 +1,6 @@
-namespace Rubric.Rules.Async;
+using Rubric.Rules.Async;
+
+namespace Rubric.Rulesets.Async;
 
 public class AsyncRuleset<T> : IAsyncRuleset<T>
 {

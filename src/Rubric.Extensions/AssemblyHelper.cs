@@ -7,9 +7,11 @@ public static class AssemblyHelper
     if (that is null) throw new ArgumentNullException(nameof(that));
     var types = that.GetTypes()
                     .Where(t => typeof(T).IsAssignableFrom(t));
-    if (includes?.Any() ?? false)
+    includes = includes?.ToArray() ?? Array.Empty<string>();
+    excludes = excludes?.ToArray() ?? Array.Empty<string>();
+    if (includes.Any())
       types = types.Where(t => includes.Any(i => i == t.Name || i == t.FullName));
-    if (excludes?.Any() ?? false)
+    if (excludes.Any())
       types = types.Where(t => !excludes.Any(i => i == t.Name || i == t.FullName));
     return types;
   }

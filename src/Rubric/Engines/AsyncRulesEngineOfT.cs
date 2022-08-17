@@ -4,6 +4,7 @@ using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 using Rubric.Rulesets;
+using Rubric.Rulesets.Async;
 
 namespace Rubric.Engines;
 
@@ -45,7 +46,7 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
   /// <param name="handler">An exception handler.</param>
   /// <param name="logger">A logger.</param>
   public AsyncRuleEngine(
-      Ruleset<T> ruleSet,
+      IRuleset<T> ruleSet,
       bool isParallel = false,
       IExceptionHandler handler = null,
       ILogger logger = null

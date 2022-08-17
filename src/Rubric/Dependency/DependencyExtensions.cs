@@ -12,17 +12,17 @@ public static class DependencyExtensions
 
   private static readonly ConcurrentDictionary<Type, string[]> _providesCache = new();
 
-  public static string[] GetDependencies(Type t) 
+  public static string[] GetDependencies(Type type) 
     => _dependsCache.GetOrAdd(
-                      t,
+                      type,
                       t => t.GetCustomAttributes(true)
                             .OfType<DependsOnAttribute>()
                             .Select(d => d.Name)
                             .ToArray());
 
-  public static string[] GetProvides(Type t)
+  public static string[] GetProvides(Type type)
     => _providesCache.GetOrAdd(
-                      t,
+                      type,
                       t => t.GetCustomAttributes(true)
                             .OfType<ProvidesAttribute>()
                             .Select(d => d.Name)

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Engines;
 using Rubric.Rules;
 using Rubric.Rules.Async;
+using Rubric.Rulesets.Async;
 
 namespace Rubric.Builder;
 

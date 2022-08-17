@@ -1,12 +1,12 @@
 using Microsoft.CodeAnalysis.Scripting;
-using Rubric.Rules.Async;
+using Rubric.Rulesets.Async;
 using static Rubric.Extensions.Serialization.RuleLoader;
 
 namespace Rubric.Extensions.Serialization;
 
 internal class JsonRuleSet<T> : AsyncRuleset<T>
 {
-  public JsonRuleSet(AsyncRulesetModel<T> model, ScriptOptions options = null) : base()
+  public JsonRuleSet(AsyncRulesetModel<T> model, ScriptOptions options = null)
   {
     if (model == null)
       throw new ArgumentNullException($"'{nameof(model)}' cannot be null.", nameof(model));

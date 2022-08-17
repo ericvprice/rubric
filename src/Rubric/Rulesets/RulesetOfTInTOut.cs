@@ -8,8 +8,6 @@ public class Ruleset<TIn, TOut> : IRuleset<TIn, TOut>
   private readonly List<IRule<TIn>> _preRules = new();
   private readonly List<IRule<TIn, TOut>> _rules = new();
 
-  public Ruleset() { }
-
   public IEnumerable<IRule<TIn>> PreRules => _preRules;
 
   public IEnumerable<IRule<TIn, TOut>> Rules => _rules;

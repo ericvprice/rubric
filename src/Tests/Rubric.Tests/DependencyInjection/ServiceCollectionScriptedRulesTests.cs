@@ -47,7 +47,7 @@ public class ServiceCollectionScriptedRulesTests
             .AddScriptedRules<TestInput>(
               config,
               "ofTWithDeps",
-              (options) => options.AddReferences(typeof(TestDep).Assembly));
+              options => options.AddReferences(typeof(TestDep).Assembly));
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IAsyncRuleEngine<TestInput>>();
     Assert.NotNull(result);
@@ -56,7 +56,7 @@ public class ServiceCollectionScriptedRulesTests
   }
 
   [Fact]
-  public void AddScriptedRulesOfTU()
+  public void AddScriptedRulesOfTInTOut()
   {
     var services = new ServiceCollection();
     var configBuilder = new ConfigurationBuilder();
@@ -79,7 +79,7 @@ public class ServiceCollectionScriptedRulesTests
   }
 
   [Fact]
-  public void AddScriptedRulesOfTUWithDeps()
+  public void AddScriptedRulesOfTInTOutWithDeps()
   {
     var services = new ServiceCollection();
     var configBuilder = new ConfigurationBuilder();
@@ -94,7 +94,7 @@ public class ServiceCollectionScriptedRulesTests
             .AddScriptedRules<TestInput, TestOutput>(
               config,
               "ofTUWithDeps",
-              (options) => options.AddReferences(typeof(TestDep).Assembly));
+              options => options.AddReferences(typeof(TestDep).Assembly));
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IAsyncRuleEngine<TestInput, TestOutput>>();
     Assert.NotNull(result);

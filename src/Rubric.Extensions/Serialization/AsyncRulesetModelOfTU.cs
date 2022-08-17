@@ -1,6 +1,6 @@
 namespace Rubric.Extensions.Serialization;
 
-public class AsyncRulesetModel<T, U> : AsyncRulesetModel<T>
+public class AsyncRulesetModel<TIn, TOut> : AsyncRulesetModel<TIn>
 {
   public Dictionary<string, RuleModel> PreRules { get; set; } = new();
 

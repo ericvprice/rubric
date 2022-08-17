@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.Scripting;
 using Rubric.Extensions.Serialization;
 using Rubric.Rules.Scripted;
 using System.IO;
@@ -29,7 +28,7 @@ public class ScriptTests
   }
 
   [Fact]
-  public async Task BasicTestsOfTU()
+  public async Task BasicTestsOfTInTOut()
   {
     var rule = new ScriptedRule<TestInput, TestOutput>(
         "test",
@@ -39,7 +38,7 @@ public class ScriptTests
           Task Apply(IEngineContext context, TestInput input, TestOutput output, CancellationToken t) { output.TestFlag = true; return Task.CompletedTask; }
         "
     );
-    var input = new TestInput() { InputFlag = true };
+    var input = new TestInput { InputFlag = true };
     var output = new TestOutput();
     var context = new EngineContext();
     Assert.True(await rule.DoesApply(context, input, output, default));
@@ -54,7 +53,7 @@ public class ScriptTests
   [Fact]
   public async Task RuleSetTFromJson()
   {
-    var fileName = "Data\\TestRulesT.json";
+    const string fileName = "Data\\TestRulesT.json";
     var options = new JsonSerializerOptions
     {
       AllowTrailingCommas = true,
@@ -64,19 +63,20 @@ public class ScriptTests
     var ruleSetModel = JsonSerializer.Deserialize<AsyncRulesetModel<TestInput>>(
       await File.ReadAllTextAsync(fileName),
       options);
+    Assert.NotNull(ruleSetModel);
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
     var ruleset = new JsonRuleSet<TestInput>(ruleSetModel);
     Assert.Equal(2, ruleset.AsyncRules.Count());
-    var engine = new AsyncRuleEngine<TestInput>(ruleset, false);
+    var engine = new AsyncRuleEngine<TestInput>(ruleset);
     var input = new TestInput();
     await engine.ApplyAsync(input);
     Assert.True(input.InputFlag);
   }
 
   [Fact]
-  public async Task RuleSetTUFromJson()
+  public async Task RuleSetTInTOutFromJson()
   {
-    var fileName = "Data\\TestRulesTU.json";
+    const string fileName = "Data\\TestRulesTU.json";
     var options = new JsonSerializerOptions
     {
       AllowTrailingCommas = true,
@@ -86,13 +86,14 @@ public class ScriptTests
     var ruleSetModel = JsonSerializer.Deserialize<AsyncRulesetModel<TestInput, TestOutput>>(
       await File.ReadAllTextAsync(fileName),
       options);
+    Assert.NotNull(ruleSetModel);
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
     var scriptOptions = ScriptingHelpers.GetDefaultOptions<TestInput, TestOutput>();
     var ruleset = new JsonRuleSet<TestInput, TestOutput>(ruleSetModel, scriptOptions);
     Assert.Single(ruleset.AsyncPreRules);
     Assert.Single(ruleset.AsyncRules);
     Assert.Single(ruleset.AsyncPostRules);
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleset, false);
+    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleset);
     var input = new TestInput();
     var output = new TestOutput();
     await engine.ApplyAsync(input, output);

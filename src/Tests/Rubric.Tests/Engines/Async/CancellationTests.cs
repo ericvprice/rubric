@@ -1,4 +1,5 @@
-﻿namespace Rubric.Tests.Engines.Async;
+﻿// ReSharper disable MethodSupportsCancellation
+namespace Rubric.Tests.Engines.Async;
 
 public class CancellationTests
 {
@@ -36,7 +37,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, input.Counter);
   }
@@ -73,7 +74,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, input.Counter);
   }
@@ -112,7 +113,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, input.Counter);
   }
@@ -150,7 +151,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, input.Counter);
   }
@@ -192,7 +193,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, input.Counter);
     Assert.Equal(1, output.Counter);
@@ -234,7 +235,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, input.Counter);
     Assert.Equal(1, output.Counter);
@@ -274,7 +275,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, output.Counter);
   }
@@ -312,7 +313,7 @@ public class CancellationTests
     await Task.Delay(150);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
-    var exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+    await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
     Assert.Null(engine.LastException);
     Assert.Equal(1, output.Counter);
   }

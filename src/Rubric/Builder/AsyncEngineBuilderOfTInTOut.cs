@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Engines;
 using Rubric.Rules;
 using Rubric.Rules.Async;
+using Rubric.Rulesets.Async;
 
 namespace Rubric.Builder;
 
@@ -18,7 +19,7 @@ internal class AsyncEngineBuilder<TIn, TOut> : IAsyncEngineBuilder<TIn, TOut>
 
   public IExceptionHandler ExceptionHandler { get; private set; }
 
-  internal AsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new();
+  internal IAsyncRuleset<TIn, TOut> AsyncRuleset { get; } = new AsyncRuleset<TIn, TOut>();
 
   public IAsyncRuleEngine<TIn, TOut> Build()
     => new AsyncRuleEngine<TIn, TOut>(AsyncRuleset, IsParallel, ExceptionHandler, Logger);

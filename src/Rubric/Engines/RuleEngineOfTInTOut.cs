@@ -29,7 +29,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <param name="ruleset">A collection of various rules</param>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger</param>
-  public RuleEngine(Ruleset<TIn, TOut> ruleset,
+  public RuleEngine(IRuleset<TIn, TOut> ruleset,
                     IExceptionHandler exceptionHandler = null,
                     ILogger logger = null)
       : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, exceptionHandler, logger) { }
@@ -111,7 +111,6 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
     catch (EngineHaltException)
     {
-      return;
     }
   }
 
@@ -129,7 +128,6 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
     catch (EngineHaltException)
     {
-      return;
     }
   }
 
@@ -150,7 +148,6 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
     catch (ItemHaltException)
     {
-      return;
     }
   }
 

@@ -1,6 +1,6 @@
 ﻿using Rubric.Tests.TestAssembly;
 
-namespace Rubric.Tests.TestAssembly2.TestRules;
+namespace Rubric.Tests.TestAssembly2.AsyncRules;
 
 internal class TestInputOutputRuleAsync : DefaultAsyncRule<TestAssemblyInput, TestAssemblyOutput2>
 {
