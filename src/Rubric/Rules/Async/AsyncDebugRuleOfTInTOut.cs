@@ -10,8 +10,8 @@ public abstract class AsyncDebugRule<TIn,TOut> : AsyncRule<TIn, TOut>
   /// <inheritdoc />
   public override Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken t)
     #if DEBUG
-    => Task.FromResult(true);
-  #else
-      => Task.FromResult(false);
-  #endif
+        => Task.FromResult(true);
+    #else
+        => Task.FromResult(false);
+    #endif
 }

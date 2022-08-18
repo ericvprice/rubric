@@ -29,8 +29,7 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
-
-
+  
   public string Name { get; }
 
   public IEnumerable<string> Dependencies { get; }

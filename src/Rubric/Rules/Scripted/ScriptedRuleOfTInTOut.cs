@@ -7,13 +7,13 @@ namespace Rubric.Rules.Scripted;
 
 public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
 {
-
-  private static readonly Type _contextType = typeof(ScriptedRuleContext<TIn, TOut>);
   private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Output, Token);";
   private const string APPLY_TRAILER = "return Apply(Context, Input, Output, Token);";
 
-  private readonly ScriptRunner<Task<bool>> _doesApply;
+  private static readonly Type _contextType = typeof(ScriptedRuleContext<TIn, TOut>);
   private readonly ScriptRunner<Task> _apply;
+
+  private readonly ScriptRunner<Task<bool>> _doesApply;
 
   public ScriptedRule(
     string name,
@@ -27,12 +27,12 @@ public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
     Name = name;
     options ??= GetDefaultOptions<TIn, TOut>();
     var baseScript = Create<bool>(script.FilterScript(),
-                                 options,
-                                 globalsType: _contextType);
+                                  options,
+                                  _contextType);
     _doesApply = baseScript.ContinueWith<Task<bool>>(DOES_APPLY_TRAILER)
                            .CreateDelegate();
     _apply = baseScript.ContinueWith<Task>(APPLY_TRAILER)
-                           .CreateDelegate();
+                       .CreateDelegate();
   }
 
   public IEnumerable<string> Dependencies { get; }
@@ -42,8 +42,8 @@ public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
   public string Name { get; }
 
   public async Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken t)
-      => await await _apply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t), t);
+    => await await _apply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t), t);
 
   public async Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken t)
-      => await await _doesApply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t), t);
+    => await await _doesApply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t), t);
 }

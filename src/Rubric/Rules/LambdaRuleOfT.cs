@@ -1,7 +1,7 @@
 namespace Rubric.Rules;
 
 /// <summary>
-///     A runtime-constructed processing rule.
+///   A runtime-constructed processing rule.
 /// </summary>
 /// <typeparam name="T">The engine input type.</typeparam>
 public class LambdaRule<T> : IRule<T>
@@ -18,7 +18,7 @@ public class LambdaRule<T> : IRule<T>
     IEnumerable<string> provides = null
   )
   {
-    Name = String.IsNullOrWhiteSpace(name)
+    Name = string.IsNullOrWhiteSpace(name)
       ? throw new ArgumentException("Name is required and must be nonempty.", nameof(name))
       : name;
     _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
@@ -26,8 +26,7 @@ public class LambdaRule<T> : IRule<T>
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
-
-
+  
   public string Name { get; }
 
   public IEnumerable<string> Dependencies { get; }

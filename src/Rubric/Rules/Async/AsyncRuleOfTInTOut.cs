@@ -3,7 +3,7 @@ using Rubric.Dependency;
 namespace Rubric.Rules.Async;
 
 /// <summary>
-///     A runtime-constructed asynchronous processing rule.
+///   A runtime-constructed asynchronous processing rule.
 /// </summary>
 /// <typeparam name="TIn">The engine input type.</typeparam>
 /// <typeparam name="TOut">The engine output type.</typeparam>
@@ -17,5 +17,4 @@ public abstract class AsyncRule<TIn, TOut> : BaseDependency, IAsyncRule<TIn, TOu
 
   /// <inheritdoc />
   public abstract Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token);
-
 }
