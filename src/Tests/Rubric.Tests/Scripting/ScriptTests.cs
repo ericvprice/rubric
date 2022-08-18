@@ -53,7 +53,7 @@ public class ScriptTests
   [Fact]
   public async Task RuleSetTFromJson()
   {
-    const string fileName = "Data\\TestRulesT.json";
+    var fileName = Path.Combine("Data", "TestRulesT.json");
     var options = new JsonSerializerOptions
     {
       AllowTrailingCommas = true,
@@ -76,7 +76,7 @@ public class ScriptTests
   [Fact]
   public async Task RuleSetTInTOutFromJson()
   {
-    const string fileName = "Data\\TestRulesTU.json";
+    var fileName = Path.Combine("Data", "TestRulesTU.json");
     var options = new JsonSerializerOptions
     {
       AllowTrailingCommas = true,

@@ -19,7 +19,7 @@ public class ServiceCollectionScriptedRulesTests
                                     new KeyValuePair<string, string>(HostDefaults.ContentRootKey, root)
                                 })
                               .SetBasePath(Directory.GetCurrentDirectory())
-                              .AddJsonFile("Data\\appsettings.json")
+                              .AddJsonFile(Path.Combine("Data", "appsettings.json"))
                               .Build();
     services.AddAsyncRuleEngine<TestInput>()
             .AddScriptedRules<TestInput>(config, "ofT");
@@ -41,7 +41,7 @@ public class ServiceCollectionScriptedRulesTests
                                     new KeyValuePair<string, string>(HostDefaults.ContentRootKey, root)
                                 })
                               .SetBasePath(Directory.GetCurrentDirectory())
-                              .AddJsonFile("Data\\appsettings.json")
+                              .AddJsonFile(Path.Combine("Data", "appsettings.json"))
                               .Build();
     services.AddAsyncRuleEngine<TestInput>()
             .AddScriptedRules<TestInput>(
@@ -65,7 +65,7 @@ public class ServiceCollectionScriptedRulesTests
                                 {
                                     new KeyValuePair<string, string>(HostDefaults.ContentRootKey, root)
                                 })
-                              .AddJsonFile("Data\\appsettings.json")
+                              .AddJsonFile(Path.Combine("Data", "appsettings.json"))
                               .Build();
     services.AddAsyncRuleEngine<TestInput, TestOutput>()
             .AddScriptedRules<TestInput, TestOutput>(config, "ofTU");
@@ -88,7 +88,7 @@ public class ServiceCollectionScriptedRulesTests
                                 {
                                     new KeyValuePair<string, string>(HostDefaults.ContentRootKey, root)
                                 })
-                              .AddJsonFile("Data\\appsettings.json")
+                              .AddJsonFile(Path.Combine("Data", "appsettings.json"))
                               .Build();
     services.AddAsyncRuleEngine<TestInput, TestOutput>()
             .AddScriptedRules<TestInput, TestOutput>(
