@@ -10,8 +10,8 @@ public abstract class DebugRule<TIn, TOut> : Rule<TIn, TOut>
   /// <inheritdoc />
   public override bool DoesApply(IEngineContext context, TIn input, TOut output)
     #if DEBUG
-    => true;
-  #else
-      => false;
-  #endif
+        => true;
+    #else
+        => false;
+    #endif
 }

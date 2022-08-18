@@ -6,7 +6,7 @@
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
-public class NullRule<TIn, TOut> : AsyncRule<TIn, TOut>
+public class AsyncNullRule<TIn, TOut> : AsyncRule<TIn, TOut>
 {
   /// <inheritdoc />
   public override Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken t) 
