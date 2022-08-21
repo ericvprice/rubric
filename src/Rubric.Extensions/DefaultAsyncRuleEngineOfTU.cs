@@ -30,8 +30,6 @@ internal class DefaultAsyncRuleEngine<TIn, TOut> : IAsyncRuleEngine<TIn, TOut> w
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException => _instance.LastException;
-
   public IEnumerable<IAsyncRule<TIn>> PreRules => _instance.PreRules;
 
   public IEnumerable<IAsyncRule<TOut>> PostRules => _instance.PostRules;

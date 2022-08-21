@@ -25,8 +25,6 @@ internal class DefaultAsyncRuleEngine<T> : IAsyncRuleEngine<T> where T : class
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException => _instance.LastException;
-
   public bool IsParallel => _instance.IsParallel;
 
   public Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)

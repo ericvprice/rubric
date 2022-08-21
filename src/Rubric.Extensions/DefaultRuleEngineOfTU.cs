@@ -30,8 +30,6 @@ internal class DefaultRuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut> where TIn :
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
 
-  public EngineException LastException => _instance.LastException;
-
   public IEnumerable<IRule<TIn>> PreRules => _instance.PreRules;
 
   public IEnumerable<IRule<TOut>> PostRules => _instance.PostRules;

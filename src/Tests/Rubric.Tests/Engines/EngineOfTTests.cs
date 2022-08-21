@@ -49,11 +49,13 @@ public class EngineOfTTests
     var engine = new RuleEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule }
     );
-    engine.Apply(new[] { input, input2 });
+    var context = new EngineContext();
+    engine.Apply(new[] { input, input2 }, context);
     Assert.True(input.InputFlag);
     Assert.False(input2.InputFlag);
-    Assert.NotNull(engine.LastException);
-    var exception = engine.LastException;
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    var exception = ex;
     Assert.IsType<EngineHaltException>(exception);
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
@@ -78,11 +80,12 @@ public class EngineOfTTests
     var engine = new RuleEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule }
     );
-    engine.Apply(new[] { input, input2 });
+    var context = new EngineContext();
+    engine.Apply(new[] { input, input2 }, context);
     Assert.True(input.InputFlag);
     Assert.True(input2.InputFlag);
-    Assert.NotNull(engine.LastException);
-    var exception = engine.LastException;
+    var exception = context.GetLastException();
+    Assert.NotNull(exception);
     Assert.IsType<ItemHaltException>(exception);
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
@@ -108,11 +111,12 @@ public class EngineOfTTests
         new IRule<TestInput>[] { testPreRule },
         ExceptionHandlers.HaltItem
     );
-    engine.Apply(new[] { input, input2 });
+    var context = new EngineContext();
+    engine.Apply(new[] { input, input2 }, context);
     Assert.True(input.InputFlag);
     Assert.True(input2.InputFlag);
-    Assert.NotNull(engine.LastException);
-    var exception = engine.LastException;
+    var exception = context.GetLastException();
+    Assert.NotNull(exception);
     Assert.IsType<ItemHaltException>(exception);
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
@@ -138,11 +142,12 @@ public class EngineOfTTests
         new IRule<TestInput>[] { testPreRule },
         ExceptionHandlers.HaltEngine
     );
-    engine.Apply(new[] { input, input2 });
+    var context = new EngineContext();
+    engine.Apply(new[] { input, input2 }, context);
     Assert.True(input.InputFlag);
     Assert.False(input2.InputFlag);
-    Assert.NotNull(engine.LastException);
-    var exception = engine.LastException;
+    var exception = context.GetLastException();
+    Assert.NotNull(exception);
     Assert.IsType<EngineHaltException>(exception);
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
@@ -164,14 +169,15 @@ public class EngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
+    var context = new EngineContext();
     var engine = new RuleEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule },
         ExceptionHandlers.Rethrow
     );
-    var exception = Assert.Throws<Exception>(() => engine.Apply(new[] { input, input2 }));
+    var exception = Assert.Throws<Exception>(() => engine.Apply(new[] { input, input2 }, context));
     Assert.True(input.InputFlag);
     Assert.False(input2.InputFlag);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.IsNotType<EngineHaltException>(exception);
   }
 
@@ -238,9 +244,9 @@ public class EngineOfTTests
     var testPreRule = new TestExceptionPreRule(false);
     var engine = new RuleEngine<TestInput>(new Rule<TestInput>[] { testPreRule });
     var input = new TestInput();
-    Assert.Throws<Exception>(() => engine.Apply(input));
-    Assert.Null(engine.LastException);
-    Assert.IsNotType<EngineHaltException>(engine.LastException);
+    var context = new EngineContext();
+    Assert.Throws<Exception>(() => engine.Apply(input, context));
+    Assert.Null(context.GetLastException());
     Assert.True(input.InputFlag);
   }
 
@@ -250,10 +256,12 @@ public class EngineOfTTests
     var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new EngineHaltException("Test", null));
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule });
     var input = new TestInput();
-    engine.Apply(input);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    var exception = engine.LastException;
+    var context = new EngineContext();
+    engine.Apply(input, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    var exception = ex;
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
     Assert.Null(exception.Output);
@@ -267,10 +275,12 @@ public class EngineOfTTests
     var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new ItemHaltException());
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule });
     var input = new TestInput();
-    engine.Apply(input);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    var exception = engine.LastException;
+    var context = new EngineContext();
+    engine.Apply(input, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    var exception = ex;
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
     Assert.Null(exception.Output);
@@ -285,10 +295,12 @@ public class EngineOfTTests
     var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.HaltEngine);
     var input = new TestInput();
-    engine.Apply(input);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    var exception = engine.LastException;
+    var context = new EngineContext();
+    engine.Apply(input, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    var exception = ex;
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
     Assert.Null(exception.Output);
@@ -301,12 +313,14 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", (_, _) => true, (_, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
+    var context = new EngineContext();
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.HaltItem);
     var input = new TestInput();
-    engine.Apply(input);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    var exception = engine.LastException;
+    engine.Apply(input, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    var exception = ex;
     Assert.Equal(testPreRule, exception.Rule);
     Assert.Equal(input, exception.Input);
     Assert.Null(exception.Output);
@@ -321,8 +335,9 @@ public class EngineOfTTests
     var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Rethrow);
     var input = new TestInput();
-    var exception = Assert.Throws<Exception>(() => engine.Apply(input));
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    var exception = Assert.Throws<Exception>(() => engine.Apply(input, context));
+    Assert.Null(context.GetLastException());
     Assert.IsNotType<EngineException>(exception);
     Assert.False(input.InputFlag);
   }
@@ -335,8 +350,9 @@ public class EngineOfTTests
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 },
         new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
-    Assert.Throws<InvalidOperationException>(() => engine.Apply(input));
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    Assert.Throws<InvalidOperationException>(() => engine.Apply(input, context));
+    Assert.Null(context.GetLastException());
     Assert.False(input.InputFlag);
   }
 
@@ -347,8 +363,9 @@ public class EngineOfTTests
     var testPreRule2 = new LambdaRule<TestInput>("test2", (_, _) => true, (_, i) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, ExceptionHandlers.Ignore);
     var input = new TestInput();
-    engine.Apply(input);
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    engine.Apply(input, context);
+    Assert.Null(context.GetLastException());
     Assert.True(input.InputFlag);
   }
 
@@ -358,8 +375,9 @@ public class EngineOfTTests
     var testPreRule = new TestExceptionPreRule(true);
     var engine = new RuleEngine<TestInput>(new Rule<TestInput>[] { testPreRule }, ExceptionHandlers.Rethrow);
     var input = new TestInput();
-    var exception = Assert.Throws<Exception>(() => engine.Apply(input));
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    var exception = Assert.Throws<Exception>(() => engine.Apply(input, context));
+    Assert.Null(context.GetLastException());
     Assert.IsNotType<EngineException>(exception);
     Assert.False(input.InputFlag);
   }

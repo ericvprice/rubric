@@ -6,6 +6,18 @@ public static class EngineContextExtensions
 {
   public const string ENGINE_KEY = "__ENGINE";
 
+  public const string TRACE_ID_KEY = "__TRACE_ID";
+
+  public const string LAST_EXCEPTION_KEY = "__LAST_EXCEPTION";
+
+  public static string GetTraceId(this IEngineContext context)
+    => context.Get<string>(TRACE_ID_KEY);
+
+  public static EngineException GetLastException(this IEngineContext context)
+    => context.ContainsKey(LAST_EXCEPTION_KEY)
+        ? context.Get<EngineException>(LAST_EXCEPTION_KEY)
+        : null;
+
   /// <summary>
   ///     Get the currently executing engine.
   /// </summary>

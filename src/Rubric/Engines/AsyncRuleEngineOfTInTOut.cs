@@ -462,14 +462,12 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
         }, t)));
   }
 
-  private IEngineContext Reset(IEngineContext context)
+  internal IEngineContext Reset(IEngineContext context)
   {
     context ??= new EngineContext();
-    SetupContext(context);
-    LastException = null;
+    context[EngineContextExtensions.ENGINE_KEY] = this;
+    context[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
     return context;
   }
-
-  internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
 
 }
