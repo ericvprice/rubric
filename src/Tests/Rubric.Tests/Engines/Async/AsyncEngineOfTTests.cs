@@ -1,7 +1,8 @@
-﻿using Rubric.Tests.TestRules;
+﻿using Rubric.Rulesets;
+using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
 using System.Diagnostics;
-using System.Linq;
+using Rubric.Rulesets.Async;
 
 namespace Rubric.Tests.Engines.Async;
 
@@ -769,7 +770,7 @@ public class AsyncEngineOfTTests
     var testPreRule = new TestExceptionAsyncPreRule(false);
     var engine = new AsyncRuleEngine<TestInput>(new AsyncRule<TestInput>[] { testPreRule });
     var input = new TestInput();
-    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input));
+    await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input));
     Assert.Null(engine.LastException);
     Assert.IsNotType<EngineHaltException>(engine.LastException);
     Assert.True(input.InputFlag);
@@ -866,7 +867,7 @@ public class AsyncEngineOfTTests
     var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false,
         new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
-    var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(input));
+    await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(input));
     Assert.Null(engine.LastException);
     Assert.False(input.InputFlag);
   }

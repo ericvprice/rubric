@@ -1,4 +1,3 @@
-using System.Linq;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Engines.Async;

@@ -1,6 +1,6 @@
 namespace Rubric;
 
-public class LambdaExceptionHandler : IExceptionHandler
+internal class LambdaExceptionHandler : IExceptionHandler
 {
   private readonly Func<Exception, IEngineContext, object, object, object, bool> _handler;
 

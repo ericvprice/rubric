@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+     run:
+        working-directory: ./src
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml /p:Threshold=95
+    - name: Package
+      run: dotnet pack --configuration Release --no-build --output .
+    - name: Push to nuget.org
+      run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json

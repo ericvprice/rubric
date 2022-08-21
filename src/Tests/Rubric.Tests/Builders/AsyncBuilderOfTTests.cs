@@ -1,10 +1,9 @@
-using System.Linq;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Builders;
 
-public class SingleTypeAsyncBuilderTests
+public class AsyncBuilderOfTTests
 {
   [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()

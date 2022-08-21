@@ -1,9 +1,7 @@
-using System.Threading;
-
 namespace Rubric.Rules.Async;
 
 /// <summary>
-///     Asynchronous wrapper for a synchronous rule.
+///   Asynchronous wrapper for a synchronous rule.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public class AsyncRuleWrapper<T> : IAsyncRule<T>
@@ -11,7 +9,7 @@ public class AsyncRuleWrapper<T> : IAsyncRule<T>
   private readonly IRule<T> _syncRule;
 
   /// <summary>
-  ///     Create a wrapper around the equivalent synchronous rule.
+  ///   Create a wrapper around the equivalent synchronous rule.
   /// </summary>
   /// <param name="syncRule">The synchronous rule.</param>
   public AsyncRuleWrapper(IRule<T> syncRule) => _syncRule = syncRule;

@@ -1,4 +1,3 @@
-using System.Threading;
 using Rubric.Rules.Async;
 using static System.String;
 

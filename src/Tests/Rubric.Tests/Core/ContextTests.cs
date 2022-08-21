@@ -1,3 +1,5 @@
+using Rubric.Rulesets.Async;
+
 namespace Rubric.Tests.Core;
 
 public class ContextTests

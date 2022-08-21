@@ -1,5 +1,5 @@
-﻿using System.Threading;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Rubric.Engines;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 
@@ -18,7 +18,7 @@ internal static class EngineExtensions
   /// <param name="r">The current r.</param>
   /// <param name="i">The current i item.</param>
   /// <param name="t">The cancellation t.</param>
-  internal static async Task ApplyAsyncPreRule<T>(this IRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
+  internal static async Task ApplyAsyncPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
     try
@@ -39,7 +39,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, i, null, t))
+      if (!e.HandleException(ex, e, ctx, r, i, null, t))
       {
         throw;
       }
@@ -54,7 +54,7 @@ internal static class EngineExtensions
   /// <param name="r">The current r.</param>
   /// <param name="o">The o item.</param>
   /// <param name="t">The cancellation t.</param>
-  internal static async Task ApplyAsyncPostRule<T>(this IRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
+  internal static async Task ApplyAsyncPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
     try
@@ -75,7 +75,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, null, o, t))
+      if (!e.HandleException(ex, e, ctx, r, null, o, t))
       {
         throw;
       }
@@ -91,7 +91,7 @@ internal static class EngineExtensions
   /// <param name="i">The current i item.</param>
   /// <param name="o">The o item.</param>
   /// <param name="t">The cancellation t.</param>
-  internal static async Task ApplyAsyncRule<TIn, TOut>(this IRuleEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
+  internal static async Task ApplyAsyncRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
     try
@@ -112,7 +112,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, i, o, t))
+      if (!e.HandleException(ex, e, ctx, r, i, o, t))
       {
         throw;
       }
@@ -126,7 +126,7 @@ internal static class EngineExtensions
   /// <param name="ctx">Engine context.</param>
   /// <param name="r">The current r.</param>
   /// <param name="i">The current i item.</param>
-  internal static void ApplyPreRule<T>(this IRuleEngine e, IEngineContext ctx, IRule<T> r, T i)
+  internal static void ApplyPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T i)
   {
     try
     {
@@ -144,7 +144,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, i, null))
+      if (!e.HandleException(ex, e, ctx, r, i, null))
       {
         throw;
       }
@@ -159,7 +159,7 @@ internal static class EngineExtensions
   /// <param name="r">The current r.</param>
   /// <param name="i">The current i item.</param>
   /// <param name="o">The current o item.</param>
-  internal static void ApplyRule<TIn, TOut>(this IRuleEngine e, IEngineContext ctx, IRule<TIn, TOut> r, TIn i, TOut o)
+  internal static void ApplyRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IRule<TIn, TOut> r, TIn i, TOut o)
   {
     try
     {
@@ -176,7 +176,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, i, o))
+      if (!e.HandleException(ex, e, ctx, r, i, o))
       {
         throw;
       }
@@ -190,7 +190,7 @@ internal static class EngineExtensions
   /// <param name="ctx">Engine context.</param>
   /// <param name="r">The current r.</param>
   /// <param name="o">The o item.</param>
-  internal static void ApplyPostRule<T>(this IRuleEngine e, IEngineContext ctx, IRule<T> r, T o)
+  internal static void ApplyPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T o)
   {
     try
     {
@@ -207,73 +207,15 @@ internal static class EngineExtensions
     }
     catch (ItemHaltException)
     {
-      return;
     }
     catch (Exception ex)
     {
-      if (!HandleException(ex, e, ctx, r, null, o))
+      if (!e.HandleException(ex, e, ctx, r, null, o))
       {
         throw;
       }
     }
   }
-
-  /// <summary>
-  ///   Consistently handle exceptions after attempting to run a rule.
-  /// </summary>
-  /// <param name="ex">The exception.</param>
-  /// <param name="e">The e.</param>
-  /// <param name="ctx">The current context.</param>
-  /// <param name="rule">The r being executed.</param>
-  /// <param name="input">The current i object.</param>
-  /// <param name="output">The current o object.</param>
-  /// <param name="t">The cancellation t, if present.</param>
-  /// <returns>Whether the exception should be rethrown.</returns>
-  private static bool HandleException(Exception ex, IRuleEngine e, IEngineContext ctx, object rule, object input, object output, CancellationToken t = default)
-  {
-    switch (ex)
-    {
-      //Ignore user-requested task cancellation exceptions
-      case TaskCanceledException tce:
-        if (t == tce.CancellationToken)
-        {
-          return false;
-        }
-        try
-        {
-          return e.ExceptionHandler.HandleException(ex, ctx, input, null, rule);
-        }
-        catch (EngineException ee)
-        {
-          ee.Rule = rule;
-          ee.Input = input;
-          ee.Output = output;
-          ee.Context = ctx;
-          e.LastException = ee;
-          throw;
-        }
-      case EngineException ee:
-        ee.Rule = rule;
-        ee.Input = input;
-        ee.Output = output;
-        ee.Context = ctx;
-        e.LastException = ee;
-        return false;
-      default:
-        try
-        {
-          return e.ExceptionHandler.HandleException(ex, ctx, input, null, rule);
-        }
-        catch (EngineException ee)
-        {
-          ee.Rule = rule;
-          ee.Input = input;
-          ee.Output = output;
-          ee.Context = ctx;
-          e.LastException = ee;
-          throw;
-        }
-    }
-  }
+  
 
 }

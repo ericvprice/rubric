@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace Rubric.Builder;
 
 public interface IAsyncPreRuleBuilder<TIn, TOut>

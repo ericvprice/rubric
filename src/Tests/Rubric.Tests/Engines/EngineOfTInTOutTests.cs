@@ -1,4 +1,4 @@
-using System.Linq;
+using Rubric.Rulesets;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Engines;
@@ -60,7 +60,7 @@ public class EngineOfTInTOutTests
     var engine = new RuleEngine<TestInput, TestOutput>(null, new Rule<TestInput, TestOutput>[] { rule }, null);
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = Assert.Throws<Exception>(() => engine.Apply(input, output));
+    Assert.Throws<Exception>(() => engine.Apply(input, output));
     Assert.True(input.InputFlag);
     Assert.True(output.TestFlag);
   }
