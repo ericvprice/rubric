@@ -47,7 +47,7 @@ Example script file:
 //Note, the references below are at Design time only (to help with Intellisense and the like)
 //All reference loading ('#r') commands are stripped from the script before compilation.
 //The app tightly controls the build context: you must load code dependencies by setting up ScriptOptions
-//in AddScriptedRules.  Rubric will automaticall adds itself, a few .NET core assemblies,
+//in AddScriptedRules.  Rubric automatically adds itself, a few .NET core assemblies,
 //and the assemblies of the types provided in the generic signature to the compilation context.
 #r "..\bin\Debug\net6.0\Rubric.dll"
 #r "..\bin\Debug\net6.0\Rubric.Tests.dll"
