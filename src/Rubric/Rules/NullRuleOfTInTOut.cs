@@ -1,4 +1,6 @@
-﻿namespace Rubric.Rules;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Rubric.Rules;
 
 /// <summary>
 ///   Utility rule that never executes and does nothing, but can serve as a provider of dependencies for other rules
@@ -9,6 +11,7 @@
 public class NullRule<TIn, TOut> : Rule<TIn, TOut>
 {
   /// <inheritdoc />
+  [ExcludeFromCodeCoverage]
   public override void Apply(IEngineContext context, TIn input, TOut output) { }
 
   /// <inheritdoc />

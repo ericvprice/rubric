@@ -191,15 +191,14 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
       foreach (var rule in set)
       {
         t.ThrowIfCancellationRequested();
-        using (Logger.BeginScope("Rule: {Rule}", rule.Name))
-          try
-          {
-            await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
-          }
-          catch (ItemHaltException)
-          {
-            return;
-          }
+        try
+        {
+          await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+        }
+        catch (ItemHaltException)
+        {
+          return;
+        }
       }
   }
 
@@ -220,7 +219,6 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
       rules.Select(
         r => Task.Run(async () =>
         {
-          using (Logger.BeginScope("Rule: {Rule}", r.Name))
             try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
             catch (Exception) { cts.Cancel(); throw; }
         }, t)));

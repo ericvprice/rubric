@@ -146,7 +146,6 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           this.ApplyPreRule(ctx, rule, input);
       foreach (var set in _rules)
         foreach (var rule in set)
-          using (Logger.BeginScope("Rule: {Rule}", rule.Name))
             this.ApplyRule(ctx, rule, input, output);
     }
     catch (ItemHaltException)

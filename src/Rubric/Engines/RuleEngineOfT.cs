@@ -97,15 +97,14 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   {
     foreach (var set in _rules)
       foreach (var rule in set)
-        using (Logger.BeginScope("Rule: {Rule}", rule.Name))
-          try
-          {
-            this.ApplyPreRule(ctx, rule, input);
-          }
-          catch (ItemHaltException)
-          {
-            return;
-          }
+        try
+        {
+          this.ApplyPreRule(ctx, rule, input);
+        }
+        catch (ItemHaltException)
+        {
+          return;
+        }
   }
 
   private IEngineContext Reset(IEngineContext ctx)

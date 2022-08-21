@@ -21,30 +21,30 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
-    using (e.Logger.BeginScope("Rule: {Rule}", r.Name))
-      try
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    try
+    {
+      var doesApply = await r.DoesApply(ctx, i, t).ConfigureAwait(false);
+      if (doesApply)
       {
-        var doesApply = await r.DoesApply(ctx, i, t).ConfigureAwait(false);
-        if (doesApply)
-        {
-          using var logCtx = e.Logger.BeginScope(r.Name);
-          e.Logger.LogTrace("Rule {name} applies.", r.Name);
-          e.Logger.LogTrace("Applying {name}.", r.Name);
-          await r.Apply(ctx, i, t).ConfigureAwait(false);
-          e.Logger.LogTrace("Finished applying {name}.", r.Name);
-        }
-        else
-        {
-          e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-        }
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Applying {name}.", r.Name);
+        await r.Apply(ctx, i, t).ConfigureAwait(false);
+        e.Logger.LogTrace("Finished applying {name}.", r.Name);
       }
-      catch (Exception ex)
+      else
       {
-        if (!e.HandleException(ex, e, ctx, r, i, null, t))
-        {
-          throw;
-        }
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
       }
+    }
+    catch (Exception ex)
+    {
+      if (!e.HandleException(ex, e, ctx, r, i, null, t))
+      {
+        throw;
+      }
+    }
   }
 
   /// <summary>
@@ -58,30 +58,30 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
-    using (e.Logger.BeginScope("Rule: {Rule}", r.Name))
-      try
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    try
+    {
+      var doesApply = await r.DoesApply(ctx, o, t).ConfigureAwait(false);
+      if (doesApply)
       {
-        var doesApply = await r.DoesApply(ctx, o, t).ConfigureAwait(false);
-        if (doesApply)
-        {
-          using var logCtx = e.Logger.BeginScope(r.Name);
-          e.Logger.LogTrace("Rule {name} applies.", r.Name);
-          e.Logger.LogTrace("Applying {name}.", r.Name);
-          await r.Apply(ctx, o, t).ConfigureAwait(false);
-          e.Logger.LogTrace("Finished applying {name}.", r.Name);
-        }
-        else
-        {
-          e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-        }
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Applying {name}.", r.Name);
+        await r.Apply(ctx, o, t).ConfigureAwait(false);
+        e.Logger.LogTrace("Finished applying {name}.", r.Name);
       }
-      catch (Exception ex)
+      else
       {
-        if (!e.HandleException(ex, e, ctx, r, null, o, t))
-        {
-          throw;
-        }
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
       }
+    }
+    catch (Exception ex)
+    {
+      if (!e.HandleException(ex, e, ctx, r, null, o, t))
+      {
+        throw;
+      }
+    }
   }
 
   /// <summary>
@@ -96,30 +96,30 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
-    using (e.Logger.BeginScope("Rule: {Rule}", r.Name))
-      try
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    try
+    {
+      var doesApply = await r.DoesApply(ctx, i, o, t).ConfigureAwait(false);
+      if (doesApply)
       {
-        var doesApply = await r.DoesApply(ctx, i, o, t).ConfigureAwait(false);
-        if (doesApply)
-        {
-          using var logCtx = e.Logger.BeginScope(r.Name);
-          e.Logger.LogTrace("Rule {name} applies.", r.Name);
-          e.Logger.LogTrace("Applying {name}.", r.Name);
-          await r.Apply(ctx, i, o, t).ConfigureAwait(false);
-          e.Logger.LogTrace("Finished applying {name}.", r.Name);
-        }
-        else
-        {
-          e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-        }
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Applying {name}.", r.Name);
+        await r.Apply(ctx, i, o, t).ConfigureAwait(false);
+        e.Logger.LogTrace("Finished applying {name}.", r.Name);
       }
-      catch (Exception ex)
+      else
       {
-        if (!e.HandleException(ex, e, ctx, r, i, o, t))
-        {
-          throw;
-        }
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
       }
+    }
+    catch (Exception ex)
+    {
+      if (!e.HandleException(ex, e, ctx, r, i, o, t))
+      {
+        throw;
+      }
+    }
   }
 
   /// <summary>
@@ -131,28 +131,28 @@ internal static class EngineExtensions
   /// <param name="i">The current i item.</param>
   internal static void ApplyPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T i)
   {
-    using (e.Logger.BeginScope("Rule: {Rule}", r.Name))
-      try
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    try
+    {
+      var doesApply = r.DoesApply(ctx, i);
+      if (!doesApply)
       {
-        var doesApply = r.DoesApply(ctx, i);
-        if (!doesApply)
-        {
-          e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-          return;
-        }
-        e.Logger.LogTrace("Rule {name} applies.", r.Name);
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        return;
+      }
+      e.Logger.LogTrace("Rule {name} applies.", r.Name);
 
-        e.Logger.LogTrace("Applying {name}.", r.Name);
-        r.Apply(ctx, i);
-        e.Logger.LogTrace("Finished applying {Name}.", r.Name);
-      }
-      catch (Exception ex)
+      e.Logger.LogTrace("Applying {name}.", r.Name);
+      r.Apply(ctx, i);
+      e.Logger.LogTrace("Finished applying {Name}.", r.Name);
+    }
+    catch (Exception ex)
+    {
+      if (!e.HandleException(ex, e, ctx, r, i, null))
       {
-        if (!e.HandleException(ex, e, ctx, r, i, null))
-        {
-          throw;
-        }
+        throw;
       }
+    }
   }
 
   /// <summary>
@@ -165,27 +165,27 @@ internal static class EngineExtensions
   /// <param name="o">The current o item.</param>
   internal static void ApplyRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IRule<TIn, TOut> r, TIn i, TOut o)
   {
-    using (e.Logger.BeginScope("Rule: {Rule}", r.Name))
-      try
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    try
+    {
+      var doesApply = r.DoesApply(ctx, i, o);
+      if (!doesApply)
       {
-        var doesApply = r.DoesApply(ctx, i, o);
-        if (!doesApply)
-        {
-          e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-          return;
-        }
-        e.Logger.LogTrace("Rule {name} applies.", r.Name);
-        e.Logger.LogTrace("Applying {name}.", r.Name);
-        r.Apply(ctx, i, o);
-        e.Logger.LogTrace("Finished applying {name}.", r.Name);
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        return;
       }
-      catch (Exception ex)
+      e.Logger.LogTrace("Rule {name} applies.", r.Name);
+      e.Logger.LogTrace("Applying {name}.", r.Name);
+      r.Apply(ctx, i, o);
+      e.Logger.LogTrace("Finished applying {name}.", r.Name);
+    }
+    catch (Exception ex)
+    {
+      if (!e.HandleException(ex, e, ctx, r, i, o))
       {
-        if (!e.HandleException(ex, e, ctx, r, i, o))
-        {
-          throw;
-        }
+        throw;
       }
+    }
   }
 
   /// <summary>
@@ -197,31 +197,29 @@ internal static class EngineExtensions
   /// <param name="o">The o item.</param>
   internal static void ApplyPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T o)
   {
-    using (e.Logger.BeginScope("Rule: {Rule}", r.Name))
-      try
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    try
+    {
+      var doesApply = r.DoesApply(ctx, o);
+      if (!doesApply)
       {
-        var doesApply = r.DoesApply(ctx, o);
-        if (!doesApply)
-        {
-          e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-          return;
-        }
-        e.Logger.LogTrace("Rule {name} does not applies.", r.Name);
-        e.Logger.LogTrace("Applying {name}.", r.Name);
-        r.Apply(ctx, o);
-        e.Logger.LogTrace("Finished applying {name}.", r.Name);
+        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        return;
       }
-      catch (ItemHaltException)
+      e.Logger.LogTrace("Rule {name} does not applies.", r.Name);
+      e.Logger.LogTrace("Applying {name}.", r.Name);
+      r.Apply(ctx, o);
+      e.Logger.LogTrace("Finished applying {name}.", r.Name);
+    }
+    catch (ItemHaltException)
+    {
+    }
+    catch (Exception ex)
+    {
+      if (!e.HandleException(ex, e, ctx, r, null, o))
       {
+        throw;
       }
-      catch (Exception ex)
-      {
-        if (!e.HandleException(ex, e, ctx, r, null, o))
-        {
-          throw;
-        }
-      }
+    }
   }
-
-
 }
