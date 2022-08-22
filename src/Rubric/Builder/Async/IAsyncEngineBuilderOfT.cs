@@ -1,7 +1,8 @@
+using Rubric.Async;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 
-namespace Rubric.Builder;
+namespace Rubric.Builder.Async;
 
 public interface IAsyncEngineBuilder<T>
     where T : class

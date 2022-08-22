@@ -1,7 +1,7 @@
 using Rubric.Rules.Async;
 using static System.String;
 
-namespace Rubric.Builder;
+namespace Rubric.Builder.Async;
 
 internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
     where TIn : class

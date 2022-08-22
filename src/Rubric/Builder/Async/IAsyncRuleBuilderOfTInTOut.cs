@@ -1,4 +1,4 @@
-namespace Rubric.Builder;
+namespace Rubric.Builder.Async;
 
 public interface IAsyncRuleBuilder<TIn, TOut>
   where TIn : class

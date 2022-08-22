@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rubric.Async;
 using Rubric.Extensions;
 using Rubric.Extensions.Serialization;
 using Rubric.Tests.TestAssembly;

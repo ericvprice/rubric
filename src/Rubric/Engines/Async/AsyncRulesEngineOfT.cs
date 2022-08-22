@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Rubric.Async;
 using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 using Rubric.Rulesets;
 using Rubric.Rulesets.Async;
 
-namespace Rubric.Engines;
+namespace Rubric.Engines.Async;
 
 public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     where T : class

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Rubric.Builder.Async;
 
 namespace Rubric.Builder;
 

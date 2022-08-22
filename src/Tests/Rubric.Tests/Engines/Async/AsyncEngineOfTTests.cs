@@ -2,6 +2,7 @@
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
 using System.Diagnostics;
+using Rubric.Engines.Async;
 using Rubric.Rulesets.Async;
 
 namespace Rubric.Tests.Engines.Async;

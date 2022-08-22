@@ -1,3 +1,5 @@
+using Rubric.Async;
+using Rubric.Engines.Async;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Engines.Async;

@@ -7,7 +7,7 @@ for Rubic comapatible with the Microsoft.Extensions.DependencyInjection framewor
 ## Usage
 
 * `AddRuleEngine*(...)` - Inject a rule engine implementation with the given types.  A lambda to configure the builder may be provided to configure the engine.  Async versions are provided.
-* `AddRules*(Assembly a == null)` - Scan the given assembly, or if null is provided, the assemblies containing the provided types in the generic arguments, for rules compatible with engines of that type.
+* `AddRules*(Assembly a = null)` - Scan the given assembly, or if null is provided, the assemblies containing the provided types in the generic arguments, for rules compatible with engines of that type.
 * `AddScriptedRules*(IConfiguration config, string section)` - Load rules for engines of this type from external `.csx` scripts in the given configuration section.
 
 ## Scripted Rules

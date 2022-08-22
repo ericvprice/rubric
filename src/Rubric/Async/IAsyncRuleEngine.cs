@@ -1,4 +1,4 @@
-namespace Rubric;
+namespace Rubric.Async;
 
 public interface IAsyncRuleEngine : IRuleEngine
 {

@@ -2,6 +2,8 @@ using Microsoft.Extensions.Logging;
 using Rubric.Builder;
 using Rubric.Rules.Async;
 using System.Diagnostics.CodeAnalysis;
+using Rubric.Async;
+using Rubric.Builder.Async;
 
 namespace Rubric.Extensions;
 

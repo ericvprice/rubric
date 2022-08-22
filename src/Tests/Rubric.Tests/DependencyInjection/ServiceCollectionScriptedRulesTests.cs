@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rubric.TestAssembly3;
 using System.IO;
+using Rubric.Async;
 
 namespace Rubric.Tests.DependencyInjection;
 
