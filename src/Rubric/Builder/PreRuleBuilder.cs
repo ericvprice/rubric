@@ -23,16 +23,9 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
   }
 
 
-  public IEngineBuilder<TIn, TOut> EndRule()
+  public IPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, bool> predicate)
   {
-    _parentBuilder.Ruleset.AddPreRule(new LambdaRule<TIn>(_name, _predicate, _action, _deps, _provides));
-    return _parentBuilder;
-  }
-
-  public IPreRuleBuilder<TIn, TOut> ThatProvides(string provides)
-  {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
-    _provides.Add(provides);
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
   }
 
@@ -55,9 +48,16 @@ internal class PreRuleBuilder<TIn, TOut> : IPreRuleBuilder<TIn, TOut>
     return this;
   }
 
-  public IPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, bool> predicate)
+  public IPreRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
+    _provides.Add(provides);
     return this;
+  }
+
+  public IEngineBuilder<TIn, TOut> EndRule()
+  {
+    _parentBuilder.Ruleset.AddPreRule(new LambdaRule<TIn>(_name, _predicate, _action, _deps, _provides));
+    return _parentBuilder;
   }
 }

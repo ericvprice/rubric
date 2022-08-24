@@ -164,7 +164,7 @@ public class ServiceCollectionTests
   {
     var services = new ServiceCollection();
     services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>(
-              b => b.WithRule("foo")
+              b => b.WithAsyncRule("foo")
                     .WithAction((_, _, _) => Task.CompletedTask)
                     .EndRule()
             )

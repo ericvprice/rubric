@@ -4,8 +4,8 @@ using static System.String;
 namespace Rubric.Builder;
 
 internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   private readonly List<string> _deps;
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
@@ -17,26 +17,17 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
   {
     _parentBuilder = engineBuilder;
     Name = IsNullOrWhiteSpace(name)
-        ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
-        : name;
+      ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
+      : name;
     _provides = new() { name };
     _deps = new();
   }
 
   public string Name { get; }
 
-
-  public IEngineBuilder<TIn, TOut> EndRule()
+  public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, bool> predicate)
   {
-    _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(Name, _predicate, _action, _deps, _provides));
-    return _parentBuilder;
-  }
-
-  public IPostRuleBuilder<TIn, TOut> ThatProvides(string provides)
-  {
-    if (IsNullOrWhiteSpace(provides))
-      throw new ArgumentException("String cannot be null or empty.", nameof(provides));
-    _provides.Add(provides);
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
   }
 
@@ -59,9 +50,17 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
     return this;
   }
 
-  public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, bool> predicate)
+  public IPostRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    if (IsNullOrWhiteSpace(provides))
+      throw new ArgumentException("String cannot be null or empty.", nameof(provides));
+    _provides.Add(provides);
     return this;
+  }
+
+  public IEngineBuilder<TIn, TOut> EndRule()
+  {
+    _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(Name, _predicate, _action, _deps, _provides));
+    return _parentBuilder;
   }
 }

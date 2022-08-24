@@ -85,21 +85,21 @@ public class CancellationTests
   public async Task EngineParallelPreCancellation()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule("1")
+                              .WithAsyncPreRule("1")
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(100, t);
                                   i.Counter++;
                                 })
                               .EndRule()
-                              .WithPreRule("2")
+                              .WithAsyncPreRule("2")
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(200, t);
                                   i.Counter++;
                                 })
                               .EndRule()
-                              .WithPreRule("3")
+                              .WithAsyncPreRule("3")
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(300, t);
@@ -125,21 +125,21 @@ public class CancellationTests
   public async Task EnginePreCancellation()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule("1")
+                              .WithAsyncPreRule("1")
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(100, t);
                                   i.Counter++;
                                 })
                               .EndRule()
-                              .WithPreRule("2")
+                              .WithAsyncPreRule("2")
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(200, t);
                                   i.Counter++;
                                 })
                               .EndRule()
-                              .WithPreRule("3")
+                              .WithAsyncPreRule("3")
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(300, t);
@@ -164,7 +164,7 @@ public class CancellationTests
   public async Task ParallelEngineCancellation()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithRule("1")
+                              .WithAsyncRule("1")
                                 .WithAction(async (_, i, o, t) =>
                                 {
                                   await Task.Delay(100, t);
@@ -172,7 +172,7 @@ public class CancellationTests
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithRule("2")
+                              .WithAsyncRule("2")
                                 .WithAction(async (_, i, o, t) =>
                                 {
                                   await Task.Delay(200, t);
@@ -180,7 +180,7 @@ public class CancellationTests
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithRule("3")
+                              .WithAsyncRule("3")
                                 .WithAction(async (_, i, o, t) =>
                                 {
                                   await Task.Delay(300, t);
@@ -208,7 +208,7 @@ public class CancellationTests
   public async Task EngineCancellation()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithRule("1")
+                              .WithAsyncRule("1")
                                 .WithAction(async (_, i, o, t) =>
                                 {
                                   await Task.Delay(100, t);
@@ -216,7 +216,7 @@ public class CancellationTests
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithRule("2")
+                              .WithAsyncRule("2")
                                 .WithAction(async (_, i, o, t) =>
                                 {
                                   await Task.Delay(200, t);
@@ -224,7 +224,7 @@ public class CancellationTests
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithRule("3")
+                              .WithAsyncRule("3")
                                 .WithAction(async (_, i, o, t) =>
                                 {
                                   await Task.Delay(300, t);
@@ -251,21 +251,21 @@ public class CancellationTests
   public async Task EngineParallelPostCancellation()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPostRule("1")
+                              .WithAsyncPostRule("1")
                                 .WithAction(async (_, o, t) =>
                                 {
                                   await Task.Delay(100, t);
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithPostRule("2")
+                              .WithAsyncPostRule("2")
                                 .WithAction(async (_, o, t) =>
                                 {
                                   await Task.Delay(200, t);
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithPostRule("3")
+                              .WithAsyncPostRule("3")
                                 .WithAction(async (_, o, t) =>
                                 {
                                   await Task.Delay(300, t);
@@ -291,21 +291,21 @@ public class CancellationTests
   public async Task EnginePostCancellation()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPostRule("1")
+                              .WithAsyncPostRule("1")
                                 .WithAction(async (_, o, t) =>
                                 {
                                   await Task.Delay(100, t);
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithPostRule("2")
+                              .WithAsyncPostRule("2")
                                 .WithAction(async (_, o, t) =>
                                 {
                                   await Task.Delay(200, t);
                                   o.Counter++;
                                 })
                               .EndRule()
-                              .WithPostRule("3")
+                              .WithAsyncPostRule("3")
                                 .WithAction(async (_, o, t) =>
                                 {
                                   await Task.Delay(300, t);

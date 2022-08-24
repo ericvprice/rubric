@@ -15,7 +15,7 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 
   internal ILogger Logger { get; }
 
-  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
+  internal IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
   public IRuleBuilder<T> WithRule(string name)
       => new RuleBuilder<T>(this, name);

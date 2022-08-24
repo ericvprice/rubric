@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Rubric.Builder;
 using Rubric.Rules.Async;
 using System.Diagnostics.CodeAnalysis;
 using Rubric.Async;

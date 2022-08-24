@@ -8,19 +8,19 @@ public interface IEngineBuilder<TIn, TOut>
 {
   IPreRuleBuilder<TIn, TOut> WithPreRule(string name);
 
-  IRuleBuilder<TIn, TOut> WithRule(string name);
-
-  IPostRuleBuilder<TIn, TOut> WithPostRule(string name);
-
   IEngineBuilder<TIn, TOut> WithPreRule(IRule<TIn> rule);
+
+  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<IRule<TIn>> rule);
+  
+  IRuleBuilder<TIn, TOut> WithRule(string name);
 
   IEngineBuilder<TIn, TOut> WithRule(IRule<TIn, TOut> rule);
 
-  IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
-
-  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<IRule<TIn>> rule);
-
   IEngineBuilder<TIn, TOut> WithRules(IEnumerable<IRule<TIn, TOut>> rule);
+
+  IPostRuleBuilder<TIn, TOut> WithPostRule(string name);
+
+  IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
 
   IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rule);
 

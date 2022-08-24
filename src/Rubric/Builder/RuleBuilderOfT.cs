@@ -20,16 +20,9 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
     _provides = new() { name };
   }
 
-  public IEngineBuilder<T> EndRule()
+  public IRuleBuilder<T> WithPredicate(Func<IEngineContext, T, bool> predicate)
   {
-    _parentBuilder.Ruleset.AddRule(new LambdaRule<T>(_name, _predicate, _action, _deps, _provides));
-    return _parentBuilder;
-  }
-
-  public IRuleBuilder<T> ThatProvides(string provides)
-  {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
-    _provides.Add(provides);
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
   }
 
@@ -52,9 +45,16 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
     return this;
   }
 
-  public IRuleBuilder<T> WithPredicate(Func<IEngineContext, T, bool> predicate)
+  public IRuleBuilder<T> ThatProvides(string provides)
   {
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
+    _provides.Add(provides);
     return this;
+  }
+
+  public IEngineBuilder<T> EndRule()
+  {
+    _parentBuilder.Ruleset.AddRule(new LambdaRule<T>(_name, _predicate, _action, _deps, _provides));
+    return _parentBuilder;
   }
 }

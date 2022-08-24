@@ -30,7 +30,7 @@ public class ParallelAsyncEngineTests
   public async Task FullRun()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule("test")
+                              .WithAsyncPreRule("test")
                               .WithPredicate((_, _) => Task.FromResult(true))
                               .WithAction((_, i) =>
                               {
@@ -38,7 +38,7 @@ public class ParallelAsyncEngineTests
                                 return Task.CompletedTask;
                               })
                               .EndRule()
-                              .WithRule("test")
+                              .WithAsyncRule("test")
                               .WithPredicate((_, _, _) => Task.FromResult(true))
                               .WithAction((_, i, o) =>
                               {
@@ -47,7 +47,7 @@ public class ParallelAsyncEngineTests
                                 return Task.CompletedTask;
                               })
                               .EndRule()
-                              .WithPostRule("test")
+                              .WithAsyncPostRule("test")
                               .WithPredicate((_, _) => Task.FromResult(true))
                               .WithAction((_, o) =>
                               {
@@ -597,7 +597,7 @@ public class ParallelAsyncEngineTests
 
   private static IAsyncRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithPreRule("testprerule")
+                  .WithAsyncPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -605,7 +605,7 @@ public class ParallelAsyncEngineTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithRule("testrule")
+                  .WithAsyncRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -613,7 +613,7 @@ public class ParallelAsyncEngineTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithPostRule("testpostrule")
+                  .WithAsyncPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
@@ -627,7 +627,7 @@ public class ParallelAsyncEngineTests
 
   private static IAsyncRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("testprerule")
+                .WithAsyncPreRule("testprerule")
                   .WithAction(async (_, i, _) =>
                   {
                     i.Items.Add("testprerule");
@@ -635,7 +635,7 @@ public class ParallelAsyncEngineTests
                     i.Items.Add("testprerule");
                   })
                 .EndRule()
-                .WithRule("testrule")
+                .WithAsyncRule("testrule")
                   .WithAction(async (_, i, _, _) =>
                   {
                     i.Items.Add("testrule");
@@ -643,7 +643,7 @@ public class ParallelAsyncEngineTests
                     i.Items.Add("testrule2");
                   })
                 .EndRule()
-                .WithPostRule("testpostrule")
+                .WithAsyncPostRule("testpostrule")
                   .WithAction(async (_, o, _) =>
                   {
                     o.Outputs.Add("testpostrule");
