@@ -6,9 +6,7 @@
     <Authors>Eric Price</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>0.9.0</Version>
-    <AssemblyVersion>0.9.0</AssemblyVersion>
-    <FileVersion>0.9.0</FileVersion>
+    <Version>0.9.1</Version>
     <Authors>Eric Price</Authors>
     <Product>Rubric.Extensions</Product>
     <Description>Dependency injection for Rubric library.</Description>

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubric.Tests.TestAssembly2"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{64F8FA9B-3C8B-43EF-941B-D5CB1970D315}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubric.TestAssembly3", "Tests\Rubric.TestAssembly3\Rubric.TestAssembly3.csproj", "{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubric.Tests.TestAssembly3", "Tests\Rubric.Tests.TestAssembly3\Rubric.Tests.TestAssembly3.csproj", "{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
