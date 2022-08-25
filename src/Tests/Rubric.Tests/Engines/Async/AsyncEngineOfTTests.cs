@@ -360,7 +360,7 @@ public class AsyncEngineOfTTests
                               .WithPredicate((_, _) => Task.FromResult(true))
                               .WithAction(async (_, i, t) =>
                               {
-                                await Task.Delay(1000, t);
+                                await Task.Delay(2000, t);
                                 if (!t.IsCancellationRequested)
                                   i.Items.Add("rule2");
                               })
@@ -377,7 +377,7 @@ public class AsyncEngineOfTTests
     //Nothing should have modified the input.
     //In addition, the delay should have been cancelled, and processing should be less than 1 second
     Assert.Empty(input.Items);
-    Assert.True(stopwatch.ElapsedMilliseconds < 1000);
+    Assert.True(stopwatch.ElapsedMilliseconds < 2000);
   }
 
   [Fact]
