@@ -391,6 +391,28 @@ public class AsyncBuilderOfTInTOutTests
   }
 
   [Fact]
+  public async Task RuleWrappingMultiple()
+  {
+    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithPreRules(new [] {new TestPreRule(true)})
+                              .WithRules(new [] {new TestRule(true)})
+                              .WithPostRules(new [] {new TestPostRule(true)})
+                              .Build();
+    Assert.Single(engine.PreRules);
+    var preRule = engine.PreRules.ElementAt(0);
+    Assert.Equal($"{typeof(TestPreRule)} (wrapped async)", preRule.Name);
+    Assert.Single(engine.Rules);
+    var rule = engine.Rules.ElementAt(0);
+    Assert.Equal($"{typeof(TestRule)} (wrapped async)", rule.Name);
+    Assert.Single(engine.PostRules);
+    var postRule = engine.PostRules.ElementAt(0);
+    Assert.Equal($"{typeof(TestPostRule)} (wrapped async)", postRule.Name);
+    Assert.True(await preRule.DoesApply(null, null, default));
+    Assert.True(await rule.DoesApply(null, null, null, default));
+    Assert.True(await postRule.DoesApply(null, null, default));
+  }
+
+  [Fact]
   public void TypeAttributeDependency()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()

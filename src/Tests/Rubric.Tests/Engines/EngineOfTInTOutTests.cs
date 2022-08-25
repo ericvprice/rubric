@@ -113,12 +113,11 @@ public class EngineOfTInTOutTests
     engine.Apply(new[] { input, input2 }, output, context);
     var ex = context.GetLastException();
     Assert.NotNull(ex);
-    var exception = ex;
-    Assert.IsType<EngineHaltException>(exception);
-    Assert.Equal(rule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Equal(output, exception.Output);
-    Assert.NotNull(exception.Context);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(rule, ex.Rule);
+    Assert.Equal(input, ex.Input);
+    Assert.Equal(output, ex.Output);
+    Assert.NotNull(ex.Context);
     Assert.True(input.InputFlag);
     Assert.False(input2.InputFlag);
     Assert.True(output.TestFlag);

@@ -55,12 +55,11 @@ public class EngineOfTTests
     Assert.False(input2.InputFlag);
     var ex = context.GetLastException();
     Assert.NotNull(ex);
-    var exception = ex;
-    Assert.IsType<EngineHaltException>(exception);
-    Assert.Equal(testPreRule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Null(exception.Output);
-    Assert.NotNull(exception.Context);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(testPreRule, ex.Rule);
+    Assert.Equal(input, ex.Input);
+    Assert.Null(ex.Output);
+    Assert.NotNull(ex.Context);
   }
 
   [Fact]
@@ -261,11 +260,10 @@ public class EngineOfTTests
     var ex = context.GetLastException();
     Assert.NotNull(ex);
     Assert.IsType<EngineHaltException>(ex);
-    var exception = ex;
-    Assert.Equal(testPreRule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Null(exception.Output);
-    Assert.NotNull(exception.Context);
+    Assert.Equal(testPreRule, ex.Rule);
+    Assert.Equal(input, ex.Input);
+    Assert.Null(ex.Output);
+    Assert.NotNull(ex.Context);
     Assert.False(input.InputFlag);
   }
 
@@ -280,11 +278,10 @@ public class EngineOfTTests
     var ex = context.GetLastException();
     Assert.NotNull(ex);
     Assert.IsType<ItemHaltException>(ex);
-    var exception = ex;
-    Assert.Equal(testPreRule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Null(exception.Output);
-    Assert.NotNull(exception.Context);
+    Assert.Equal(testPreRule, ex.Rule);
+    Assert.Equal(input, ex.Input);
+    Assert.Null(ex.Output);
+    Assert.NotNull(ex.Context);
     Assert.False(input.InputFlag);
   }
 
@@ -300,11 +297,10 @@ public class EngineOfTTests
     var ex = context.GetLastException();
     Assert.NotNull(ex);
     Assert.IsType<EngineHaltException>(ex);
-    var exception = ex;
-    Assert.Equal(testPreRule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Null(exception.Output);
-    Assert.NotNull(exception.Context);
+    Assert.Equal(testPreRule, ex.Rule);
+    Assert.Equal(input, ex.Input);
+    Assert.Null(ex.Output);
+    Assert.NotNull(ex.Context);
     Assert.False(input.InputFlag);
   }
 
@@ -320,11 +316,10 @@ public class EngineOfTTests
     var ex = context.GetLastException();
     Assert.NotNull(ex);
     Assert.IsType<ItemHaltException>(ex);
-    var exception = ex;
-    Assert.Equal(testPreRule, exception.Rule);
-    Assert.Equal(input, exception.Input);
-    Assert.Null(exception.Output);
-    Assert.NotNull(exception.Context);
+    Assert.Equal(testPreRule, ex.Rule);
+    Assert.Equal(input, ex.Input);
+    Assert.Null(ex.Output);
+    Assert.NotNull(ex.Context);
     Assert.False(input.InputFlag);
   }
 

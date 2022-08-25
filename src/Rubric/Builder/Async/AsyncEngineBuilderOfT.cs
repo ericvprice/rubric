@@ -17,7 +17,7 @@ internal class AsyncEngineBuilder<T> : IAsyncEngineBuilder<T>
 
   internal bool IsParallel { get; private set; }
 
-  internal AsyncRuleset<T> AsyncRuleset { get; } = new();
+  internal IAsyncRuleset<T> AsyncRuleset { get; } = new AsyncRuleset<T>();
 
   internal IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
