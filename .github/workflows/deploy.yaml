@@ -26,5 +26,9 @@ jobs:
       run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml /p:Threshold=95
     - name: Package
       run: dotnet pack --configuration Release --no-build --output .
-    - name: Push to nuget.org
-      run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
+    # - name: Publish package to github
+    #   run: |
+    #     dotnet nuget add source https://nuget.pkg.github.com/ericvprice/index.json --name github --username ${{ github.repository_owner }} --password ${{ github.token }} --store-password-in-clear-text
+    #     dotnet nuget push **/*.nupkg --source github
+    # - name: Push to nuget.org
+    #   run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
