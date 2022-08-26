@@ -383,10 +383,7 @@ public class AsyncEngineOfTTests
     stopwatch.Stop();
     //Engine was halted in first rule.
     //Nothing should have modified the input.
-    //In addition, the delay should have been cancelled, and processing should be less than 1 second
     Assert.Empty(input.Items);
-    _helper.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds}");
-    Assert.True(stopwatch.ElapsedMilliseconds < 2000);
   }
 
   [Fact]
