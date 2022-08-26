@@ -1,3 +1,4 @@
+using Rubric.Engines.Async;
 using Rubric.Rulesets.Async;
 
 namespace Rubric.Tests.Core;
@@ -51,7 +52,7 @@ public class ContextTests
     IEngineContext ctx = new EngineContext();
     var logger = new TestLogger();
     var engine = new AsyncRuleEngine<TestInput, TestOutput>(new AsyncRuleset<TestInput, TestOutput>(), false, null, logger);
-    engine.SetupContext(ctx);
+    engine.Reset(ctx);
     Assert.Equal(engine, ctx.GetEngine());
     Assert.Equal(engine, ctx.GetAsyncEngine<TestInput, TestOutput>());
     Assert.Equal(logger, ctx.GetLogger());

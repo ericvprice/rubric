@@ -26,7 +26,7 @@
     <ProjectReference Include="..\Rubric.Tests.TestAssembly2\Rubric.Tests.TestAssembly2.csproj" />
     <ProjectReference Include="..\..\Rubric\Rubric.csproj" />
     <ProjectReference Include="..\..\Rubric.Extensions\Rubric.Extensions.csproj" />
-    <ProjectReference Include="..\Rubric.TestAssembly3\Rubric.TestAssembly3.csproj" />
+    <ProjectReference Include="..\Rubric.Tests.TestAssembly3\Rubric.Tests.TestAssembly3.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\*.*" CopyToOutputDirectory="PreserveNewest" />

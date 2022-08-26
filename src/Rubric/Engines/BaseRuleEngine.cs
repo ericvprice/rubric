@@ -4,17 +4,15 @@ namespace Rubric.Engines;
 
 public abstract class BaseRuleEngine : IRuleEngine
 {
-  public ILogger Logger { get; protected set; } 
+  public ILogger Logger { get; protected set; }
 
   public abstract bool IsAsync { get; }
 
-  public abstract Type InputType { get; } 
+  public abstract Type InputType { get; }
 
   public abstract Type OutputType { get; }
 
   public IExceptionHandler ExceptionHandler { get; protected set; }
-
-  public EngineException LastException { get; protected set; }
 
   protected internal bool HandleException(Exception ex, IRuleEngine e, IEngineContext ctx, object rule, object input, object output, CancellationToken t = default)
   {
@@ -36,7 +34,7 @@ public abstract class BaseRuleEngine : IRuleEngine
           ee.Input = input;
           ee.Output = output;
           ee.Context = ctx;
-          LastException = ee;
+          ctx[EngineContextExtensions.LAST_EXCEPTION_KEY] = ee;
           throw;
         }
       case EngineException ee:
@@ -44,7 +42,7 @@ public abstract class BaseRuleEngine : IRuleEngine
         ee.Input = input;
         ee.Output = output;
         ee.Context = ctx;
-        LastException = ee;
+        ctx[EngineContextExtensions.LAST_EXCEPTION_KEY] = ee;
         return false;
       default:
         try
@@ -57,7 +55,7 @@ public abstract class BaseRuleEngine : IRuleEngine
           ee.Input = input;
           ee.Output = output;
           ee.Context = ctx;
-          LastException = ee;
+          ctx[EngineContextExtensions.LAST_EXCEPTION_KEY] = ee;
           throw;
         }
     }

@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Rubric.Async;
 using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 using Rubric.Rulesets;
 using Rubric.Rulesets.Async;
 
-namespace Rubric.Engines;
+namespace Rubric.Engines.Async;
 
 public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, TOut>
     where TIn : class
@@ -462,14 +463,12 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
         }, t)));
   }
 
-  private IEngineContext Reset(IEngineContext context)
+  internal IEngineContext Reset(IEngineContext context)
   {
     context ??= new EngineContext();
-    SetupContext(context);
-    LastException = null;
+    context[EngineContextExtensions.ENGINE_KEY] = this;
+    context[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
     return context;
   }
-
-  internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
 
 }

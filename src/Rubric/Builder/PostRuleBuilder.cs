@@ -4,8 +4,8 @@ using static System.String;
 namespace Rubric.Builder;
 
 internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   private readonly List<string> _deps;
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
@@ -17,21 +17,44 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
   {
     _parentBuilder = engineBuilder;
     Name = IsNullOrWhiteSpace(name)
-        ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
-        : name;
+      ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
+      : name;
     _provides = new() { name };
     _deps = new();
   }
 
-  public string Name { get; }
+  internal string Name { get; }
 
-
-  public IEngineBuilder<TIn, TOut> EndRule()
+  /// <inheritdoc/>
+  public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, bool> predicate)
   {
-    _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(Name, _predicate, _action, _deps, _provides));
-    return _parentBuilder;
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    return this;
   }
 
+  /// <inheritdoc/>
+  public IPostRuleBuilder<TIn, TOut> WithAction(Action<IEngineContext, TOut> action)
+  {
+    _action = action ?? throw new ArgumentNullException(nameof(action));
+    return this;
+  }
+
+  /// <inheritdoc/>
+  public IPostRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
+  {
+    if (IsNullOrWhiteSpace(dep)) throw new ArgumentException("String cannot be null or empty.", nameof(dep));
+    _deps.Add(dep);
+    return this;
+  }
+
+  /// <inheritdoc/>
+  public IPostRuleBuilder<TIn, TOut> ThatDependsOn(Type type)
+  {
+    _deps.Add(type?.FullName ?? throw new ArgumentNullException(nameof(type)));
+    return this;
+  }
+
+  /// <inheritdoc/>
   public IPostRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
     if (IsNullOrWhiteSpace(provides))
@@ -40,28 +63,10 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
     return this;
   }
 
-  public IPostRuleBuilder<TIn, TOut> WithAction(Action<IEngineContext, TOut> action)
+  /// <inheritdoc/>
+  public IEngineBuilder<TIn, TOut> EndRule()
   {
-    _action = action ?? throw new ArgumentNullException(nameof(action));
-    return this;
-  }
-
-  public IPostRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
-  {
-    if (IsNullOrWhiteSpace(dep)) throw new ArgumentException("String cannot be null or empty.", nameof(dep));
-    _deps.Add(dep);
-    return this;
-  }
-
-  public IPostRuleBuilder<TIn, TOut> ThatDependsOn(Type type)
-  {
-    _deps.Add(type?.FullName ?? throw new ArgumentNullException(nameof(type)));
-    return this;
-  }
-
-  public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, bool> predicate)
-  {
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-    return this;
+    _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(Name, _predicate, _action, _deps, _provides));
+    return _parentBuilder;
   }
 }

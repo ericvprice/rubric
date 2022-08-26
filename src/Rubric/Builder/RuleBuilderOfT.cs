@@ -20,25 +20,21 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
     _provides = new() { name };
   }
 
-  public IEngineBuilder<T> EndRule()
+  /// <inheritdoc/>
+  public IRuleBuilder<T> WithPredicate(Func<IEngineContext, T, bool> predicate)
   {
-    _parentBuilder.Ruleset.AddRule(new LambdaRule<T>(_name, _predicate, _action, _deps, _provides));
-    return _parentBuilder;
-  }
-
-  public IRuleBuilder<T> ThatProvides(string provides)
-  {
-    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
-    _provides.Add(provides);
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
   }
 
+  /// <inheritdoc/>
   public IRuleBuilder<T> WithAction(Action<IEngineContext, T> action)
   {
     _action = action ?? throw new ArgumentNullException(nameof(action));
     return this;
   }
 
+  /// <inheritdoc/>
   public IRuleBuilder<T> ThatDependsOn(string dep)
   {
     if (IsNullOrEmpty(dep)) throw new ArgumentException(null, nameof(dep));
@@ -46,15 +42,25 @@ internal class RuleBuilder<T> : IRuleBuilder<T>
     return this;
   }
 
+  /// <inheritdoc/>
   public IRuleBuilder<T> ThatDependsOn(Type dep)
   {
     _deps.Add(dep?.FullName ?? throw new ArgumentNullException(nameof(dep)));
     return this;
   }
 
-  public IRuleBuilder<T> WithPredicate(Func<IEngineContext, T, bool> predicate)
+  /// <inheritdoc/>
+  public IRuleBuilder<T> ThatProvides(string provides)
   {
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    if (IsNullOrEmpty(provides)) throw new ArgumentException(null, nameof(provides));
+    _provides.Add(provides);
     return this;
+  }
+
+  /// <inheritdoc/>
+  public IEngineBuilder<T> EndRule()
+  {
+    _parentBuilder.Ruleset.AddRule(new LambdaRule<T>(_name, _predicate, _action, _deps, _provides));
+    return _parentBuilder;
   }
 }

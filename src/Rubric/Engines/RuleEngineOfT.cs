@@ -67,28 +67,30 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   public void Apply(T input, IEngineContext context = null)
   {
     var ctx = Reset(context);
-    try
-    {
-      ApplyItem(input, ctx);
-    }
-    catch (EngineHaltException) { }
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+      try
+      {
+        ApplyItem(input, ctx);
+      }
+      catch (EngineHaltException) { }
   }
 
   ///<inheritdoc/>
   public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
   {
     var ctx = Reset(context);
-    foreach (var input in inputs)
-    {
-      try
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+      foreach (var input in inputs)
       {
-        ApplyItem(input, ctx);
+        try
+        {
+          ApplyItem(input, ctx);
+        }
+        catch (EngineHaltException)
+        {
+          break;
+        }
       }
-      catch (EngineHaltException)
-      {
-        break;
-      }
-    }
   }
 
   private void ApplyItem(T input, IEngineContext ctx)
@@ -109,7 +111,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   {
     ctx ??= new EngineContext();
     ctx[EngineContextExtensions.ENGINE_KEY] = this;
-    LastException = null;
+    ctx[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
     return ctx;
   }
 

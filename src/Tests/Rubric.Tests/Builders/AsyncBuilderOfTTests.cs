@@ -190,4 +190,17 @@ public class AsyncBuilderOfTTests
 
   }
 
+  [Fact]
+  public async Task MultipleRuleWrapping()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRules(new [] {new TestPreRule(true) })
+                              .Build();
+    Assert.Single(engine.Rules);
+    var rule = engine.Rules.ElementAt(0);
+    Assert.Equal($"{typeof(TestPreRule)} (wrapped async)", rule.Name);
+    Assert.True(await rule.DoesApply(null, null, default));
+
+  }
+
 }

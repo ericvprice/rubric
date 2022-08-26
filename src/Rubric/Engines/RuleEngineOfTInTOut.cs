@@ -102,33 +102,35 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public void Apply(TIn input, TOut output, IEngineContext context = null)
   {
     context = SetupContext(context);
-    try
-    {
-      ApplyItem(input, output, context);
-      foreach (var set in _postprocessingRules)
-        foreach (var rule in set)
-          this.ApplyPostRule(context, rule, output);
-    }
-    catch (EngineHaltException)
-    {
-    }
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", context.GetTraceId()))
+      try
+      {
+        ApplyItem(input, output, context);
+        foreach (var set in _postprocessingRules)
+          foreach (var rule in set)
+            this.ApplyPostRule(context, rule, output);
+      }
+      catch (EngineHaltException)
+      {
+      }
   }
 
   ///<inheritdoc/>
   public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
   {
-    var ctx = context ?? new EngineContext();
-    try
-    {
-      foreach (var input in inputs)
-        ApplyItem(input, output, ctx);
-      foreach (var set in _postprocessingRules)
-        foreach (var rule in set)
-          this.ApplyPostRule(ctx, rule, output);
-    }
-    catch (EngineHaltException)
-    {
-    }
+    var ctx = SetupContext(context);
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+      try
+      {
+        foreach (var input in inputs)
+          ApplyItem(input, output, ctx);
+        foreach (var set in _postprocessingRules)
+          foreach (var rule in set)
+            this.ApplyPostRule(ctx, rule, output);
+      }
+      catch (EngineHaltException)
+      {
+      }
   }
 
   #endregion
@@ -144,7 +146,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           this.ApplyPreRule(ctx, rule, input);
       foreach (var set in _rules)
         foreach (var rule in set)
-          this.ApplyRule(ctx, rule, input, output);
+            this.ApplyRule(ctx, rule, input, output);
     }
     catch (ItemHaltException)
     {
@@ -154,8 +156,8 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   internal IEngineContext SetupContext(IEngineContext ctx)
   {
     ctx ??= new EngineContext();
-    LastException = null;
     ctx[EngineContextExtensions.ENGINE_KEY] = this;
+    ctx[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
     return ctx;
   }
 

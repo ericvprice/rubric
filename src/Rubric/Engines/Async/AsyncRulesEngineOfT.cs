@@ -1,20 +1,26 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Rubric.Async;
 using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 using Rubric.Rulesets;
 using Rubric.Rulesets.Async;
 
-namespace Rubric.Engines;
+namespace Rubric.Engines.Async;
 
 public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     where T : class
 {
+
+  #region Fields
+
   /// <summary>
   ///     Ordered and parallelized processing rules
   /// </summary>
   private readonly IAsyncRule<T>[][] _rules;
+
+  #endregion
 
   #region Constructors
 
@@ -105,8 +111,10 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
 
   #region Properties
 
+  /// <inheritdoc />
   public bool IsParallel { get; internal set; }
 
+  /// <inheritdoc />
   public override bool IsAsync => true;
 
   /// <inheritdoc />
@@ -115,12 +123,14 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
   /// <inheritdoc />
   public override Type OutputType => typeof(T);
 
+  /// <inheritdoc />
   public IEnumerable<IAsyncRule<T>> Rules => _rules.SelectMany(_ => _);
 
   #endregion
 
   #region Methods
 
+  /// <inheritdoc />
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
   {
     context = Reset(context);
@@ -131,6 +141,7 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     catch (EngineException) { }
   }
 
+  /// <inheritdoc />
   public async Task ApplyAsync(
     IEnumerable<T> inputs,
     IEngineContext ctx = null,
@@ -138,20 +149,21 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     CancellationToken token = default)
   {
     ctx = Reset(ctx);
-    try
-    {
-      if (IsParallel)
-        if (parallelizeInputs)
-          await ApplyParallelManyAsyncParallel(ctx, inputs, token);
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+      try
+      {
+        if (IsParallel)
+          if (parallelizeInputs)
+            await ApplyParallelManyAsyncParallel(ctx, inputs, token);
+          else
+            await ApplyManyAsyncParallel(inputs, ctx, token);
         else
-          await ApplyManyAsyncParallel(inputs, ctx, token);
-      else
-        if (parallelizeInputs)
-        await ApplyParallelManyAsyncSerial(inputs, ctx, token);
-      else
-        await ApplyManyAsyncSerial(inputs, ctx, token);
-    }
-    catch (EngineHaltException) { }
+          if (parallelizeInputs)
+          await ApplyParallelManyAsyncSerial(inputs, ctx, token);
+        else
+          await ApplyManyAsyncSerial(inputs, ctx, token);
+      }
+      catch (EngineHaltException) { }
   }
 
   public async Task ApplyAsync(
@@ -160,14 +172,15 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     CancellationToken token = default)
   {
     ctx = Reset(ctx);
-    try
-    {
-      if (IsParallel)
-        await ApplyManyAsyncParallel(inputs, ctx, token);
-      else
-        await ApplyManyAsyncSerial(inputs, ctx, token);
-    }
-    catch (EngineHaltException) { }
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+      try
+      {
+        if (IsParallel)
+          await ApplyManyAsyncParallel(inputs, ctx, token);
+        else
+          await ApplyManyAsyncSerial(inputs, ctx, token);
+      }
+      catch (EngineHaltException) { }
   }
 
   private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
@@ -207,20 +220,18 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
       rules.Select(
         r => Task.Run(async () =>
         {
-          try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
-          catch (Exception) { cts.Cancel(); throw; }
+            try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
+            catch (Exception) { cts.Cancel(); throw; }
         }, t)));
   }
 
   private IEngineContext Reset(IEngineContext context)
   {
     context ??= new EngineContext();
-    SetupContext(context);
-    LastException = null;
+    context[EngineContextExtensions.ENGINE_KEY] = this;
+    context[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
     return context;
   }
-
-  internal void SetupContext(IEngineContext ctx) => ctx[EngineContextExtensions.ENGINE_KEY] = this;
 
   private async Task ApplyManyAsyncSerial(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {

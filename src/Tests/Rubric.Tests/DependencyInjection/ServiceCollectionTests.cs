@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rubric.Async;
 using Rubric.Extensions;
 using Rubric.Extensions.Serialization;
 using Rubric.Tests.TestAssembly;
@@ -163,7 +164,7 @@ public class ServiceCollectionTests
   {
     var services = new ServiceCollection();
     services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>(
-              b => b.WithRule("foo")
+              b => b.WithAsyncRule("foo")
                     .WithAction((_, _, _) => Task.CompletedTask)
                     .EndRule()
             )

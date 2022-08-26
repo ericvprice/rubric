@@ -1,7 +1,7 @@
 using Rubric.Rules.Async;
 using static System.String;
 
-namespace Rubric.Builder;
+namespace Rubric.Builder.Async;
 
 internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
     where TIn : class
@@ -22,21 +22,23 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
     _deps = new();
   }
 
-
-  public IAsyncEngineBuilder<TIn, TOut> EndRule()
+  /// <inheritdoc />
+  public IAsyncPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, Task<bool>> predicate)
   {
-    _parentBuilder.AsyncRuleset.AddAsyncPreRule(
-        new LambdaAsyncRule<TIn>(_name, _predicate, _action, _deps, _provides));
-    return _parentBuilder;
-  }
-
-  public IAsyncPreRuleBuilder<TIn, TOut> ThatProvides(string provides)
-  {
-    if (IsNullOrEmpty(provides)) throw new ArgumentNullException(nameof(provides));
-    _provides.Add(provides);
+    if (predicate == null)
+      throw new ArgumentNullException(nameof(predicate));
+    _predicate = (ctx, inObj, _) => predicate(ctx, inObj);
     return this;
   }
 
+  /// <inheritdoc />
+  public IAsyncPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, CancellationToken, Task<bool>> predicate)
+  {
+    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    return this;
+  }
+
+  /// <inheritdoc />
   public IAsyncPreRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TIn, Task> action)
   {
     if (action == null)
@@ -47,12 +49,14 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
     return this;
   }
 
+  /// <inheritdoc />
   public IAsyncPreRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TIn, CancellationToken, Task> action)
   {
     _action = action ?? throw new ArgumentNullException(nameof(action));
     return this;
   }
 
+  /// <inheritdoc />
   public IAsyncPreRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
     if (IsNullOrEmpty(dep)) throw new ArgumentNullException(nameof(dep));
@@ -60,23 +64,26 @@ internal class AsyncPreRuleBuilder<TIn, TOut> : IAsyncPreRuleBuilder<TIn, TOut>
     return this;
   }
 
+  /// <inheritdoc />
   public IAsyncPreRuleBuilder<TIn, TOut> ThatDependsOn(Type dep)
   {
     _deps.Add(dep?.FullName ?? throw new ArgumentNullException(nameof(dep)));
     return this;
   }
 
-  public IAsyncPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, Task<bool>> predicate)
+  /// <inheritdoc />
+  public IAsyncPreRuleBuilder<TIn, TOut> ThatProvides(string provides)
   {
-    if (predicate == null)
-      throw new ArgumentNullException(nameof(predicate));
-    _predicate = (ctx, inObj, _) => predicate(ctx, inObj);
+    if (IsNullOrEmpty(provides)) throw new ArgumentNullException(nameof(provides));
+    _provides.Add(provides);
     return this;
   }
 
-  public IAsyncPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, CancellationToken, Task<bool>> predicate)
+  /// <inheritdoc />
+  public IAsyncEngineBuilder<TIn, TOut> EndRule()
   {
-    _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-    return this;
+    _parentBuilder.AsyncRuleset.AddAsyncPreRule(
+      new LambdaAsyncRule<TIn>(_name, _predicate, _action, _deps, _provides));
+    return _parentBuilder;
   }
 }

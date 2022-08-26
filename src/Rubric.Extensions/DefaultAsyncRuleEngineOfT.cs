@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Logging;
-using Rubric.Builder;
 using Rubric.Rules.Async;
 using System.Diagnostics.CodeAnalysis;
+using Rubric.Async;
+using Rubric.Builder.Async;
 
 namespace Rubric.Extensions;
 
@@ -24,8 +25,6 @@ internal class DefaultAsyncRuleEngine<T> : IAsyncRuleEngine<T> where T : class
   public Type OutputType => _instance.OutputType;
 
   public IExceptionHandler ExceptionHandler => _instance.ExceptionHandler;
-
-  public EngineException LastException => _instance.LastException;
 
   public bool IsParallel => _instance.IsParallel;
 

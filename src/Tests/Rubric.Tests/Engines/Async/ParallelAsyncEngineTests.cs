@@ -1,3 +1,5 @@
+using Rubric.Async;
+using Rubric.Engines.Async;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Engines.Async;
@@ -28,7 +30,7 @@ public class ParallelAsyncEngineTests
   public async Task FullRun()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule("test")
+                              .WithAsyncPreRule("test")
                               .WithPredicate((_, _) => Task.FromResult(true))
                               .WithAction((_, i) =>
                               {
@@ -36,7 +38,7 @@ public class ParallelAsyncEngineTests
                                 return Task.CompletedTask;
                               })
                               .EndRule()
-                              .WithRule("test")
+                              .WithAsyncRule("test")
                               .WithPredicate((_, _, _) => Task.FromResult(true))
                               .WithAction((_, i, o) =>
                               {
@@ -45,7 +47,7 @@ public class ParallelAsyncEngineTests
                                 return Task.CompletedTask;
                               })
                               .EndRule()
-                              .WithPostRule("test")
+                              .WithAsyncPostRule("test")
                               .WithPredicate((_, _) => Task.FromResult(true))
                               .WithAction((_, o) =>
                               {
@@ -173,9 +175,10 @@ public class ParallelAsyncEngineTests
     };
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+    var context = new EngineContext();
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output, context));
     Assert.IsNotType<EngineException>(exception);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.True(input.InputFlag);
     Assert.True(output.TestFlag);
   }
@@ -192,9 +195,10 @@ public class ParallelAsyncEngineTests
     };
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+    var context = new EngineContext();
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output, context));
     Assert.IsNotType<EngineException>(exception);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.False(input.InputFlag);
     Assert.False(output.TestFlag);
   }
@@ -211,9 +215,10 @@ public class ParallelAsyncEngineTests
     };
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+    var context = new EngineContext();
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output, context));
     Assert.IsNotType<EngineException>(exception);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.True(output.TestFlag);
   }
 
@@ -229,9 +234,10 @@ public class ParallelAsyncEngineTests
     };
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+    var context = new EngineContext();
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output, context));
     Assert.IsNotType<EngineException>(exception);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.False(output.TestFlag);
   }
 
@@ -247,9 +253,10 @@ public class ParallelAsyncEngineTests
     };
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output));
+    var context = new EngineContext();
+    var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, output, context));
     Assert.IsNotType<EngineException>(exception);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.True(input.InputFlag);
   }
 
@@ -266,9 +273,10 @@ public class ParallelAsyncEngineTests
     };
     var input = new TestInput();
     var output = new TestOutput();
-    var exception = await Assert.ThrowsAsync<Exception>(async () => await engine.ApplyAsync(input, output));
+    var context = new EngineContext();
+    var exception = await Assert.ThrowsAsync<Exception>(async () => await engine.ApplyAsync(input, output, context));
     Assert.IsNotType<EngineException>(exception);
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.False(input.InputFlag);
   }
 
@@ -285,8 +293,9 @@ public class ParallelAsyncEngineTests
       Outputs = new() { "PostException" }
     };
     var engine = GetExceptionEngine(ExceptionHandlers.Ignore);
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    Assert.Null(context.GetLastException());
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -303,8 +312,9 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(ExceptionHandlers.Rethrow);
-    await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context));
+    Assert.Null(context.GetLastException());
     Assert.Equal(3, testInput.Items.Count);
     Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
@@ -320,13 +330,15 @@ public class ParallelAsyncEngineTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
+    var context = new EngineContext();
     var engine = GetExceptionEngine(ExceptionHandlers.HaltItem);
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.PreRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
     Assert.Equal(3, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -342,13 +354,15 @@ public class ParallelAsyncEngineTests
     };
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
+    var context = new EngineContext();
     var engine = GetExceptionEngine(ExceptionHandlers.HaltEngine);
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.PreRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
     Assert.Equal(3, testInput.Items.Count);
     Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
@@ -365,8 +379,9 @@ public class ParallelAsyncEngineTests
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(new LambdaExceptionHandler(
       (_, _, _, _, _) => throw new InvalidOperationException()));
+    var context = new EngineContext();
     await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
-    Assert.Null(engine.LastException);
+    Assert.Null(context.GetLastException());
     Assert.Equal(3, testInput.Items.Count);
     Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
@@ -383,8 +398,9 @@ public class ParallelAsyncEngineTests
     var testOutput = new TestOutput();
     var engine = GetExceptionEngine(new LambdaExceptionHandler(
       (_, _, _, _, _) => throw new InvalidOperationException()));
-    await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput));
-    Assert.Null(engine.LastException);
+    var context = new EngineContext();
+    await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context));
+    Assert.Null(context.GetLastException());
     Assert.Equal(4, testInput.Items.Count);
     Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
@@ -400,12 +416,14 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetEngineExceptionEngine<ItemHaltException>();
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.PreRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
     Assert.Equal(2, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -421,12 +439,14 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetEngineExceptionEngine<EngineHaltException>();
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.Rules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.Rules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
@@ -442,12 +462,14 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetEngineExceptionEngine<ItemHaltException>();
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.Rules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.Rules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -463,17 +485,19 @@ public class ParallelAsyncEngineTests
     var testInput2 = new TestInput();
     var testOutput = new TestOutput();
     var engine = GetEngineExceptionEngine<EngineHaltException>();
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    Assert.Equal(testInput, engine.LastException.Input);
-    Assert.Equal(engine.PreRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.PreRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(testInput, ex.Input);
+    Assert.Equal(engine.PreRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
     Assert.Equal(2, testInput.Items.Count);
     Assert.Empty(testInput2.Items);
     Assert.Empty(testOutput.Outputs);
@@ -489,13 +513,15 @@ public class ParallelAsyncEngineTests
       Outputs = new() { "PostException" }
     };
     var engine = GetEngineExceptionEngine<EngineHaltException>();
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(engine.PostRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -511,13 +537,15 @@ public class ParallelAsyncEngineTests
       Outputs = new() { "PostException" }
     };
     var engine = GetEngineExceptionEngine<ItemHaltException>();
-    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
+    var context = new EngineContext();
+    await engine.ApplyAsync(new[] { testInput, testInput2 }, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    Assert.Equal(engine.PostRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(4, testInput2.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
@@ -532,13 +560,15 @@ public class ParallelAsyncEngineTests
       Outputs = new() { "PostException" }
     };
     var engine = GetEngineExceptionEngine<EngineHaltException>();
-    await engine.ApplyAsync(testInput, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
-    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<EngineHaltException>(engine.LastException);
+    var context = new EngineContext();
+    await engine.ApplyAsync(testInput, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
+    Assert.Equal(engine.PostRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
+    Assert.NotNull(ex);
+    Assert.IsType<EngineHaltException>(ex);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
   }
@@ -552,20 +582,22 @@ public class ParallelAsyncEngineTests
       Outputs = new() { "PostException" }
     };
     var engine = GetEngineExceptionEngine<ItemHaltException>();
-    await engine.ApplyAsync(testInput, testOutput);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
-    Assert.Equal(engine.PostRules.First(), engine.LastException.Rule);
-    Assert.NotNull(engine.LastException.Context);
-    Assert.NotNull(engine.LastException);
-    Assert.IsType<ItemHaltException>(engine.LastException);
+    var context = new EngineContext();
+    await engine.ApplyAsync(testInput, testOutput, context);
+    var ex = context.GetLastException();
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
+    Assert.Equal(engine.PostRules.First(), ex.Rule);
+    Assert.NotNull(ex.Context);
+    Assert.NotNull(ex);
+    Assert.IsType<ItemHaltException>(ex);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
   private static IAsyncRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithPreRule("testprerule")
+                  .WithAsyncPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -573,7 +605,7 @@ public class ParallelAsyncEngineTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithRule("testrule")
+                  .WithAsyncRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -581,7 +613,7 @@ public class ParallelAsyncEngineTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithPostRule("testpostrule")
+                  .WithAsyncPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
@@ -595,7 +627,7 @@ public class ParallelAsyncEngineTests
 
   private static IAsyncRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("testprerule")
+                .WithAsyncPreRule("testprerule")
                   .WithAction(async (_, i, _) =>
                   {
                     i.Items.Add("testprerule");
@@ -603,7 +635,7 @@ public class ParallelAsyncEngineTests
                     i.Items.Add("testprerule");
                   })
                 .EndRule()
-                .WithRule("testrule")
+                .WithAsyncRule("testrule")
                   .WithAction(async (_, i, _, _) =>
                   {
                     i.Items.Add("testrule");
@@ -611,7 +643,7 @@ public class ParallelAsyncEngineTests
                     i.Items.Add("testrule2");
                   })
                 .EndRule()
-                .WithPostRule("testpostrule")
+                .WithAsyncPostRule("testpostrule")
                   .WithAction(async (_, o, _) =>
                   {
                     o.Outputs.Add("testpostrule");

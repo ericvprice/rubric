@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rubric.Engines;
 using Rubric.Rules;
 using Rubric.Rules.Async;
 
-namespace Rubric;
+namespace Rubric.Engines;
 
 /// <summary>
 ///   Rule application methods shared among multiple engine implementations.
@@ -21,6 +20,7 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
     try
     {
       var doesApply = await r.DoesApply(ctx, i, t).ConfigureAwait(false);
@@ -57,6 +57,7 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
     try
     {
       var doesApply = await r.DoesApply(ctx, o, t).ConfigureAwait(false);
@@ -94,6 +95,7 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
     try
     {
       var doesApply = await r.DoesApply(ctx, i, o, t).ConfigureAwait(false);
@@ -128,6 +130,7 @@ internal static class EngineExtensions
   /// <param name="i">The current i item.</param>
   internal static void ApplyPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T i)
   {
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
     try
     {
       var doesApply = r.DoesApply(ctx, i);
@@ -161,6 +164,7 @@ internal static class EngineExtensions
   /// <param name="o">The current o item.</param>
   internal static void ApplyRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IRule<TIn, TOut> r, TIn i, TOut o)
   {
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
     try
     {
       var doesApply = r.DoesApply(ctx, i, o);
@@ -192,6 +196,7 @@ internal static class EngineExtensions
   /// <param name="o">The o item.</param>
   internal static void ApplyPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T o)
   {
+    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
     try
     {
       var doesApply = r.DoesApply(ctx, o);
@@ -216,6 +221,4 @@ internal static class EngineExtensions
       }
     }
   }
-  
-
 }

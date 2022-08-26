@@ -39,7 +39,7 @@ All rules are constructed from two implemented (or fluently provided) methods:
 * `DoesApply` is the predicate function that dynamically determines whether the rule runs.
 * `Apply` is the processing method that applies the rule.
 
-Rules can be either implemented as classes with declarative dependencies, or built via fluent builders with explicit dependencies.  Engine constructors are also provided for convenient usage with dependency injection libraries, and are highly recommended for most scenarios.
+Rules can be either implemented as classes with declarative dependencies, or built via fluent builders with explicit dependencies.  Engine constructors are also provided for convenient usage with dependency injection libraries, and are highly recommended for most scenarios.  A [companion library](/src/Rubric.Extensions/README.md) is provided for integration with the [`Microsoft.Extensions.DependencyInjection`](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) library.
 
 ## Usage
 ---
@@ -156,7 +156,7 @@ public MyOutputType ProcessInputsWithFluentConstruction(IEnumearble<MyInputType>
 
 Asynchronous engine composition follows analogously.
 
-## Exceptions
+## Exception Handling
 
 When an non-engine exception is thrown during execution, the exception is wrapped and passed to an optionally provided exception handler.  Users may short-circuit engine execution using `ItemHaltException` and `EngineHaltException` which will halt the execution of the current item or the entire engine's execution, respectively.  These can be thrown directly from the rules, or from a custom exception handler.  The engine will populate these 2 known exceptions with contextual information, and place the exception the `LastException` property.  These exceptions are not rethrown.
 
@@ -169,7 +169,7 @@ In asynchronous engines, all the above statements apply, except that if one is e
 
 ## Logging
 
-The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  You can access this logger via the context in your rules.
+The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  Engines will set context information in the logger about the execution status.  You can access this logger via the context in your rules.
 
 ## License
 

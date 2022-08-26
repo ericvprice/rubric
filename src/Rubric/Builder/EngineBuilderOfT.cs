@@ -15,28 +15,33 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 
   internal ILogger Logger { get; }
 
-  public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
+  internal IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
+  /// <inheritdoc/>
   public IRuleBuilder<T> WithRule(string name)
       => new RuleBuilder<T>(this, name);
 
+  /// <inheritdoc/>
   public IEngineBuilder<T> WithRule(IRule<T> rule)
   {
     Ruleset.AddRule(rule);
     return this;
   }
 
+  /// <inheritdoc/>
   public IEngineBuilder<T> WithRules(IEnumerable<IRule<T>> rules)
   {
     Ruleset.AddRules(rules);
     return this;
   }
 
+  /// <inheritdoc/>
   public IEngineBuilder<T> WithExceptionHandler(IExceptionHandler h)
   {
     ExceptionHandler = h;
     return this;
   }
 
+  /// <inheritdoc/>
   public IRuleEngine<T> Build() => new RuleEngine<T>(Ruleset, ExceptionHandler, Logger);
 }

@@ -1,6 +1,6 @@
 using Rubric.Rules.Async;
 
-namespace Rubric;
+namespace Rubric.Async;
 
 public interface IAsyncRuleEngine<in TIn, in TOut> : IAsyncRuleEngine
     where TIn : class
