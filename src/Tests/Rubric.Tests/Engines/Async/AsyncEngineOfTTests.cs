@@ -4,12 +4,20 @@ using Rubric.Tests.TestRules.Async;
 using System.Diagnostics;
 using Rubric.Engines.Async;
 using Rubric.Rulesets.Async;
+using Xunit.Abstractions;
 
 namespace Rubric.Tests.Engines.Async;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class AsyncEngineOfTTests
 {
+  private readonly ITestOutputHelper _helper;
+
+  public AsyncEngineOfTTests(ITestOutputHelper helper)
+  {
+    _helper = helper;
+  }
+
   [Fact]
   public async Task AppliesOrder()
   {
@@ -377,6 +385,7 @@ public class AsyncEngineOfTTests
     //Nothing should have modified the input.
     //In addition, the delay should have been cancelled, and processing should be less than 1 second
     Assert.Empty(input.Items);
+    _helper.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds}");
     Assert.True(stopwatch.ElapsedMilliseconds < 2000);
   }
 
