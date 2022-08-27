@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ "develop", "feature/code_coverage" ]
+    branches: [ "develop" ]
 
 jobs:
   build:
