@@ -23,7 +23,7 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal --logger trx --collect:"XPlat code coverage" --settings Tests/testsettings.xml --results-directory ./TestResults
     - name: Test Results
-      uses: NasAmin/NasAmin/trx-parser@v0.2.0
+      uses: NasAmin/trx-parser@v0.2.0
       id: trx-parser
       with:
         TRX_PATH: ${{ github.workspace }}/TestResults
