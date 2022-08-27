@@ -655,10 +655,6 @@ public class AsyncEngineOfTTests
     Assert.Equal(2, input.Items.Count);
     Assert.Equal("rule1", input.Items.First());
     Assert.Equal("rule2", input.Items.Last());
-    //It should take >300 millis to run on a single rule since rules are not parallelized.
-    //Since inputs are parallelized, it should take less than 400
-    Assert.True(stopwatch.ElapsedMilliseconds >= 300);
-    Assert.True(stopwatch.ElapsedMilliseconds < 400);
   }
 
   [Fact]
