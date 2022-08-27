@@ -23,11 +23,11 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal --logger trx --collect:"XPlat code coverage" --settings Tests/testsettings.xml --results-directory ./TestResults
     - name: Test Results
-        uses: NasAmin/trx-parser@v0.1
-        id: trx-parser
-        with:
-          TRX_PATH: ${{ github.workspace }}/TestResults
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: NasAmin/trx-parser@v0.1
+      id: trx-parser
+      with:
+        TRX_PATH: ${{ github.workspace }}/TestResults
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Generate Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
