@@ -1,4 +1,4 @@
-[![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/ericvprice/rubric/actions/workflows/build.yaml)    ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)](https://github.com/ericvprice/rubric/actions/workflows/build.yaml)    ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 # Rubric
 
 Rubric is a .NET library providing synchronous and asynchronous rule engines.
@@ -23,7 +23,7 @@ Engines are created from rules and apply them to one or several input objects an
 
 ### Engine Contexts
 
-Engine contexts act as a holder of conveient properties about the engine current executing, as a per-execution temporary object stash where rules can loosely communicate with each other, and as a way to pass information into the engine for use by the rules.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them.  Be aware of possible race conditions.
+Engine contexts act as a holder of conveient properties about the engine current executing and  as a per-execution temporary object stash where rules can loosely communicate with each other.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing wiht the context.
 
 ### Rules
 
