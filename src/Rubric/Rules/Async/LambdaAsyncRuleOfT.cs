@@ -1,18 +1,18 @@
-using System.Threading;
-
 namespace Rubric.Rules.Async;
 
 public class LambdaAsyncRule<T> : IAsyncRule<T>
 {
   private readonly Func<IEngineContext, T, CancellationToken, Task> _body;
-  private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (_, _, _) => Task.FromResult(true);
+
+  private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (_, _, _)
+    => Task.FromResult(true);
 
   public LambdaAsyncRule(
-      string name,
-      Func<IEngineContext, T, CancellationToken, Task<bool>> predicate,
-      Func<IEngineContext, T, CancellationToken, Task> body,
-      IEnumerable<string> dependencies = null,
-      IEnumerable<string> provides = null
+    string name,
+    Func<IEngineContext, T, CancellationToken, Task<bool>> predicate,
+    Func<IEngineContext, T, CancellationToken, Task> body,
+    IEnumerable<string> dependencies = null,
+    IEnumerable<string> provides = null
   )
   {
     Name = string.IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
@@ -30,8 +30,8 @@ public class LambdaAsyncRule<T> : IAsyncRule<T>
   public IEnumerable<string> Provides { get; }
 
   public Task Apply(IEngineContext context, T input, CancellationToken token)
-      => _body(context, input, token);
+    => _body(context, input, token);
 
   public Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token)
-      => _predicate(context, input, token);
+    => _predicate(context, input, token);
 }

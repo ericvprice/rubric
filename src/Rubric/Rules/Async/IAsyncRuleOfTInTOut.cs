@@ -1,18 +1,17 @@
-using System.Threading;
 using Rubric.Dependency;
 
 namespace Rubric.Rules.Async;
 
 /// <summary>
-///     An asynchronous engine processing rule.
+///   An asynchronous engine processing rule.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
 public interface IAsyncRule<in TIn, in TOut> : IDependency
 {
   /// <summary>
-  ///     Whether this rule should apply to the given input, output, and
-  ///     execution context.
+  ///   Whether this rule should apply to the given input, output, and
+  ///   execution context.
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
@@ -22,7 +21,7 @@ public interface IAsyncRule<in TIn, in TOut> : IDependency
   Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token);
 
   /// <summary>
-  ///     Apply this rule on the given input and output objects.
+  ///   Apply this rule on the given input and output objects.
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>

@@ -6,7 +6,7 @@ public class AsyncWrapperTests
 {
 
   [Fact]
-  public async void SingleTypeWrapper()
+  public async void WrapperOfT()
   {
     var sync = new TestPreRule(true);
     var async = new AsyncRuleWrapper<TestInput>(sync);
@@ -20,7 +20,7 @@ public class AsyncWrapperTests
   }
 
   [Fact]
-  public async void Wrapper()
+  public async void WrapperOfTInTOut()
   {
     var sync = new TestRule(true);
     var async = new AsyncRuleWrapper<TestInput, TestOutput>(sync);

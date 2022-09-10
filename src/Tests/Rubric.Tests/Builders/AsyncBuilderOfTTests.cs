@@ -1,10 +1,9 @@
-using System.Linq;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Builders;
 
-public class SingleTypeAsyncBuilderTests
+public class AsyncBuilderOfTTests
 {
   [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
@@ -183,6 +182,19 @@ public class SingleTypeAsyncBuilderTests
   {
     var engine = EngineBuilder.ForInputAsync<TestInput>()
                               .WithRule(new TestPreRule(true))
+                              .Build();
+    Assert.Single(engine.Rules);
+    var rule = engine.Rules.ElementAt(0);
+    Assert.Equal($"{typeof(TestPreRule)} (wrapped async)", rule.Name);
+    Assert.True(await rule.DoesApply(null, null, default));
+
+  }
+
+  [Fact]
+  public async Task MultipleRuleWrapping()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRules(new [] {new TestPreRule(true) })
                               .Build();
     Assert.Single(engine.Rules);
     var rule = engine.Rules.ElementAt(0);

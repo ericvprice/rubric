@@ -1,8 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.SDK" Version="17.1.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
@@ -19,8 +28,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rubric.Tests.TestAssembly\Rubric.Tests.TestAssembly.csproj" />
+    <ProjectReference Include="..\Rubric.Tests.TestAssembly2\Rubric.Tests.TestAssembly2.csproj" />
     <ProjectReference Include="..\..\Rubric\Rubric.csproj" />
-    <ProjectReference Include="..\..\Rubric.Scripting\Rubric.Scripting.csproj" />
+    <ProjectReference Include="..\..\Rubric.Extensions\Rubric.Extensions.csproj" />
+    <ProjectReference Include="..\Rubric.Tests.TestAssembly3\Rubric.Tests.TestAssembly3.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\*.*" CopyToOutputDirectory="PreserveNewest" />

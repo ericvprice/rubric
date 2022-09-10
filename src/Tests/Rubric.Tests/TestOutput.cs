@@ -8,5 +8,5 @@ public class TestOutput
 
   public ConcurrentBag<string> Outputs { get; set; } = new();
 
-  public int Counter { get; internal set; }
+  public int Counter { get; set; }
 }
