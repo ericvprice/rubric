@@ -17,8 +17,6 @@ jobs:
       with:
         dotnet-version: 6.0.x
         source-url: https://nuget.pkg.github.com/ericvprice/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.github_token}}
     - name: Set version
       run: |
         dotnet tool install -g dotnet-setversion
@@ -66,6 +64,8 @@ jobs:
       with:
         tag: ${{github.ref_name}}-beta-${{github.run_number}}
     - name: Publish package to github
-      run: dotnet nuget push *.nupkg
+      run: dotnet nuget push -k $NUGET_AUTH_TOKEN *.nupkg
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.github_token}}
     # - name: Push to nuget.org
     #   run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
