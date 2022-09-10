@@ -1,4 +1,4 @@
-![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![C#10](https://img.shields.io/badge/c%23-10-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%25-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![C#10](https://img.shields.io/badge/c%23-10-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 
 # Rubric
