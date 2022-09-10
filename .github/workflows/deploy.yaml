@@ -16,7 +16,10 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/release})"
+      id: extract_branch
     - name: Set version
       run: |
         dotnet tool install -g dotnet-setversion
@@ -62,10 +65,8 @@ jobs:
     - name: Create Release Tag
       uses: rickstaa/action-create-tag@v1
       with:
-        tag: ${{github.ref_name}}-beta-${{github.run_number}}
+        tag: ${{steps.extract_branch.outputs.branch}}-beta-${{github.run_number}}
     - name: Publish package to github
       run: dotnet nuget push -s "https://nuget.pkg.github.com/ericvprice/index.json" -k $LOCAL_NUGET_KEY *.nupkg
       env:
         LOCAL_NUGET_KEY: ${{ secrets.LOCAL_NUGET_KEY }}
-    # - name: Push to nuget.org
-    #   run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
