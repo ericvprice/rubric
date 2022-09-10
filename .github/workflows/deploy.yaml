@@ -16,9 +16,9 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-        source-url: https://nuget.pkg.github.com/<organization>/index.json
+        source-url: https://nuget.pkg.github.com/ericvprice/index.json
       env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        NUGET_AUTH_TOKEN: ${{secrets.github_token}}
     - name: Set version
       run: |
         dotnet tool install -g dotnet-setversion
