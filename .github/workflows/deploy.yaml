@@ -18,7 +18,7 @@ jobs:
         dotnet-version: 6.0.x
     - name: Extract branch name
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/release})"
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/release/})"
       id: extract_branch
     - name: Set version
       run: |
