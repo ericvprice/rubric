@@ -63,8 +63,6 @@ jobs:
       with:
         tag: ${{github.ref_name}}-beta-${{github.run_number}}
     - name: Publish package to github
-      run: |
-        dotnet nuget add source --username ericvprice --password $LOCAL_NUGET_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ericvprice/index.json"
-        dotnet nuget push -s github -k $LOCAL_NUGET_KEY *.nupkg
+      run: dotnet nuget push -s "https://nuget.pkg.github.com/ericvprice/index.json" -k $LOCAL_NUGET_KEY *.nupkg
     # - name: Push to nuget.org
     #   run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
