@@ -26,7 +26,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat code coverage" --settings Tests/testsettings.xml /p:Threshold=95
+      run: dotnet test --configuration Release --no-build --verbosity normal --logger trx --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml --results-directory ./TestResults
     - name: Test Results
       uses: NasAmin/trx-parser@v0.2.0
       id: trx-parser
