@@ -59,9 +59,9 @@ jobs:
     - name: Package
       run: dotnet pack --configuration Release --no-build --output .
     - name: Create Release Tag
-        - uses: rickstaa/action-create-tag@v1
-        with:
-          tag: ${GITHUB_REF##*/}-beta-${{github.run_number}}
+      uses: rickstaa/action-create-tag@v1
+      with:
+        tag: ${GITHUB_REF##*/}-beta-${{github.run_number}}
     - name: Publish package to github
       run: |
         dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --name github --username ${{ github.repository_owner }} --password ${{ github.token }} --store-password-in-clear-text
