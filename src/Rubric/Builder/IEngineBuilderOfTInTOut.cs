@@ -7,21 +7,21 @@ public interface IEngineBuilder<TIn, TOut>
     where TOut : class
 {
   /// <summary>
-  ///   Begin building a prerule by name.
+  ///   Begin building a preprocessing rule by name.
   /// </summary>
   /// <param name="name">The name fo the new rule.</param>
   /// <returns>A fluent rule builder.</returns>
   IPreRuleBuilder<TIn, TOut> WithPreRule(string name);
 
   /// <summary>
-  ///   Add a prerule.
+  ///   Add a preprocessing rule.
   /// </summary>
-  /// <param name="rule">The prerule to add.</param>
+  /// <param name="rule">The preprocessing rule to add.</param>
   /// <returns>A fluent continuation.</returns>
   IEngineBuilder<TIn, TOut> WithPreRule(IRule<TIn> rule);
 
   /// <summary>
-  ///   Add multiple prerules.
+  ///   Add multiple preprocessing rules.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
@@ -49,23 +49,23 @@ public interface IEngineBuilder<TIn, TOut>
   IEngineBuilder<TIn, TOut> WithRules(IEnumerable<IRule<TIn, TOut>> rules);
 
   /// <summary>
-  ///   Begin building a postrule by name.
+  ///   Begin building a postprocessing rule by name.
   /// </summary>
   /// <param name="name">The name fo the new rule.</param>
   /// <returns>A fluent rule builder.</returns>
   IPostRuleBuilder<TIn, TOut> WithPostRule(string name);
 
   /// <summary>
-  ///   Add a postrule.
+  ///   Add a postprocessing rule.
   /// </summary>
-  /// <param name="rule">The postrule to add.</param>
+  /// <param name="rule">The postprocessing rule to add.</param>
   /// <returns>A fluent continuation.</returns>
   IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
 
   /// <summary>
-  ///   Add multiple postrules.
+  ///   Add multiple postprocessing rules.
   /// </summary>
-  /// <param name="rules">The postrules to add.</param>
+  /// <param name="rules">The postprocessing rules to add.</param>
   /// <returns>A fluent continuation.</returns>
   IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rules);
 

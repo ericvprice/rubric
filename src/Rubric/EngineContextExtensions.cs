@@ -11,9 +11,20 @@ public static class EngineContextExtensions
 
   public const string LAST_EXCEPTION_KEY = "__LAST_EXCEPTION";
 
+  /// <summary>
+  ///     Get the currently execution id.
+  /// </summary>
+  /// <param name="context">The target engine context.</param>
+  /// <returns>A unique execution id.</returns>
   public static string GetTraceId(this IEngineContext context)
     => context.Get<string>(TRACE_ID_KEY);
 
+  /// <summary>
+  ///   Get the last engine exception thrown, if any.  Can be used to check the
+  ///   exit status of the engine.
+  /// </summary>
+  /// <param name="context">The target engine context.</param>
+  /// <returns>The last engine exception handled.</returns>
   public static EngineException GetLastException(this IEngineContext context)
     => context.ContainsKey(LAST_EXCEPTION_KEY)
         ? context.Get<EngineException>(LAST_EXCEPTION_KEY)
@@ -67,9 +78,19 @@ public static class EngineContextExtensions
   public static bool IsParallel(this IEngineContext context)
       => (context.GetEngine() as IAsyncRuleEngine)?.IsParallel ?? false;
 
+  /// <summary>
+  ///   Get the current engine's input type.
+  /// </summary>
+  /// <param name="context">The target context.</param>
+  /// <returns>The current engine's input type.</returns>
   public static Type GetInputType(this IEngineContext context)
       => context.GetEngine().InputType;
 
+  /// <summary>
+  ///   Get the current engine's output type.
+  /// </summary>
+  /// <param name="context">The target context.</param>
+  /// <returns>The current engine's output type.</returns>
   public static Type GetOutputType(this IEngineContext context)
       => context.GetEngine().OutputType;
 

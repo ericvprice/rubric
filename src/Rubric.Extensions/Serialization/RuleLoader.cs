@@ -5,6 +5,9 @@ using System.IO;
 
 namespace Rubric.Extensions.Serialization;
 
+/// <summary>
+///   Helper class to turn a configured rule into a scripted rule.
+/// </summary>
 internal static class RuleLoader
 {
 

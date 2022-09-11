@@ -10,7 +10,7 @@ namespace Rubric.Engines;
 internal static class EngineExtensions
 {
   /// <summary>
-  ///     Apply an async prerule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async preprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -47,7 +47,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply an async postrule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async postprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -188,7 +188,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply a postrule.  Handle trace logging, exception handling, etc.
+  ///     Apply a postprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
