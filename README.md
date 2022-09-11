@@ -21,11 +21,11 @@ A rule engine is essentially a version of the [strategy pattern](https://en.wiki
 
 ### Engines
 
-Engines are created from rules and apply them to one or several input objects and potentially an output object.  Synchronous engines run their rules sequentially as determined by their dependency ordering.  Asynchronous engines can execute in parallel, automatically determining what rules can be run in parallel given their dependencies, and process items in parallel as well.
+Engines are created from rules and apply them to one or several input objects and potentially an output object.  Synchronous engines run their rules sequentially as determined by their dependency ordering.  Asynchronous engines can execute in parallel, automatically determining what rules can be run in parallel given their dependencies, and process items in parallel as well, and allow for asynchronous rule operations.
 
 ### Engine Contexts
 
-Engine contexts act as a holder of convenient properties about the engine current executing and  as a per-execution temporary object stash where rules can loosely communicate with each other.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing with the context.
+Engine contexts act as a holder of convenient properties about the engine current executing and as a per-execution temporary object stash where rules can loosely communicate with each other.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing with the context.
 
 ### Rules
 

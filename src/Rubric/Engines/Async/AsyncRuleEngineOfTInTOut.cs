@@ -177,12 +177,13 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     CancellationToken token = default)
   {
     context = Reset(context);
-    try
-    {
-      await ApplyItemAsync(input, output, context, token);
-      await ApplyPostAsync(output, context, token);
-    }
-    catch (EngineException) { }
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", context.GetTraceId()))
+      try
+      {
+        await ApplyItemAsync(input, output, context, token);
+        await ApplyPostAsync(output, context, token);
+      }
+      catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -193,12 +194,13 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     CancellationToken token = default)
   {
     context = Reset(context);
-    try
-    {
-      await ApplyManyAsyncSerial(inputs, output, context, token);
-      await ApplyPostAsync(output, context, token);
-    }
-    catch (EngineException) { }
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", context.GetTraceId()))
+      try
+      {
+        await ApplyManyAsyncSerial(inputs, output, context, token);
+        await ApplyPostAsync(output, context, token);
+      }
+      catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -209,11 +211,12 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     CancellationToken token = default)
   {
     context = Reset(context);
-    try
-    {
-      await ApplyManyAsyncParallel(inputs, output, context, token);
-    }
-    catch (EngineException) { }
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", context.GetTraceId()))
+      try
+      {
+        await ApplyManyAsyncParallel(inputs, output, context, token);
+      }
+      catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -223,15 +226,17 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     IEngineContext context,
     CancellationToken token = default)
   {
-    try
-    {
-      await foreach (var input in inputStream.WithCancellation(token))
+    context = Reset(context);
+    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", context.GetTraceId()))
+      try
       {
-        await ApplyItemAsync(input, output, context, token);
+        await foreach (var input in inputStream.WithCancellation(token))
+        {
+          await ApplyItemAsync(input, output, context, token);
+        }
+        await ApplyPostAsync(output, context, token);
       }
-      await ApplyPostAsync(output, context, token);
-    }
-    catch (EngineException) { }
+      catch (EngineException) { }
   }
 
   /// <summary>
