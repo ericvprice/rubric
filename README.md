@@ -158,9 +158,12 @@ public MyOutputType ProcessInputsWithFluentConstruction(IEnumerable<MyInputType>
 
 Asynchronous engine composition follows analogously.
 
-## Exception Handling
+## Exceptions and Exception Handling
 
-When an non-engine exception is thrown during execution, the exception is wrapped and passed to an optionally provided exception handler.  Users may short-circuit engine execution using `ItemHaltException` and `EngineHaltException` which will halt the execution of the current item or the entire engine's execution, respectively.  These can be thrown directly from the rules, or from a custom exception handler.  The engine will populate these 2 known exceptions with contextual information, and place the exception the `LastException` property.  These exceptions are not rethrown.
+The library provides two special exceptions: `ItemHaltException` and `EngineHaltException`.  When thrown from any rule, the engine will handle the exception by either halting further rule execution on the current item,
+or halting the engine's execution entirely.  The exception will be decorated and placed in the engine context's `LastEngineException` property before the next item is executed, or the engine exits.
+
+When an non-engine exception is thrown during execution, the exception is wrapped and passed to an optionally provided exception handler.  Users may throw one of the engine exceptions above and they will be handled appropriately.  If not handled, the exception will escape the engine to be handled by the user.
 
 In asynchronous engines, all the above statements apply, except that if one is executing either rules (for `ItemHaltException`) or inputs (for `EngineHaltException`) in parallel, the engine will attempt to cancel all other tasks being executed in parallel.  Long running rules can check the cancellation token (or pass it to other async functions) to allow graceful exiting.  The engine guarantees that:
 
