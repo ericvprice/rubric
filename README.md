@@ -174,7 +174,7 @@ In asynchronous engines, all the above statements apply, except that if one is e
 
 ## Logging
 
-The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  Engines will set context information in the logger about the execution status.  You can access this logger via the context in your rules.
+The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  Engines will set context information in the logger about the execution status, including information about executions, rules, and objects being processed.  This logger can be accessed via the context in rule implementations.
 
 ## License
 
