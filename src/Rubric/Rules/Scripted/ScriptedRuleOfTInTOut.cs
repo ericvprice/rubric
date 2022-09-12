@@ -5,6 +5,11 @@ using static Rubric.Rules.Scripted.ScriptingHelpers;
 
 namespace Rubric.Rules.Scripted;
 
+/// <summary>
+///   Represent a dynamically compiled rule.
+/// </summary>
+/// <typeparam name="TIn">The rule input type.</typeparam>
+/// <typeparam name="TOut">The rule output type.</typeparam>
 public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
 {
   private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Output, Token);";
@@ -35,15 +40,20 @@ public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
                        .CreateDelegate();
   }
 
+  /// <inheritdoc />
   public IEnumerable<string> Dependencies { get; }
 
+  /// <inheritdoc />
   public IEnumerable<string> Provides { get; }
 
+  /// <inheritdoc />
   public string Name { get; }
 
+  /// <inheritdoc />
   public async Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken t)
     => await await _apply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t), t);
 
+  /// <inheritdoc />
   public async Task<bool> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken t)
     => await await _doesApply(new ScriptedRuleContext<TIn, TOut>(context, input, output, t), t);
 }

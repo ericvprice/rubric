@@ -128,7 +128,7 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
 
   #endregion
 
-  #region Methods
+  #region Public Methods
 
   /// <inheritdoc />
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
@@ -149,19 +149,13 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     CancellationToken token = default)
   {
     ctx = Reset(ctx);
-    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
       try
       {
-        if (IsParallel)
-          if (parallelizeInputs)
-            await ApplyParallelManyAsyncParallel(ctx, inputs, token);
-          else
-            await ApplyManyAsyncParallel(inputs, ctx, token);
+        if (parallelizeInputs)
+          await ApplyManyParallelAsync(ctx, inputs, token);
         else
-          if (parallelizeInputs)
-          await ApplyParallelManyAsyncSerial(inputs, ctx, token);
-        else
-          await ApplyManyAsyncSerial(inputs, ctx, token);
+          await ApplyManySerialAsync(inputs, ctx, token);
       }
       catch (EngineHaltException) { }
   }
@@ -172,19 +166,25 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     CancellationToken token = default)
   {
     ctx = Reset(ctx);
-    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
       try
       {
-        if (IsParallel)
-          await ApplyManyAsyncParallel(inputs, ctx, token);
-        else
-          await ApplyManyAsyncSerial(inputs, ctx, token);
+        await ApplyManyAsync(inputs, ctx, token);
       }
       catch (EngineHaltException) { }
   }
 
+  #endregion
+
+  #region Private Methods
+
   private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
-    => IsParallel ? ApplyParallel(context, input, token) : ApplySerial(context, input, token);
+  {
+    using (Logger.BeginScope("Input", input))
+      return IsParallel
+        ? ApplyParallel(context, input, token)
+        : ApplySerial(context, input, token);
+  }
 
   private async Task ApplySerial(IEngineContext ctx, T i, CancellationToken t)
   {
@@ -220,8 +220,8 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
       rules.Select(
         r => Task.Run(async () =>
         {
-            try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
-            catch (Exception) { cts.Cancel(); throw; }
+          try { await this.ApplyAsyncPreRule(ctx, r, i, t); }
+          catch (Exception) { cts.Cancel(); throw; }
         }, t)));
   }
 
@@ -233,22 +233,7 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     return context;
   }
 
-  private async Task ApplyManyAsyncSerial(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
-  {
-    foreach (var input in inputs)
-    {
-      try
-      {
-        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
-      }
-      catch (EngineHaltException)
-      {
-        break;
-      }
-    }
-  }
-
-  private async Task ApplyManyAsyncSerial(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
+  private async Task ApplyManyAsync(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
     await foreach (var input in inputs.WithCancellation(t))
     {
@@ -256,29 +241,18 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
     }
   }
 
-  private async Task ApplyManyAsyncParallel(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
+  private async Task ApplyManySerialAsync(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
     foreach (var input in inputs)
     {
       t.ThrowIfCancellationRequested();
-      await ApplyParallel(context, input, t).ConfigureAwait(false);
+      await ApplyItemAsync(input, context, t);
     }
   }
 
-  private async Task ApplyManyAsyncParallel(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
-  {
-    await foreach (var input in inputs.WithCancellation(t))
-    {
-      t.ThrowIfCancellationRequested();
-      await ApplyParallel(context, input, t).ConfigureAwait(false);
-    }
-  }
-
-  private Task ApplyParallelManyAsyncParallel(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)
-      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyParallel(ctx, i, t), t)));
-
-  private Task ApplyParallelManyAsyncSerial(IEnumerable<T> inputs, IEngineContext ctx, CancellationToken t)
-      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplySerial(ctx, i, t), t)));
+  private Task ApplyManyParallelAsync(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)
+      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyItemAsync(i, ctx, t), t)));
 
   #endregion
+
 }

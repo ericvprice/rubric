@@ -5,7 +5,7 @@
 using Rubric;
 using Rubric.Tests;
 using System.Threading;
-using Rubric.TestAssembly3;
+using Rubric.Tests.TestAssembly3;
 
 Task<bool> DoesApply(IEngineContext context, TestInput input, CancellationToken token)
 => Task.FromResult(true);

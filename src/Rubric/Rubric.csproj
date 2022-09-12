@@ -11,6 +11,8 @@
     <Product>Rubric</Product>
     <Description>A simple rules engine implementation for .NET.</Description>
     <Copyright>Copyright © 2022</Copyright>
+    <RepositoryUrl>https://github.com/ericvprice/rubric</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />

@@ -1,11 +1,11 @@
-name: Deploy Beta
+name: Deploy
 
 on:
   push:
     branches: [ "release/**" ]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     defaults:
      run:
@@ -16,17 +16,21 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/release/})"
+      id: extract_branch
     - name: Set version
       run: |
         dotnet tool install -g dotnet-setversion
         dotnet tool install -g dotnet-reportgenerator-globaltool
-        setversion ${GITHUB_REF##*/}-beta-${{github.run_number}}
+        setversion --recursive ${GITHUB_REF##*/}-beta-${{github.run_number}}
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat code coverage" --settings Tests/testsettings.xml /p:Threshold=95
+      run: dotnet test --configuration Release --no-build --verbosity normal --logger trx --collect:"XPlat Code Coverage" --settings Tests/testsettings.xml --results-directory ./TestResults
     - name: Test Results
       uses: NasAmin/trx-parser@v0.2.0
       id: trx-parser
@@ -59,12 +63,10 @@ jobs:
     - name: Package
       run: dotnet pack --configuration Release --no-build --output .
     - name: Create Release Tag
-        - uses: rickstaa/action-create-tag@v1
-        with:
-          tag: ${GITHUB_REF##*/}-beta-${{github.run_number}}
+      uses: rickstaa/action-create-tag@v1
+      with:
+        tag: ${{steps.extract_branch.outputs.branch}}-beta-${{github.run_number}}
     - name: Publish package to github
-      run: |
-        dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --name github --username ${{ github.repository_owner }} --password ${{ github.token }} --store-password-in-clear-text
-        dotnet nuget push *.nupkg --source github
-    # - name: Push to nuget.org
-    #   run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_key}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push -s "https://nuget.pkg.github.com/ericvprice/index.json" -k $LOCAL_NUGET_KEY *.nupkg
+      env:
+        LOCAL_NUGET_KEY: ${{ secrets.LOCAL_NUGET_KEY }}

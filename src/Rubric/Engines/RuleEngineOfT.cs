@@ -67,7 +67,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   public void Apply(T input, IEngineContext context = null)
   {
     var ctx = Reset(context);
-    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
       try
       {
         ApplyItem(input, ctx);
@@ -79,7 +79,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
   {
     var ctx = Reset(context);
-    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
       foreach (var input in inputs)
       {
         try
@@ -95,16 +95,17 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
 
   private void ApplyItem(T input, IEngineContext ctx)
   {
-    foreach (var set in _rules)
-      foreach (var rule in set)
-        try
-        {
-          this.ApplyPreRule(ctx, rule, input);
-        }
-        catch (ItemHaltException)
-        {
-          return;
-        }
+    using (Logger.BeginScope("Input", input))
+      foreach (var set in _rules)
+        foreach (var rule in set)
+          try
+          {
+            this.ApplyPreRule(ctx, rule, input);
+          }
+          catch (ItemHaltException)
+          {
+            return;
+          }
   }
 
   private IEngineContext Reset(IEngineContext ctx)

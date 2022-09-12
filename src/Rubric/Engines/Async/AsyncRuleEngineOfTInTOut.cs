@@ -169,6 +169,8 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
 
   #endregion
 
+  #region Public Methods
+
   ///<inheritdoc/>
   public async Task ApplyAsync(
     TIn input,
@@ -177,12 +179,14 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     CancellationToken token = default)
   {
     context = Reset(context);
-    try
-    {
-      await ApplyItemAsync(input, output, context, token);
-      await ApplyPostAsync(output, context, token);
-    }
-    catch (EngineException) { }
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+      try
+      {
+        await ApplyItemAsync(input, output, context, token);
+        using (Logger.BeginScope("Output", output))
+          await ApplyPostAsync(output, context, token);
+      }
+      catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -193,12 +197,14 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     CancellationToken token = default)
   {
     context = Reset(context);
-    try
-    {
-      await ApplyManyAsyncSerial(inputs, output, context, token);
-      await ApplyPostAsync(output, context, token);
-    }
-    catch (EngineException) { }
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+      try
+      {
+        await ApplyManyAsyncSerial(inputs, output, context, token);
+        using (Logger.BeginScope("Output", output))
+          await ApplyPostAsync(output, context, token);
+      }
+      catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -209,11 +215,12 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     CancellationToken token = default)
   {
     context = Reset(context);
-    try
-    {
-      await ApplyManyAsyncParallel(inputs, output, context, token);
-    }
-    catch (EngineException) { }
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+      try
+      {
+        await ApplyManyAsyncParallel(inputs, output, context, token);
+      }
+      catch (EngineException) { }
   }
 
   ///<inheritdoc/>
@@ -223,16 +230,20 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     IEngineContext context,
     CancellationToken token = default)
   {
-    try
-    {
-      await foreach (var input in inputStream.WithCancellation(token))
+    context = Reset(context);
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+      try
       {
-        await ApplyItemAsync(input, output, context, token);
+        await foreach (var input in inputStream.WithCancellation(token))
+          await ApplyItemAsync(input, output, context, token);
+        await ApplyPostAsync(output, context, token);
       }
-      await ApplyPostAsync(output, context, token);
-    }
-    catch (EngineException) { }
+      catch (EngineException) { }
   }
+
+  #endregion
+
+  #region Private Methods
 
   /// <summary>
   ///   Process a single item.
@@ -242,12 +253,12 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
   /// <param name="ctx">The context.</param>
   /// <param name="t">The cancellation token.</param>
   /// <returns>An awaitable task.</returns>
-  private async Task ApplyItemAsync(TIn i, TOut o, IEngineContext ctx, CancellationToken t)
+  private Task ApplyItemAsync(TIn i, TOut o, IEngineContext ctx, CancellationToken t)
   {
-    if (IsParallel)
-      await ApplyItemParallel(ctx, i, o, t);
-    else
-      await ApplyItemSerial(ctx, i, o, t);
+    Logger.BeginScope("Input", i);
+    return IsParallel
+      ? ApplyItemParallel(ctx, i, o, t)
+      : ApplyItemSerial(ctx, i, o, t);
   }
 
   /// <summary>
@@ -272,7 +283,6 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
         t.ThrowIfCancellationRequested();
         await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
       }
-
   }
 
   /// <summary>
@@ -306,23 +316,24 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
   /// <returns>An awaitable task.</returns>
   private async Task ApplyPostAsync(TOut o, IEngineContext ctx, CancellationToken t)
   {
-    if (IsParallel)
-    {
-      foreach (var set in _postRules)
+    using (Logger.BeginScope("Output", o))
+      if (IsParallel)
       {
-        t.ThrowIfCancellationRequested();
-        await ParallelizePost(ctx, set, o, t);
-      }
-    }
-    else
-    {
-      foreach (var set in _postRules)
-        foreach (var rule in set)
+        foreach (var set in _postRules)
         {
           t.ThrowIfCancellationRequested();
-          await this.ApplyAsyncPostRule(ctx, rule, o, t).ConfigureAwait(false);
+          await ParallelizePost(ctx, set, o, t);
         }
-    }
+      }
+      else
+      {
+        foreach (var set in _postRules)
+          foreach (var rule in set)
+          {
+            t.ThrowIfCancellationRequested();
+            await this.ApplyAsyncPostRule(ctx, rule, o, t).ConfigureAwait(false);
+          }
+      }
   }
 
   /// <summary>
@@ -338,23 +349,13 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
     foreach (var input in inputs)
     {
       t.ThrowIfCancellationRequested();
-      try
-      {
-        foreach (var set in _preRules)
-          foreach (var pre in set)
-          {
-            t.ThrowIfCancellationRequested();
-            await this.ApplyAsyncPreRule(ctx, pre, input, t);
-          }
-        foreach (var set in _rules)
-          foreach (var rule in set)
-          {
-            t.ThrowIfCancellationRequested();
-            await this.ApplyAsyncRule(ctx, rule, input, output, t);
-          }
-      }
-      catch (ItemHaltException)
-      { }
+      using (Logger.BeginScope("Input", input))
+        try
+        {
+          await ApplyItemAsync(input, output, ctx, t);
+        }
+        catch (ItemHaltException)
+        { }
     }
   }
 
@@ -462,6 +463,8 @@ public class AsyncRuleEngine<TIn, TOut> : BaseRuleEngine, IAsyncRuleEngine<TIn, 
           catch (Exception) { cts.Cancel(); throw; }
         }, t)));
   }
+
+  #endregion
 
   internal IEngineContext Reset(IEngineContext context)
   {
