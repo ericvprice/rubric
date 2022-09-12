@@ -4,19 +4,12 @@ using Rubric.Tests.TestRules.Async;
 using System.Diagnostics;
 using Rubric.Engines.Async;
 using Rubric.Rulesets.Async;
-using Xunit.Abstractions;
 
 namespace Rubric.Tests.Engines.Async;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class AsyncEngineOfTTests
 {
-  private readonly ITestOutputHelper _helper;
-
-  public AsyncEngineOfTTests(ITestOutputHelper helper)
-  {
-    _helper = helper;
-  }
 
   [Fact]
   public async Task AppliesOrder()

@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Rubric.TestAssembly3;
 using System.IO;
 using Rubric.Async;
+using Rubric.Tests.TestAssembly3;
 
 namespace Rubric.Tests.DependencyInjection;
 
 public class ServiceCollectionScriptedRulesTests
 {
+
   [Fact]
   public void AddScriptedRulesOfT()
   {

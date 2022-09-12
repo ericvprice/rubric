@@ -32,7 +32,7 @@ public interface IRuleset<TIn, TOut>
   /// <summary>
   ///   Add postprocessing rules.
   /// </summary>
-  /// <param name="rule">The postprocessing rule to add.</param>
+  /// <param name="rules">The postprocessing rule to add.</param>
   void AddPostRules(IEnumerable<IRule<TOut>> rules);
 
   /// <summary>
@@ -44,7 +44,7 @@ public interface IRuleset<TIn, TOut>
   /// <summary>
   ///   Add new preprocessing rules.
   /// </summary>
-  /// <param name="rule">The preprocessing rule to add.</param>
+  /// <param name="rules">The preprocessing rule to add.</param>
   void AddPreRules(IEnumerable<IRule<TIn>> rules);
 
   /// <summary>
@@ -56,6 +56,6 @@ public interface IRuleset<TIn, TOut>
   /// <summary>
   ///   Add new rules.
   /// </summary>
-  /// <param name="rule">The rules to add.</param>
+  /// <param name="rules">The rules to add.</param>
   void AddRules(IEnumerable<IRule<TIn, TOut>> rules);
 }

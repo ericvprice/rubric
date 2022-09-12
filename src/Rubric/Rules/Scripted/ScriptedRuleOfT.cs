@@ -21,13 +21,13 @@ public class ScriptedRule<T> : IAsyncRule<T>
     string name,
     string script,
     ScriptOptions options = null,
-    string[] dependsOn = null,
-    string[] provides = null
+    IEnumerable<string> dependsOn = null,
+    IEnumerable<string> provides = null
   )
   {
     Name = name;
     Provides = provides?.Append(Name).ToArray() ?? new[] { Name };
-    Dependencies = dependsOn ?? new string[] { };
+    Dependencies = dependsOn?.ToArray() ?? new string[] { };
     options ??= GetDefaultOptions<T>();
     var baseCode = Create<bool>(script.FilterScript(),
                                 options,

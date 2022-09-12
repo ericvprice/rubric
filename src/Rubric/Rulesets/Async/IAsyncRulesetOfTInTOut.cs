@@ -31,7 +31,7 @@ public interface IAsyncRuleset<TIn, TOut>
   /// <summary>
   ///   Add new postprocessing rules.
   /// </summary>
-  /// <param name="rule">The postprocessing rules to add.</param>
+  /// <param name="rules">The postprocessing rules to add.</param>
   void AddAsyncPostRules(IEnumerable<IAsyncRule<TOut>> rules);
 
   /// <summary>
@@ -43,7 +43,7 @@ public interface IAsyncRuleset<TIn, TOut>
   /// <summary>
   ///   Add new preprocessing rules.
   /// </summary>
-  /// <param name="rule">The preprocessing rules to add.</param>
+  /// <param name="rules">The preprocessing rules to add.</param>
   void AddAsyncPreRules(IEnumerable<IAsyncRule<TIn>> rules);
 
   /// <summary>
@@ -55,7 +55,7 @@ public interface IAsyncRuleset<TIn, TOut>
   /// <summary>
   ///   Add new rules.
   /// </summary>
-  /// <param name="rule">The rules to add.</param>
+  /// <param name="rules">The rules to add.</param>
   void AddAsyncRules(IEnumerable<IAsyncRule<TIn, TOut>> rules);
 
 }

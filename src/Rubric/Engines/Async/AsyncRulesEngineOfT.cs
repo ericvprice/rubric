@@ -251,7 +251,7 @@ public class AsyncRuleEngine<T> : BaseRuleEngine, IAsyncRuleEngine<T>
   }
 
   private Task ApplyManyParallelAsync(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)
-      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyItemAsync(i, ctx, t))));
+      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyItemAsync(i, ctx, t), t)));
 
   #endregion
 
