@@ -62,10 +62,6 @@ jobs:
       env:
         LOCAL_NUGET_KEY: ${{ secrets.LOCAL_NUGET_KEY }}
     - name: Push to nuget.org
-<<<<<<< HEAD
       run: dotnet nuget push -s "https://api.nuget.org/v3/index.json" -k $NUGET_KEY *.nupkg
-=======
-      run: dotnet nuget push -s https://api.nuget.org/v3/index.json" -k $NUGET_KEY *.nupkg"
->>>>>>> master
       env:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
