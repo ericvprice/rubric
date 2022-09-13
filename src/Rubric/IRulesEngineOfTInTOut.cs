@@ -11,10 +11,23 @@ public interface IRuleEngine<in TIn, in TOut> : IRuleEngine
     where TIn : class
     where TOut : class
 {
+
+  /// <summary>
+  ///   The preprocessing rules.
+  /// </summary>
+  /// <value>An enumeration of preprocessing rules.</value>
   IEnumerable<IRule<TIn>> PreRules { get; }
 
+  /// <summary>
+  ///   The  rules.
+  /// </summary>
+  /// <value>An enumeration of rules.</value>
   IEnumerable<IRule<TIn, TOut>> Rules { get; }
 
+  /// <summary>
+  ///   The postprocessing rules.
+  /// </summary>
+  /// <value>An enumeration of postprocessing rules.</value>
   IEnumerable<IRule<TOut>> PostRules { get; }
 
   /// <summary>

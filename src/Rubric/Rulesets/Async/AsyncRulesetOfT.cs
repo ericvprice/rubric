@@ -8,14 +8,17 @@ public class AsyncRuleset<T> : IAsyncRuleset<T>
 
   public AsyncRuleset() => _rules = new();
 
+  /// <inheritdoc />
   public IEnumerable<IAsyncRule<T>> AsyncRules => _rules;
 
+  /// <inheritdoc />
   public void AddAsyncRule(IAsyncRule<T> rule)
   {
     if (rule == null) throw new ArgumentNullException(nameof(rule));
     _rules.Add(rule);
   }
 
+  /// <inheritdoc />
   public void AddAsyncRules(IEnumerable<IAsyncRule<T>> rules)
   {
     if (rules == null) throw new ArgumentNullException(nameof(rules));

@@ -1,4 +1,4 @@
-﻿namespace Rubric.TestAssembly3;
+namespace Rubric.Tests.TestAssembly3;
 
 public class TestDep
 {

@@ -1,4 +1,6 @@
-[![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)](https://github.com/ericvprice/rubric/actions/workflows/build.yaml)    ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%25-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![C#10](https://img.shields.io/badge/c%23-10-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+
 # Rubric
 
 Rubric is a .NET library providing synchronous and asynchronous rule engines.
@@ -7,7 +9,7 @@ Features include:
 * parallel rule and item processing (for asynchronous engines)
 * rule dependency resolution
 * three independent stages of rules (preprocessing, processing, and postprocessing)
-* conveient dependency injection options and a fluent builder interface
+* convenient dependency injection options and a fluent builder interface
 * short-circuiting exceptions to halt the processing of an item or the entire engine
 * user-injected exception handling
 
@@ -19,11 +21,11 @@ A rule engine is essentially a version of the [strategy pattern](https://en.wiki
 
 ### Engines
 
-Engines are created from rules and apply them to one or several input objects and potentially an output object.  Synchronous engines run their rules sequentially as determined by their dependency ordering.  Asyncronous engines can execute in parallel, automatically determining what rules can be run in parallel given their dependencies, and process items in parallel as well.
+Engines are created from rules and apply them to one or several input objects and potentially an output object.  Synchronous engines run their rules sequentially as determined by their dependency ordering.  Asynchronous engines can execute in parallel, automatically determining what rules can be run in parallel given their dependencies, and process items in parallel as well, and allow for asynchronous rule operations.
 
 ### Engine Contexts
 
-Engine contexts act as a holder of conveient properties about the engine current executing and  as a per-execution temporary object stash where rules can loosely communicate with each other.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing wiht the context.
+Engine contexts act as a holder of convenient properties about the engine current executing and as a per-execution temporary object stash where rules can loosely communicate with each other.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing with the context.
 
 ### Rules
 
@@ -52,7 +54,7 @@ public class MyDefaultPreprocessingRule<MyInputType> : DefaultPreRule<MyInputTyp
 {
     public void Apply(IEngineContext context, MyInputType input)
     {
-        //Unconitionally normalize or preprocess each input object with this rule
+        //Unconditionally normalize or preprocess each input object with this rule
     }
 }
 
@@ -68,7 +70,7 @@ public class MyRule<MyInputType, MyOutputType> : DefaultRule<MyInputType, MyOutp
     }
 }
 
-public class MyDefaulPostRule<MyOutputType> : DefaultRule<MyOutputType> {
+public class MyDefaultPostRule<MyOutputType> : DefaultRule<MyOutputType> {
     public void Apply(IEngineContext context, OutputType output) {
         //Unconditionally apply this rule to the output for postprocessing
     }
@@ -76,13 +78,13 @@ public class MyDefaulPostRule<MyOutputType> : DefaultRule<MyOutputType> {
 
 //Ensure this always executes after MyDefaultPostRule
 [DependsOn(typeof(MyDefaultPostRule))]
-public class MyDefaulPostRule2<MyOutputType> : DefaultRule<MyOutputType> {
+public class MyDefaultPostRule2<MyOutputType> : DefaultRule<MyOutputType> {
     public void Apply(IEngineContext context, OutputType output) {
         //Unconditionally apply this rule to the output
     }
 }
 
-public MyOutputType ProcessInputsWithDirectConstruction(IEnumearble<MyInputType> inputs) {
+public MyOutputType ProcessInputsWithDirectConstruction(IEnumerable<MyInputType> inputs) {
     var engine = new RulesEngine<MyInputType, MyOutputType>(
         new [] { new MyDefaultPreprocessingRule() },
         new [] { new MyProcessingRule() },
@@ -97,7 +99,7 @@ public MyOutputType ProcessInputsWithDirectConstruction(IEnumearble<MyInputType>
     rulesEngine.Apply(inputs, output, context);
 }
 
-public MyOutputType ProcessInputsWithFluentConstruction(IEnumearble<MyInputType> inputs) {
+public MyOutputType ProcessInputsWithFluentConstruction(IEnumerable<MyInputType> inputs) {
     var engine = EngineBuilder.ForInputAndOutput<MyInputType, MyOutputType>()
                               .WithPreRule(new MyDefaultPreprocessingRule())
                               .WithRule(new MyDefaultProcessingRule())
@@ -117,7 +119,7 @@ public MyOutputType ProcessInputsWithFluentConstruction(IEnumearble<MyInputType>
 
  ```csharp
 
-public MyOutputType ProcessInputsWithFluentConstruction(IEnumearble<MyInputType> inputs) {
+public MyOutputType ProcessInputsWithFluentConstruction(IEnumerable<MyInputType> inputs) {
     var engine = EngineBuilder.ForInputAndOutput<MyInputType, MyOutputType>()
                               .WithPreRule("mydefaultprerule")
                                 .WithPredicate((context, input) => true)
@@ -156,20 +158,23 @@ public MyOutputType ProcessInputsWithFluentConstruction(IEnumearble<MyInputType>
 
 Asynchronous engine composition follows analogously.
 
-## Exception Handling
+## Exceptions and Exception Handling
 
-When an non-engine exception is thrown during execution, the exception is wrapped and passed to an optionally provided exception handler.  Users may short-circuit engine execution using `ItemHaltException` and `EngineHaltException` which will halt the execution of the current item or the entire engine's execution, respectively.  These can be thrown directly from the rules, or from a custom exception handler.  The engine will populate these 2 known exceptions with contextual information, and place the exception the `LastException` property.  These exceptions are not rethrown.
+The library provides two special exceptions: `ItemHaltException` and `EngineHaltException`.  When thrown from any rule, the engine will handle the exception by either halting further rule execution on the current item,
+or halting the engine's execution entirely.  The exception will be decorated and placed in the engine context's `LastEngineException` property before the next item is executed, or the engine exits.
+
+When an non-engine exception is thrown during execution, the exception is wrapped and passed to an optionally provided exception handler.  Users may throw one of the engine exceptions above and they will be handled appropriately.  If not handled, the exception will escape the engine to be handled by the user.
 
 In asynchronous engines, all the above statements apply, except that if one is executing either rules (for `ItemHaltException`) or inputs (for `EngineHaltException`) in parallel, the engine will attempt to cancel all other tasks being executed in parallel.  Long running rules can check the cancellation token (or pass it to other async functions) to allow graceful exiting.  The engine guarantees that:
 
-1) As soon as any `*HaltException` is encountered, any parallized tasks have their cancellation requested through their token.
+1) As soon as any `*HaltException` is encountered, any parallelized tasks have their cancellation requested through their token.
 2) All internal parallelized tasks in the engine check the cancellation token before executing each piece of user code, and will exit as soon as possible.
 
 `TaskCancelledException`s caused by user-cancellation of the provided token will not be processed by the exception handling mechanism.  The user should handle this exception appropriately.  Uncaught `TaskCancellationException`s not arising from the same token provided by the user will be processed as any other normal exception.
 
 ## Logging
 
-The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  Engines will set context information in the logger about the execution status.  You can access this logger via the context in your rules.
+The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  Engines will set context information in the logger about the execution status, including information about executions, rules, and objects being processed.  This logger can be accessed via the context in rule implementations.
 
 ## License
 

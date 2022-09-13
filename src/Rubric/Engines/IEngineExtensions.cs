@@ -10,7 +10,7 @@ namespace Rubric.Engines;
 internal static class EngineExtensions
 {
   /// <summary>
-  ///     Apply an async prerule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async preprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -20,7 +20,7 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T i, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
-    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    using var scope = e.Logger.BeginScope("Rule", r.Name);
     try
     {
       var doesApply = await r.DoesApply(ctx, i, t).ConfigureAwait(false);
@@ -47,7 +47,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply an async postrule.  Handle trace logging, exception handling, etc.
+  ///     Apply an async postprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -57,7 +57,7 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<T> r, T o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
-    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    using var scope = e.Logger.BeginScope("Rule", r.Name);
     try
     {
       var doesApply = await r.DoesApply(ctx, o, t).ConfigureAwait(false);
@@ -95,7 +95,7 @@ internal static class EngineExtensions
   internal static async Task ApplyAsyncRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IAsyncRule<TIn, TOut> r, TIn i, TOut o, CancellationToken t)
   {
     t.ThrowIfCancellationRequested();
-    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    using var scope = e.Logger.BeginScope("Rule", r.Name);
     try
     {
       var doesApply = await r.DoesApply(ctx, i, o, t).ConfigureAwait(false);
@@ -130,7 +130,7 @@ internal static class EngineExtensions
   /// <param name="i">The current i item.</param>
   internal static void ApplyPreRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T i)
   {
-    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    using var scope = e.Logger.BeginScope("Rule", r.Name);
     try
     {
       var doesApply = r.DoesApply(ctx, i);
@@ -164,7 +164,7 @@ internal static class EngineExtensions
   /// <param name="o">The current o item.</param>
   internal static void ApplyRule<TIn, TOut>(this BaseRuleEngine e, IEngineContext ctx, IRule<TIn, TOut> r, TIn i, TOut o)
   {
-    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    using var scope = e.Logger.BeginScope("Rule", r.Name);
     try
     {
       var doesApply = r.DoesApply(ctx, i, o);
@@ -188,7 +188,7 @@ internal static class EngineExtensions
   }
 
   /// <summary>
-  ///     Apply a postrule.  Handle trace logging, exception handling, etc.
+  ///     Apply a postprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -196,7 +196,7 @@ internal static class EngineExtensions
   /// <param name="o">The o item.</param>
   internal static void ApplyPostRule<T>(this BaseRuleEngine e, IEngineContext ctx, IRule<T> r, T o)
   {
-    using var scope = e.Logger.BeginScope("Rule: {Rule}", r.Name);
+    using var scope = e.Logger.BeginScope("Rule", r.Name);
     try
     {
       var doesApply = r.DoesApply(ctx, o);

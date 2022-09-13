@@ -102,13 +102,11 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public void Apply(TIn input, TOut output, IEngineContext context = null)
   {
     context = SetupContext(context);
-    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", context.GetTraceId()))
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
       try
       {
         ApplyItem(input, output, context);
-        foreach (var set in _postprocessingRules)
-          foreach (var rule in set)
-            this.ApplyPostRule(context, rule, output);
+        ApplyPostRules(output, context);
       }
       catch (EngineHaltException)
       {
@@ -119,14 +117,12 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
   {
     var ctx = SetupContext(context);
-    using (Logger.BeginScope("Engine execution started: {EngineTraceId}", ctx.GetTraceId()))
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
       try
       {
         foreach (var input in inputs)
           ApplyItem(input, output, ctx);
-        foreach (var set in _postprocessingRules)
-          foreach (var rule in set)
-            this.ApplyPostRule(ctx, rule, output);
+        ApplyPostRules(output, context);
       }
       catch (EngineHaltException)
       {
@@ -139,18 +135,27 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
 
   private void ApplyItem(TIn input, TOut output, IEngineContext ctx)
   {
-    try
-    {
-      foreach (var set in _preprocessingRules)
-        foreach (var rule in set)
-          this.ApplyPreRule(ctx, rule, input);
-      foreach (var set in _rules)
-        foreach (var rule in set)
+    using (Logger.BeginScope("Input", input))
+      try
+      {
+        foreach (var set in _preprocessingRules)
+          foreach (var rule in set)
+            this.ApplyPreRule(ctx, rule, input);
+        foreach (var set in _rules)
+          foreach (var rule in set)
             this.ApplyRule(ctx, rule, input, output);
-    }
-    catch (ItemHaltException)
-    {
-    }
+      }
+      catch (ItemHaltException)
+      {
+      }
+  }
+
+  private void ApplyPostRules(TOut output, IEngineContext ctx)
+  {
+    using (Logger.BeginScope("Output", output))
+      foreach (var set in _postprocessingRules)
+        foreach (var rule in set)
+          this.ApplyPostRule(ctx, rule, output);
   }
 
   internal IEngineContext SetupContext(IEngineContext ctx)
@@ -162,4 +167,5 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   }
 
   #endregion
+
 }

@@ -24,5 +24,9 @@ public interface IEngineContext
   /// <typeparam name="T">The type to cast to.</typeparam>
   T Get<T>(string name);
 
+  /// <summary>
+  ///   Clone this engine context, making a shallow copy of all the stash entries.
+  /// </summary>
+  /// <returns>A copy of the engine context.</returns>
   EngineContext Clone();
 }
