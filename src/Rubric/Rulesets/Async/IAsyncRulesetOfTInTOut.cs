@@ -4,6 +4,7 @@ namespace Rubric.Rulesets.Async;
 
 public interface IAsyncRuleset<TIn, TOut>
 {
+
   /// <summary>
   ///   The preprocessing rules in this ruleset.
   /// </summary>

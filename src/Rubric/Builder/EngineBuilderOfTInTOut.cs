@@ -64,7 +64,7 @@ internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
     Ruleset.AddPostRule(rule);
     return this;
   }
-  
+
   /// <inheritdoc/>
   public IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rules)
   {

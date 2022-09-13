@@ -4,6 +4,7 @@ namespace Rubric.Rulesets.Async;
 
 public interface IAsyncRuleset<T>
 {
+
   /// <summary>
   ///   The rules in this ruleset.
   /// </summary>
