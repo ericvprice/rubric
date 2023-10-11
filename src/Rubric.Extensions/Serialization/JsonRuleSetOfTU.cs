@@ -4,7 +4,7 @@ using static Rubric.Extensions.Serialization.RuleLoader;
 
 namespace Rubric.Extensions.Serialization;
 
-internal class JsonRuleSet<TIn, TOut> : AsyncRuleset<TIn, TOut>
+internal class JsonRuleSet<TIn, TOut> : Ruleset<TIn, TOut>
 {
   internal JsonRuleSet(AsyncRulesetModel<TIn, TOut> model, ScriptOptions options)
   {

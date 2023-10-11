@@ -11,7 +11,7 @@ namespace Rubric.Extensions.Serialization;
 internal static class RuleLoader
 {
 
-  internal static IAsyncRule<T> LoadFromModel<T>(RuleModel model, string basePath, ScriptOptions options)
+  internal static IRule<T> LoadFromModel<T>(RuleModel model, string basePath, ScriptOptions options)
    => new ScriptedRule<T>
       (
         model.Name,
@@ -21,7 +21,7 @@ internal static class RuleLoader
         model.Provides
       );
 
-  internal static IAsyncRule<TIn, TOut> LoadFromModel<TIn, TOut>(RuleModel model, string basePath, ScriptOptions options)
+  internal static IRule<TIn, TOut> LoadFromModel<TIn, TOut>(RuleModel model, string basePath, ScriptOptions options)
     => new ScriptedRule<TIn, TOut>(
           model.Name,
           File.ReadAllText(Path.Combine(basePath, model.Script)),

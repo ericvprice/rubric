@@ -17,8 +17,8 @@ public class AsyncEngineOfTTests
     var rule = new TestDefaultAsyncPreRule();
     var rule2 = new TestAsyncPreRule(true, false);
     var input = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { rule, rule2 }
+    var engine = new RuleEngine<TestInput>(
+        new Rubric.Rules.Async.IRule<TestInput>[] { rule, rule2 }
     );
     await engine.ApplyAsync(input);
     Assert.False(input.InputFlag);
@@ -30,8 +30,8 @@ public class AsyncEngineOfTTests
     var rule = new TestDefaultAsyncPreRule();
     var rule2 = new TestAsyncPreRule(true, false);
     var input = new TestInput { InputFlag = true };
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { rule2, rule }
+    var engine = new RuleEngine<TestInput>(
+        new Rubric.Rules.Async.IRule<TestInput>[] { rule2, rule }
     );
     await engine.ApplyAsync(input);
     Assert.True(input.InputFlag);
@@ -41,8 +41,8 @@ public class AsyncEngineOfTTests
   public void Constructor()
   {
     var logger = new TestLogger();
-    var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet, false, null, logger);
+    var ruleSet = new Rulesets.Async.Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet, false, null, logger);
     Assert.Equal(logger, engine.Logger);
     Assert.False(engine.IsParallel);
   }
@@ -51,8 +51,8 @@ public class AsyncEngineOfTTests
   public void Properties()
   {
     var logger = new TestLogger();
-    var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet, false, null, logger);
+    var ruleSet = new Rulesets.Async.Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet, false, null, logger);
     Assert.True(engine.IsAsync);
     Assert.False(engine.IsParallel);
     Assert.Equal(typeof(TestInput), engine.InputType);
@@ -63,8 +63,8 @@ public class AsyncEngineOfTTests
   public void PropertiesParallel()
   {
     var logger = new TestLogger();
-    var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet, true, null, logger);
+    var ruleSet = new Rulesets.Async.Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet, true, null, logger);
     Assert.True(engine.IsAsync);
     Assert.True(engine.IsParallel);
     Assert.Equal(typeof(TestInput), engine.InputType);
@@ -73,16 +73,16 @@ public class AsyncEngineOfTTests
   [Fact]
   public void ConstructorNullLogger()
   {
-    var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet);
+    var ruleSet = new Rulesets.Async.Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet);
     Assert.NotNull(engine.Logger);
   }
 
   [Fact]
   public void ConstructorParallel()
   {
-    var ruleSet = new AsyncRuleset<TestInput>();
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet, true);
+    var ruleSet = new Rulesets.Async.Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet, true);
     Assert.True(engine.IsParallel);
   }
 
@@ -90,8 +90,8 @@ public class AsyncEngineOfTTests
   public void ConstructorWithEmptySyncRuleset()
   {
     var logger = new TestLogger();
-    var ruleSet = new Ruleset<TestInput>();
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet, false, null, logger);
+    var ruleSet = new Rulesets.Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet, false, null, logger);
     Assert.Equal(logger, engine.Logger);
   }
 
@@ -99,9 +99,9 @@ public class AsyncEngineOfTTests
   public void ConstructorWithSyncRuleset()
   {
     var logger = new TestLogger();
-    var ruleSet = new Ruleset<TestInput>();
+    var ruleSet = new Rulesets.Ruleset<TestInput>();
     ruleSet.AddRule(new TestPreRule(true));
-    var engine = new AsyncRuleEngine<TestInput>(ruleSet, false, null, logger);
+    var engine = new RuleEngine<TestInput>(ruleSet, false, null, logger);
     Assert.NotEmpty(engine.Rules);
   }
 
@@ -111,8 +111,8 @@ public class AsyncEngineOfTTests
   {
     var rule = new TestDefaultAsyncPreRule();
     var input = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { rule }
+    var engine = new RuleEngine<TestInput>(
+        new Rubric.Rules.Async.IRule<TestInput>[] { rule }
     );
     await engine.ApplyAsync(input);
     Assert.True(input.InputFlag);
@@ -124,8 +124,8 @@ public class AsyncEngineOfTTests
     var rule = new TestDefaultAsyncPreRule();
     var input = new TestInput();
     var input2 = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { rule }
+    var engine = new RuleEngine<TestInput>(
+        new Rubric.Rules.Async.IRule<TestInput>[] { rule }
     );
     await engine.ApplyAsync(new[] { input, input2 });
     Assert.True(input.InputFlag);
@@ -136,8 +136,8 @@ public class AsyncEngineOfTTests
   public async Task AppliesManyEmpty()
   {
     var rule = new TestDefaultAsyncPreRule();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { rule }
+    var engine = new RuleEngine<TestInput>(
+        new Rubric.Rules.Async.IRule<TestInput>[] { rule }
     );
     await engine.ApplyAsync(Array.Empty<TestInput>());
     //Shouldn't throw
@@ -148,8 +148,8 @@ public class AsyncEngineOfTTests
   {
     var rule = new TestAsyncPreRule(false);
     var input = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { rule }
+    var engine = new RuleEngine<TestInput>(
+        new Rubric.Rules.Async.IRule<TestInput>[] { rule }
     );
     await engine.ApplyAsync(input);
     Assert.False(input.InputFlag);
@@ -160,8 +160,8 @@ public class AsyncEngineOfTTests
   {
     var testPreRule = new TestExceptionAsyncPreRule(false);
     var engine =
-        new AsyncRuleEngine<TestInput>(
-            new AsyncRule<TestInput>[] { testPreRule });
+        new RuleEngine<TestInput>(
+            new Rubric.Rules.Async.Rule<TestInput>[] { testPreRule });
     var input = new TestInput();
     var context = new EngineContext();
     var exception = await Assert.ThrowsAsync<Exception>(async () => await engine.ApplyAsync(input, context));
@@ -174,8 +174,8 @@ public class AsyncEngineOfTTests
   public async Task TestEngineHalt()
   {
     var engine =
-        new AsyncRuleEngine<TestInput>(
-            new AsyncRule<TestInput>[] { new AsyncPreHaltRule(), new TestAsyncPreRule(true) });
+        new RuleEngine<TestInput>(
+            new Rubric.Rules.Async.Rule<TestInput>[] { new TestPreHaltRule(), new TestAsyncPreRule(true) });
     var input = new TestInput();
     await engine.ApplyAsync(input);
     //Engine should have halted on first rule, second rule not run
@@ -767,7 +767,7 @@ public class AsyncEngineOfTTests
   public async Task ApplyException()
   {
     var testPreRule = new TestExceptionAsyncPreRule(false);
-    var engine = new AsyncRuleEngine<TestInput>(new AsyncRule<TestInput>[] { testPreRule });
+    var engine = new RuleEngine<TestInput>(new Rubric.Rules.Async.Rule<TestInput>[] { testPreRule });
     var input = new TestInput();
     var context = new EngineContext();
     await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, context));
@@ -778,8 +778,8 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyEngineException()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new EngineHaltException("Test", null));
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule });
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new EngineHaltException("Test", null));
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule }));
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -796,8 +796,8 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyItemException()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new ItemHaltException());
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule });
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new ItemHaltException());
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule }));
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -814,9 +814,9 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyExceptionHandler()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
-    var testPreRule2 = new LambdaAsyncRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltEngine);
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
+    var testPreRule2 = new Rubric.Rules.Async.LambdaRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule, testPreRule2 }), false, ExceptionHandlers.HaltEngine);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -833,9 +833,9 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyExceptionHandlerItemException()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
-    var testPreRule2 = new LambdaAsyncRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltItem);
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
+    var testPreRule2 = new Rubric.Rules.Async.LambdaRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule, testPreRule2 }), false, ExceptionHandlers.HaltItem);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -852,9 +852,9 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyExceptionHandlerThrow()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
-    var testPreRule2 = new LambdaAsyncRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Rethrow);
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
+    var testPreRule2 = new Rubric.Rules.Async.LambdaRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule, testPreRule2 }), false, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var context = new EngineContext();
     var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, context));
@@ -866,10 +866,10 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyExceptionHandlerThrowException()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
-    var testPreRule2 = new LambdaAsyncRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false,
-        new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
+    var testPreRule2 = new Rubric.Rules.Async.LambdaRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule, testPreRule2 }), false,
+        (IExceptionHandler)new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
     var context = new EngineContext();
     await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(input, context));
@@ -880,9 +880,9 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyExceptionHandlerIgnore()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
-    var testPreRule2 = new LambdaAsyncRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
-    var engine = new AsyncRuleEngine<TestInput>(new IAsyncRule<TestInput>[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Ignore);
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
+    var testPreRule2 = new Rubric.Rules.Async.LambdaRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule, testPreRule2 }), false, ExceptionHandlers.Ignore);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -893,7 +893,7 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyManyHandleEngineHalt()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>(
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>(
         "test",
         async (_, _, _) => true,
         async (_, i, _) =>
@@ -904,8 +904,8 @@ public class AsyncEngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { testPreRule }
+    var engine = new RuleEngine<TestInput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule })
     );
     var context = new EngineContext();
     await engine.ApplyAsync(new[] { input, input2 }, context);
@@ -923,7 +923,7 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyManyHandleItemHalt()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>(
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>(
         "test",
         async (_, _, _) => true,
         async (_, i, _) =>
@@ -934,8 +934,8 @@ public class AsyncEngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { testPreRule }
+    var engine = new RuleEngine<TestInput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule })
     );
     var context = new EngineContext();
     await engine.ApplyAsync(new[] { input, input2 }, context);
@@ -953,7 +953,7 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyManyHandleExceptionItemHalt()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>(
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>(
         "test",
         async (_, _, _) => true,
         async (_, i, _) =>
@@ -964,8 +964,8 @@ public class AsyncEngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { testPreRule },
+    var engine = new RuleEngine<TestInput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule }),
         false,
         ExceptionHandlers.HaltItem
     );
@@ -985,7 +985,7 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyManyHandleExceptionEngineHalt()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>(
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>(
         "test",
         async (_, _, _) => true,
         async (_, i, _) =>
@@ -996,8 +996,8 @@ public class AsyncEngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { testPreRule },
+    var engine = new RuleEngine<TestInput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule }),
         false,
         ExceptionHandlers.HaltEngine
     );
@@ -1017,7 +1017,7 @@ public class AsyncEngineOfTTests
   [Fact]
   public async Task ApplyManyHandleExceptionEngineThrow()
   {
-    var testPreRule = new LambdaAsyncRule<TestInput>(
+    var testPreRule = new Rubric.Rules.Async.LambdaRule<TestInput>(
         "test",
         async (_, _, _) => true,
         async (_, i, _) =>
@@ -1028,8 +1028,8 @@ public class AsyncEngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
-    var engine = new AsyncRuleEngine<TestInput>(
-        new IAsyncRule<TestInput>[] { testPreRule },
+    var engine = new RuleEngine<TestInput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { testPreRule }),
         false,
         ExceptionHandlers.Rethrow
     );
@@ -1045,7 +1045,7 @@ public class AsyncEngineOfTTests
   public async Task DoesApplyException()
   {
     var testPreRule = new TestExceptionAsyncPreRule(true);
-    var engine = new AsyncRuleEngine<TestInput>(new AsyncRule<TestInput>[] { testPreRule }, false, ExceptionHandlers.Rethrow);
+    var engine = new RuleEngine<TestInput>(new Rubric.Rules.Async.Rule<TestInput>[] { testPreRule }, false, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var context = new EngineContext();
     var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, context));

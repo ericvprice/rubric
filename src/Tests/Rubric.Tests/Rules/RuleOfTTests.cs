@@ -1,9 +1,18 @@
-﻿using Rubric.Tests.TestRules;
+﻿using Rubric.Rules;
+using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Rules;
 
 public class RuleOfTTests
 {
+
+  [Fact]
+  public void Name()
+  {
+    var rule = new TestPreRule(true);
+    Assert.EndsWith(nameof(TestPreRule), rule.Name);
+  }
+
   [Theory]
   [InlineData(true)]
   [InlineData(false)]
@@ -49,6 +58,7 @@ public class RuleOfTTests
     Assert.Contains("dep2", rule.Dependencies);
     Assert.Contains("prv1", rule.Provides);
     Assert.Contains("prv2", rule.Provides);
+    rule.Apply(null, null);
   }
 
   [Fact]

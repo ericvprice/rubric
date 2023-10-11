@@ -1,4 +1,5 @@
 ﻿using Rubric.Dependency;
+using Rubric.Rules;
 
 namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 

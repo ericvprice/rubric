@@ -1,3 +1,5 @@
+using Rubric.Rules.Async;
+
 namespace Rubric.Tests.TestRules.Async;
 
 public class TestDefaultAsyncPostRule : DefaultAsyncRule<TestOutput>

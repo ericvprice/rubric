@@ -1,4 +1,6 @@
-﻿namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
+﻿using Rubric.Rules;
+
+namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 public class DepTestPreRule : Rule<TestInput>
 {

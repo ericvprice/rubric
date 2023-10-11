@@ -5,15 +5,15 @@ namespace Rubric.Rules.Async;
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
-public class AsyncRuleWrapper<TIn, TOut> : IAsyncRule<TIn, TOut>
+public class AsyncRuleWrapper<TIn, TOut> : IRule<TIn, TOut>
 {
-  private readonly IRule<TIn, TOut> _syncRule;
+  private readonly Rules.IRule<TIn, TOut> _syncRule;
 
   /// <summary>
   ///   Create a wrapper around the equivalent synchronous rule.
   /// </summary>
   /// <param name="syncRule">The synchronous rule.</param>
-  public AsyncRuleWrapper(IRule<TIn, TOut> syncRule) => _syncRule = syncRule;
+  public AsyncRuleWrapper(Rules.IRule<TIn, TOut> syncRule) => _syncRule = syncRule;
 
   /// <inheritdoc />
   public Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token)

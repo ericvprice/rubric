@@ -26,7 +26,7 @@ public class ServiceCollectionScriptedRulesTests
     services.AddAsyncRuleEngine<TestInput>()
             .AddScriptedRules<TestInput>(config, "ofT");
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestInput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestInput>>();
     Assert.NotNull(result);
     Assert.Equal(2, result.Rules.Count());
     Assert.True(result.IsAsync);
@@ -51,7 +51,7 @@ public class ServiceCollectionScriptedRulesTests
               "ofTWithDeps",
               options => options.AddReferences(typeof(TestDep).Assembly));
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestInput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestInput>>();
     Assert.NotNull(result);
     Assert.Equal(2, result.Rules.Count());
     Assert.True(result.IsAsync);
@@ -72,7 +72,7 @@ public class ServiceCollectionScriptedRulesTests
     services.AddAsyncRuleEngine<TestInput, TestOutput>()
             .AddScriptedRules<TestInput, TestOutput>(config, "ofTU");
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestInput, TestOutput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestInput, TestOutput>>();
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Single(result.Rules);
@@ -98,7 +98,7 @@ public class ServiceCollectionScriptedRulesTests
               "ofTUWithDeps",
               options => options.AddReferences(typeof(TestDep).Assembly));
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestInput, TestOutput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestInput, TestOutput>>();
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Single(result.Rules);

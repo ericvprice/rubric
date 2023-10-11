@@ -67,8 +67,8 @@ public class ScriptTests
     Assert.NotNull(ruleSetModel);
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
     var ruleset = new JsonRuleSet<TestInput>(ruleSetModel);
-    Assert.Equal(2, ruleset.AsyncRules.Count());
-    var engine = new AsyncRuleEngine<TestInput>(ruleset);
+    Assert.Equal(2, ruleset.Rules.Count());
+    var engine = new RuleEngine<TestInput>(ruleset);
     var input = new TestInput();
     await engine.ApplyAsync(input);
     Assert.True(input.InputFlag);
@@ -91,10 +91,10 @@ public class ScriptTests
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
     var scriptOptions = ScriptingHelpers.GetDefaultOptions<TestInput, TestOutput>();
     var ruleset = new JsonRuleSet<TestInput, TestOutput>(ruleSetModel, scriptOptions);
-    Assert.Single(ruleset.AsyncPreRules);
-    Assert.Single(ruleset.AsyncRules);
-    Assert.Single(ruleset.AsyncPostRules);
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleset);
+    Assert.Single(ruleset.PreRules);
+    Assert.Single(ruleset.Rules);
+    Assert.Single(ruleset.PostRules);
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleset);
     var input = new TestInput();
     var output = new TestOutput();
     await engine.ApplyAsync(input, output);

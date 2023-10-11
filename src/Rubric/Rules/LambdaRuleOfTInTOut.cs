@@ -29,16 +29,21 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
   }
-  
+
+  /// <inheritdoc/>
   public string Name { get; }
 
+  /// <inheritdoc/>
   public IEnumerable<string> Dependencies { get; }
 
+  /// <inheritdoc/>
   public IEnumerable<string> Provides { get; }
 
+  /// <inheritdoc/>
   public void Apply(IEngineContext context, TIn input, TOut output)
       => _action(context, input, output);
 
+  /// <inheritdoc/>
   public bool DoesApply(IEngineContext context, TIn input, TOut output)
       => _predicate(context, input, output);
 }

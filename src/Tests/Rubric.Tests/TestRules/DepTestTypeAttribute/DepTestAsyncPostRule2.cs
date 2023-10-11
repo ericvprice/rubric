@@ -3,7 +3,7 @@ using Rubric.Dependency;
 namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
 [DependsOn(typeof(DepTestAsyncPostRule))]
-public class DepTestAsyncPostRule2 : AsyncRule<TestOutput>
+public class DepTestAsyncPostRule2 : Rubric.Rules.Async.Rule<TestOutput>
 {
   private readonly bool _shouldApply;
 

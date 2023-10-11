@@ -1,5 +1,6 @@
 using Rubric.Async;
 using Rubric.Engines.Async;
+using Rubric.Rules.Async;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Engines.Async;
@@ -13,9 +14,9 @@ public class ParallelAsyncEngineTests
     var rule = new TestDefaultAsyncRule();
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
-        new IAsyncRule<TestInput, TestOutput>[] { rule },
+        new IRule<TestInput, TestOutput>[] { rule },
         null
     )
     {
@@ -78,9 +79,9 @@ public class ParallelAsyncEngineTests
     var rule = new TestAsyncRule(false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
-        new IAsyncRule<TestInput, TestOutput>[] { rule },
+        new IRule<TestInput, TestOutput>[] { rule },
         null
     )
     {
@@ -97,10 +98,10 @@ public class ParallelAsyncEngineTests
     var rule = new TestDefaultAsyncPostRule();
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        null,
-        null,
-        new IAsyncRule<TestOutput>[] { rule }
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)null,
+        (IEnumerable<IRule<TestInput, TestOutput>>)null,
+        (IEnumerable<Rubric.Rules.Async.IRule<TestOutput>>)(new Rubric.Rules.Async.IRule<TestOutput>[] { rule })
     )
     {
       IsParallel = true
@@ -115,10 +116,10 @@ public class ParallelAsyncEngineTests
     var rule = new TestAsyncPostRule(false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        null,
-        null,
-        new IAsyncRule<TestOutput>[] { rule }
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)null,
+        (IEnumerable<IRule<TestInput, TestOutput>>)null,
+        (IEnumerable<Rubric.Rules.Async.IRule<TestOutput>>)(new Rubric.Rules.Async.IRule<TestOutput>[] { rule })
     )
     {
       IsParallel = true
@@ -133,10 +134,10 @@ public class ParallelAsyncEngineTests
     var rule = new TestDefaultAsyncPreRule();
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new IAsyncRule<TestInput>[] { rule },
-        null,
-        null
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        (IEnumerable<Rubric.Rules.Async.IRule<TestInput>>)(new Rubric.Rules.Async.IRule<TestInput>[] { rule }),
+        (IEnumerable<IRule<TestInput, TestOutput>>)null,
+        (IEnumerable<Rubric.Rules.Async.IRule<TestOutput>>)null
     )
     {
       IsParallel = true
@@ -151,8 +152,8 @@ public class ParallelAsyncEngineTests
     var rule = new TestAsyncPreRule(false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new IAsyncRule<TestInput>[] { rule },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new IRule<TestInput>[] { rule },
         null,
         null
     )
@@ -166,9 +167,9 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task WrapApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
-        new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) },
+        new Rubric.Rules.Async.Rule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) },
         null)
     {
       IsParallel = true
@@ -186,9 +187,9 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task WrapDoesApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
-        new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) },
+        new Rubric.Rules.Async.Rule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) },
         null)
     {
       IsParallel = true
@@ -206,10 +207,10 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task WrapPostApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
         null,
-        new AsyncRule<TestOutput>[] { new TestExceptionAsyncPostRule(false) })
+        new Rubric.Rules.Async.Rule<TestOutput>[] { new TestExceptionAsyncPostRule(false) })
     {
       IsParallel = true
     };
@@ -225,10 +226,10 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task WrapPostDoesApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
         null,
-        new AsyncRule<TestOutput>[] { new TestExceptionAsyncPostRule(true) })
+        new Rubric.Rules.Async.Rule<TestOutput>[] { new TestExceptionAsyncPostRule(true) })
     {
       IsParallel = true
     };
@@ -244,8 +245,8 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task WrapPreApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new AsyncRule<TestInput>[] { new TestExceptionAsyncPreRule(false) },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new Rubric.Rules.Async.Rule<TestInput>[] { new TestExceptionAsyncPreRule(false) },
         null,
         null)
     {
@@ -264,8 +265,8 @@ public class ParallelAsyncEngineTests
   [Fact]
   public async Task WrapPreDoesApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new AsyncRule<TestInput>[] { new TestExceptionAsyncPreRule(true) },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new Rubric.Rules.Async.Rule<TestInput>[] { new TestExceptionAsyncPreRule(true) },
         null,
         null)
     {
@@ -595,7 +596,7 @@ public class ParallelAsyncEngineTests
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
-  private static IAsyncRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
+  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                   .WithAsyncPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
@@ -625,7 +626,7 @@ public class ParallelAsyncEngineTests
                   .AsParallel()
                   .Build();
 
-  private static IAsyncRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
+  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
    => EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
                 .WithAsyncPreRule("testprerule")
                   .WithAction(async (_, i, _) =>

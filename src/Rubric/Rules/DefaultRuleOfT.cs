@@ -6,5 +6,6 @@ namespace Rubric.Rules;
 /// <typeparam name="T">The engine input.</typeparam>
 public abstract class DefaultRule<T> : Rule<T>
 {
+  /// <inheritdoc/>
   public override bool DoesApply(IEngineContext context, T input) => true;
 }

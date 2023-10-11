@@ -5,7 +5,7 @@ namespace Rubric.Tests.TestRules;
 [DependsOn("dep1")]
 [DependsOn("dep2")]
 [Provides("dep3")]
-public class DepTestAsyncPreRule : AsyncRule<TestInput>
+public class DepTestAsyncPreRule : Rubric.Rules.Async.Rule<TestInput>
 {
   private readonly bool _flagValue;
   private readonly bool _shouldApply;

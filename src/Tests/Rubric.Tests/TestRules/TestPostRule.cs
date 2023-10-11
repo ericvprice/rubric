@@ -1,3 +1,5 @@
+using Rubric.Rules;
+
 namespace Rubric.Tests.TestRules;
 
 public class TestPostRule : Rule<TestOutput>

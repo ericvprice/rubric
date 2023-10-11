@@ -5,7 +5,7 @@ namespace Rubric.Tests.TestRules;
 [DependsOn("dep1")]
 [DependsOn("dep2")]
 [Provides("dep3")]
-public class DepTestAsyncPostRule : AsyncRule<TestOutput>
+public class DepTestAsyncPostRule : Rubric.Rules.Async.Rule<TestOutput>
 {
   private readonly bool _shouldApply;
 

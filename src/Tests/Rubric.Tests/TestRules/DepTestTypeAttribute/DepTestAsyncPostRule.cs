@@ -1,6 +1,6 @@
 namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
-public class DepTestAsyncPostRule : AsyncRule<TestOutput>
+public class DepTestAsyncPostRule : Rubric.Rules.Async.Rule<TestOutput>
 {
   private readonly bool _shouldApply;
 

@@ -1,19 +1,20 @@
-﻿using Rubric.Tests.TestRules;
+﻿using Rubric.Rules;
+using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Rules;
 
-public  class UtilityRuleTests
+public class UtilityRuleTests
 {
 
   [Fact]
   public void DebugReturnsDebug()
   {
     const bool expected =
-      #if DEBUG
+#if DEBUG
           true;
-      #else
+#else
       false;
-    #endif
+#endif
     Assert.Equal(expected, new TestDebugRule<TestInput>().DoesApply(null, null));
     Assert.Equal(expected, new TestDebugRule<TestInput, TestOutput>().DoesApply(null, null, null));
   }

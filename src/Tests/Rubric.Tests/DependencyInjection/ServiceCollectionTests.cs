@@ -119,7 +119,7 @@ public class ServiceCollectionTests
     services.AddAsyncRuleEngine<TestAssemblyInput>()
             .AddAsyncRules<TestAssemblyInput>();
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestAssemblyInput>>();
     Assert.NotNull(result);
     Assert.Single(result.Rules);
     Assert.True(result.IsAsync);
@@ -136,7 +136,7 @@ public class ServiceCollectionTests
             )
             .AddAsyncRules<TestAssemblyInput>();
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestAssemblyInput>>();
     Assert.NotNull(result);
     Assert.Equal(2, result.Rules.Count());
     Assert.True(result.IsAsync);
@@ -150,7 +150,7 @@ public class ServiceCollectionTests
     services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
             .AddAsyncRules<TestAssemblyInput, TestAssemblyOutput>();
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Single(result.Rules);
@@ -170,7 +170,7 @@ public class ServiceCollectionTests
             )
             .AddAsyncRules<TestAssemblyInput, TestAssemblyOutput>();
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
+    var result = provider.GetService<Async.IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();
     Assert.NotNull(result);
     Assert.Single(result.PreRules);
     Assert.Equal(2, result.Rules.Count());
@@ -186,7 +186,7 @@ public class ServiceCollectionTests
     services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput2>()
             .AddAsyncRules<TestAssemblyInput, TestAssemblyOutput2>();
     var provider = services.BuildServiceProvider();
-    var result = provider.GetService<IAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput2>>();
+    var result = provider.GetService<Async.IRuleEngine<TestAssemblyInput, TestAssemblyOutput2>>();
     Assert.NotNull(result);
     Assert.Equal(2, result.PreRules.Count());
     Assert.Single(result.Rules);

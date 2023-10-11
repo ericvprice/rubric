@@ -1,3 +1,5 @@
+using Rubric.Rules;
+
 namespace Rubric.Tests.TestRules;
 
 internal class TestRule : Rule<TestInput, TestOutput>

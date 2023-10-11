@@ -9,7 +9,7 @@ namespace Rubric.Rules.Scripted;
 ///   Represent a dynamically compiled rule.
 /// </summary>
 /// <typeparam name="T">The rule type.</typeparam>
-public class ScriptedRule<T> : IAsyncRule<T>
+public class ScriptedRule<T> : Async.IRule<T>
 {
   private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Token);";
   private const string APPLY_TRAILER = "return Apply(Context, Input, Token);";

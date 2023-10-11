@@ -1,6 +1,6 @@
 namespace Rubric.Tests.TestRules.DepTestTypeAttribute;
 
-public class DepTestAsyncPreRule : AsyncRule<TestInput>
+public class DepTestAsyncPreRule : Rubric.Rules.Async.Rule<TestInput>
 {
   private readonly bool _flagValue;
   private readonly bool _shouldApply;

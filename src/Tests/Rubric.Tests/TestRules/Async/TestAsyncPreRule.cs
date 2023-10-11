@@ -1,6 +1,6 @@
 namespace Rubric.Tests.TestRules.Async;
 
-public class TestAsyncPreRule : AsyncRule<TestInput>
+public class TestAsyncPreRule : Rubric.Rules.Async.Rule<TestInput>
 {
   private readonly bool _flagValue;
   private readonly bool _shouldApply;

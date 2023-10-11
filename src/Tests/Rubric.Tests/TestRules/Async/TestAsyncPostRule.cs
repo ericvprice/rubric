@@ -1,6 +1,6 @@
 namespace Rubric.Tests.TestRules.Async;
 
-public class TestAsyncPostRule : AsyncRule<TestOutput>
+public class TestAsyncPostRule : Rubric.Rules.Async.Rule<TestOutput>
 {
   private readonly bool _shouldApply;
 

@@ -52,10 +52,10 @@ public static class EngineContextExtensions
   ///     This can be safely called after examining <see cref="IsAsync">IsAsync</see>.
   /// </summary>
   /// <param name="context">The engine context.</param>
-  public static IAsyncRuleEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
+  public static Async.IRuleEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
       where TIn : class
       where TOut : class
-      => context.Get<IAsyncRuleEngine<TIn, TOut>>(ENGINE_KEY);
+      => context.Get<Async.IRuleEngine<TIn, TOut>>(ENGINE_KEY);
 
   /// <summary>
   ///     Get the currently executing engine's logger.
@@ -76,7 +76,7 @@ public static class EngineContextExtensions
   /// </summary>
   /// <param name="context">The engine context.</param>
   public static bool IsParallel(this IEngineContext context)
-      => (context.GetEngine() as IAsyncRuleEngine)?.IsParallel ?? false;
+      => (context.GetEngine() as Async.IRuleEngine)?.IsParallel ?? false;
 
   /// <summary>
   ///   Get the current engine's input type.

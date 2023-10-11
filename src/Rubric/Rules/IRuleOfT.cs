@@ -9,7 +9,7 @@ namespace Rubric.Rules;
 public interface IRule<in T> : IDependency
 {
   /// <summary>
-  ///   Determine whether this rule applies in the given context on the given input and output.
+  ///   Determine whether this rule applies in the given context on the given input.
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>
@@ -17,7 +17,7 @@ public interface IRule<in T> : IDependency
   bool DoesApply(IEngineContext context, T input);
 
   /// <summary>
-  ///   Apply this rule in the given context on the given inputs and outputs.
+  ///   Apply this rule in the given context on the given input.
   /// </summary>
   /// <param name="context">The execution context.</param>
   /// <param name="input">The input object.</param>

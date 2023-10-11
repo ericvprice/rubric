@@ -122,7 +122,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
       {
         foreach (var input in inputs)
           ApplyItem(input, output, ctx);
-        ApplyPostRules(output, context);
+        ApplyPostRules(output, ctx);
       }
       catch (EngineHaltException)
       {
@@ -153,9 +153,15 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   private void ApplyPostRules(TOut output, IEngineContext ctx)
   {
     using (Logger.BeginScope("Output", output))
-      foreach (var set in _postprocessingRules)
-        foreach (var rule in set)
-          this.ApplyPostRule(ctx, rule, output);
+      try
+      {
+        foreach (var set in _postprocessingRules)
+          foreach (var rule in set)
+            this.ApplyPostRule(ctx, rule, output);
+      }
+      catch (ItemHaltException)
+      {
+      }
   }
 
   internal IEngineContext SetupContext(IEngineContext ctx)

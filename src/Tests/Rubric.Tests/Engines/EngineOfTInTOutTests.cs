@@ -1,3 +1,5 @@
+using Rubric.Engines;
+using Rubric.Rules;
 using Rubric.Rulesets;
 using Rubric.Tests.TestRules;
 
@@ -623,7 +625,7 @@ public class EngineOfTInTOutTests
     var context = new EngineContext();
     var engine = GetEngineExceptionEngine<ItemHaltException>();
     engine.Apply(testInput, testOutput, context);
-    Assert.Null(context.GetLastException());
+    Assert.IsType<ItemHaltException>(context.GetLastException());
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
   }

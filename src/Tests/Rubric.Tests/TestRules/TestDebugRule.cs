@@ -1,4 +1,6 @@
-﻿namespace Rubric.Tests.TestRules;
+﻿using Rubric.Rules;
+
+namespace Rubric.Tests.TestRules;
 
 public class TestDebugRule<T> : DebugRule<T>
 {

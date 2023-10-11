@@ -1,3 +1,4 @@
+using Rubric;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Builders;

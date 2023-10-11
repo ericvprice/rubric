@@ -1,9 +1,9 @@
 using Rubric.Async;
 using Rubric.Engines.Async;
-using Rubric.Rulesets;
 using Rubric.Rulesets.Async;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
+using Rubric.Rules.Async;
 
 namespace Rubric.Tests.Engines.Async;
 
@@ -17,9 +17,9 @@ public class AsyncEngineOfTInTOutTests
     var rule = new TestDefaultAsyncRule();
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
-        new IAsyncRule<TestInput, TestOutput>[] { rule },
+        new IRule<TestInput, TestOutput>[] { rule },
         null
     );
     await engine.ApplyAsync(input, output);
@@ -34,8 +34,8 @@ public class AsyncEngineOfTInTOutTests
     var rule2 = new TestAsyncPreRule(true, false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new IAsyncRule<TestInput>[] { rule, rule2 },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new IRule<TestInput>[] { rule, rule2 },
         null,
         null
     );
@@ -50,8 +50,8 @@ public class AsyncEngineOfTInTOutTests
     var rule2 = new TestAsyncPreRule(true, false);
     var input = new TestInput { InputFlag = true };
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new IAsyncRule<TestInput>[] { rule2, rule },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new IRule<TestInput>[] { rule2, rule },
         null,
         null
     );
@@ -63,8 +63,8 @@ public class AsyncEngineOfTInTOutTests
   public void Constructor()
   {
     var logger = new TestLogger();
-    var ruleSet = new AsyncRuleset<TestInput, TestOutput>();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
+    var ruleSet = new Ruleset<TestInput, TestOutput>();
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
     Assert.Equal(logger, engine.Logger);
     Assert.False(engine.IsParallel);
   }
@@ -72,16 +72,16 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public void ConstructorNullLogger()
   {
-    var ruleSet = new AsyncRuleset<TestInput, TestOutput>();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleSet);
+    var ruleSet = new Ruleset<TestInput, TestOutput>();
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet);
     Assert.NotNull(engine.Logger);
   }
 
   [Fact]
   public void ConstructorParallel()
   {
-    var ruleSet = new AsyncRuleset<TestInput, TestOutput>();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleSet, true);
+    var ruleSet = new Ruleset<TestInput, TestOutput>();
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, true);
     Assert.True(engine.IsParallel);
   }
 
@@ -89,8 +89,8 @@ public class AsyncEngineOfTInTOutTests
   public void ConstructorWithEmptySyncRuleset()
   {
     var logger = new TestLogger();
-    var ruleSet = new Ruleset<TestInput, TestOutput>();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
+    var ruleSet = new Rulesets.Ruleset<TestInput, TestOutput>();
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
     Assert.Equal(logger, engine.Logger);
   }
 
@@ -98,11 +98,11 @@ public class AsyncEngineOfTInTOutTests
   public void ConstructorWithSyncRuleset()
   {
     var logger = new TestLogger();
-    var ruleSet = new Ruleset<TestInput, TestOutput>();
+    var ruleSet = new Rulesets.Ruleset<TestInput, TestOutput>();
     ruleSet.AddPreRule(new TestPreRule(true));
     ruleSet.AddPostRule(new TestPostRule(true));
     ruleSet.AddRule(new TestRule(true));
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
     Assert.NotEmpty(engine.PreRules);
     Assert.NotEmpty(engine.Rules);
     Assert.NotEmpty(engine.PostRules);
@@ -219,9 +219,9 @@ public class AsyncEngineOfTInTOutTests
     var rule = new TestAsyncRule(false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
-        new IAsyncRule<TestInput, TestOutput>[] { rule },
+        new IRule<TestInput, TestOutput>[] { rule },
         null
     );
     await engine.ApplyAsync(input, output);
@@ -235,10 +235,10 @@ public class AsyncEngineOfTInTOutTests
     var rule = new TestDefaultAsyncPostRule();
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
         null,
-        new IAsyncRule<TestOutput>[] { rule }
+        new IRule<TestOutput>[] { rule }
     );
     await engine.ApplyAsync(input, output);
     Assert.True(output.TestFlag);
@@ -250,10 +250,10 @@ public class AsyncEngineOfTInTOutTests
     var rule = new TestAsyncPostRule(false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
+    var engine = new RuleEngine<TestInput, TestOutput>(
         null,
         null,
-        new IAsyncRule<TestOutput>[] { rule }
+        new IRule<TestOutput>[] { rule }
     );
     await engine.ApplyAsync(input, output);
     Assert.False(output.TestFlag);
@@ -265,8 +265,8 @@ public class AsyncEngineOfTInTOutTests
     var rule = new TestDefaultAsyncPreRule();
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new IAsyncRule<TestInput>[] { rule },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new IRule<TestInput>[] { rule },
         null,
         null
     );
@@ -280,8 +280,8 @@ public class AsyncEngineOfTInTOutTests
     var rule = new TestAsyncPreRule(false);
     var input = new TestInput();
     var output = new TestOutput();
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        new IAsyncRule<TestInput>[] { rule },
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        new IRule<TestInput>[] { rule },
         null,
         null
     );
@@ -292,8 +292,8 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task ApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        null, new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) }, null);
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        null, new Rule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) }, null);
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -307,8 +307,8 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task DoesApplyAsyncException()
   {
-    var engine = new AsyncRuleEngine<TestInput, TestOutput>(
-        null, new AsyncRule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) }, null);
+    var engine = new RuleEngine<TestInput, TestOutput>(
+        null, new Rule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) }, null);
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -324,8 +324,8 @@ public class AsyncEngineOfTInTOutTests
   {
     var testPostRule = new TestExceptionAsyncPostRule(false);
     var engine =
-        new AsyncRuleEngine<TestInput, TestOutput>(
-            null, null, new AsyncRule<TestOutput>[] { testPostRule });
+        new RuleEngine<TestInput, TestOutput>(
+            null, null, new Rule<TestOutput>[] { testPostRule });
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -340,8 +340,8 @@ public class AsyncEngineOfTInTOutTests
   {
     var testPostRule = new TestExceptionAsyncPostRule(false);
     var engine =
-        new AsyncRuleEngine<TestInput, TestOutput>(
-            null, null, new AsyncRule<TestOutput>[] { testPostRule });
+        new RuleEngine<TestInput, TestOutput>(
+            null, null, new Rule<TestOutput>[] { testPostRule });
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -356,8 +356,8 @@ public class AsyncEngineOfTInTOutTests
   {
     var testPreRule = new TestExceptionAsyncPreRule(false);
     var engine =
-        new AsyncRuleEngine<TestInput, TestOutput>(
-            new AsyncRule<TestInput>[] { testPreRule }, null, null);
+        new RuleEngine<TestInput, TestOutput>(
+            new Rule<TestInput>[] { testPreRule }, null, null);
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -372,8 +372,8 @@ public class AsyncEngineOfTInTOutTests
   {
     var testPreRule = new TestExceptionAsyncPreRule(false);
     var engine =
-        new AsyncRuleEngine<TestInput, TestOutput>(
-            new AsyncRule<TestInput>[] { testPreRule }, null, null);
+        new RuleEngine<TestInput, TestOutput>(
+            new Rule<TestInput>[] { testPreRule }, null, null);
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -817,7 +817,7 @@ public class AsyncEngineOfTInTOutTests
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
-  private static IAsyncRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
+  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
     where T : Exception, new()
   {
     var builder =
@@ -852,7 +852,7 @@ public class AsyncEngineOfTInTOutTests
     return builder.Build();
   }
 
-  private static IAsyncRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>(bool parallelizeRules) where T : EngineException, new()
+  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>(bool parallelizeRules) where T : EngineException, new()
   {
     var builder =
       EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()

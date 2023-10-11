@@ -1,9 +1,19 @@
+using Rubric.Rules;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Rules;
 
 public class RuleOfTInTOutTests
 {
+
+  [Fact]
+  public void Name()
+  {
+    var rule = new TestRule(true);
+    Assert.EndsWith(nameof(TestRule), rule.Name);
+  }
+
+
   [Theory]
   [InlineData(true)]
   [InlineData(false)]
@@ -32,6 +42,7 @@ public class RuleOfTInTOutTests
     Assert.Contains("dep2", rule.Dependencies);
     Assert.Contains("prv1", rule.Provides);
     Assert.Contains("prv2", rule.Provides);
+    rule.Apply(null, null, null);
   }
 
 

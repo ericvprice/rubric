@@ -10,7 +10,7 @@ namespace Rubric.Rules.Scripted;
 /// </summary>
 /// <typeparam name="TIn">The rule input type.</typeparam>
 /// <typeparam name="TOut">The rule output type.</typeparam>
-public class ScriptedRule<TIn, TOut> : IAsyncRule<TIn, TOut>
+public class ScriptedRule<TIn, TOut> : Async.IRule<TIn, TOut>
 {
   private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Output, Token);";
   private const string APPLY_TRAILER = "return Apply(Context, Input, Output, Token);";

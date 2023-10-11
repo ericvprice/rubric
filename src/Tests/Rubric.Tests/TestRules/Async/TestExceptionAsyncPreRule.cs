@@ -1,6 +1,6 @@
 namespace Rubric.Tests.TestRules.Async;
 
-public class TestExceptionAsyncPreRule : AsyncRule<TestInput>
+public class TestExceptionAsyncPreRule : Rubric.Rules.Async.Rule<TestInput>
 {
   public TestExceptionAsyncPreRule(bool onDoesApply)
     => OnDoesApply = onDoesApply;

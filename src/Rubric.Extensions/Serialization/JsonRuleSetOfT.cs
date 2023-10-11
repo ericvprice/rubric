@@ -4,7 +4,7 @@ using static Rubric.Extensions.Serialization.RuleLoader;
 
 namespace Rubric.Extensions.Serialization;
 
-internal class JsonRuleSet<T> : AsyncRuleset<T>
+internal class JsonRuleSet<T> : Ruleset<T>
 {
   public JsonRuleSet(AsyncRulesetModel<T> model, ScriptOptions options = null)
   {
