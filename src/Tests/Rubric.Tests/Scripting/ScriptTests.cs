@@ -2,7 +2,7 @@ using Rubric.Extensions.Serialization;
 using Rubric.Rules.Scripted;
 using System.IO;
 using System.Text.Json;
-using Rubric.Engines.Async;
+using Rubric.Engines.Async.Default;
 
 namespace Rubric.Tests.Scripting;
 

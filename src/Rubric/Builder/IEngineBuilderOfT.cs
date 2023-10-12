@@ -1,3 +1,4 @@
+using Rubric.Engines;
 using Rubric.Rules;
 
 namespace Rubric.Builder;

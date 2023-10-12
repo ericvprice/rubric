@@ -10,8 +10,8 @@ public class RulesetOfTInTOutTests
   public void AddAsyncPostRule()
   {
     var ruleset = new Ruleset<TestInput, TestOutput>();
-    var postRule = new TestDefaultAsyncPostRule();
-    ruleset.AddAsyncPostRule(postRule);
+    var postRule = new TestDefaultPostRule();
+    ruleset.AddPostRule(postRule);
     Assert.Contains(postRule, ruleset.PostRules);
   }
 
@@ -19,9 +19,9 @@ public class RulesetOfTInTOutTests
   public void AddAsyncPostRules()
   {
     var ruleset = new Ruleset<TestInput, TestOutput>();
-    var postRule = new TestDefaultAsyncPostRule();
-    var postRule2 = new TestDefaultAsyncPostRule();
-    ruleset.AddAsyncPostRules(new[] { postRule, postRule2 });
+    var postRule = new TestDefaultPostRule();
+    var postRule2 = new TestDefaultPostRule();
+    ruleset.AddPostRules(new[] { postRule, postRule2 });
     Assert.Contains(postRule, ruleset.PostRules);
     Assert.Contains(postRule2, ruleset.PostRules);
   }
@@ -30,8 +30,8 @@ public class RulesetOfTInTOutTests
   public void AddAsyncPreRule()
   {
     var ruleset = new Ruleset<TestInput, TestOutput>();
-    var preRule = new TestDefaultAsyncPreRule();
-    ruleset.AddAsyncPreRule(preRule);
+    var preRule = new TestDefaultPreRule();
+    ruleset.AddPreRule(preRule);
     Assert.Contains(preRule, ruleset.PreRules);
   }
 
@@ -39,9 +39,9 @@ public class RulesetOfTInTOutTests
   public void AddAsyncPreRules()
   {
     var ruleset = new Ruleset<TestInput, TestOutput>();
-    var preRule = new TestDefaultAsyncPreRule();
-    var preRule2 = new TestDefaultAsyncPreRule();
-    ruleset.AddAsyncPreRules(new[] { preRule, preRule2 });
+    var preRule = new TestDefaultPreRule();
+    var preRule2 = new TestDefaultPreRule();
+    ruleset.AddPreRules(new[] { preRule, preRule2 });
     Assert.Contains(preRule, ruleset.PreRules);
     Assert.Contains(preRule2, ruleset.PreRules);
   }
@@ -50,8 +50,8 @@ public class RulesetOfTInTOutTests
   public void AddAsyncRule()
   {
     var ruleset = new Ruleset<TestInput, TestOutput>();
-    var rule = new TestDefaultAsyncRule();
-    ruleset.AddAsyncRule(rule);
+    var rule = new TestDefaultRule();
+    ruleset.AddRule(rule);
     Assert.Contains(rule, ruleset.Rules);
   }
 
@@ -59,9 +59,9 @@ public class RulesetOfTInTOutTests
   public void AddAsyncRules()
   {
     var ruleset = new Ruleset<TestInput, TestOutput>();
-    var rule = new TestDefaultAsyncRule();
-    var rule2 = new TestDefaultAsyncRule();
-    ruleset.AddAsyncRules(new[] { rule, rule2 });
+    var rule = new TestDefaultRule();
+    var rule2 = new TestDefaultRule();
+    ruleset.AddRules(new[] { rule, rule2 });
     Assert.Contains(rule, ruleset.Rules);
     Assert.Contains(rule2, ruleset.Rules);
   }
@@ -69,14 +69,14 @@ public class RulesetOfTInTOutTests
   [Fact]
   public void Exceptions()
   {
-    Assert.Throws<ArgumentNullException>(() => new Ruleset<TestInput, TestOutput>().AddAsyncPreRule(null));
-    Assert.Throws<ArgumentNullException>(() => new Ruleset<TestInput, TestOutput>().AddAsyncRule(null));
+    Assert.Throws<ArgumentNullException>(() => new Ruleset<TestInput, TestOutput>().AddPreRule(null));
+    Assert.Throws<ArgumentNullException>(() => new Ruleset<TestInput, TestOutput>().AddRule(null));
     Assert.Throws<ArgumentNullException>(
-        () => new Ruleset<TestInput, TestOutput>().AddAsyncPostRule(null));
+        () => new Ruleset<TestInput, TestOutput>().AddPostRule(null));
     Assert.Throws<ArgumentNullException>(
-        () => new Ruleset<TestInput, TestOutput>().AddAsyncPreRules(null));
-    Assert.Throws<ArgumentNullException>(() => new Ruleset<TestInput, TestOutput>().AddAsyncRules(null));
+        () => new Ruleset<TestInput, TestOutput>().AddPreRules(null));
+    Assert.Throws<ArgumentNullException>(() => new Ruleset<TestInput, TestOutput>().AddRules(null));
     Assert.Throws<ArgumentNullException>(
-        () => new Ruleset<TestInput, TestOutput>().AddAsyncPostRules(null));
+        () => new Ruleset<TestInput, TestOutput>().AddPostRules(null));
   }
 }

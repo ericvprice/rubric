@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using Rubric.Tests.TestRules.Probabilistic.Async;
-using Rubric.Engines.Probabilistic.Async;
+using Rubric.Engines.Probabilistic.Async.Default;
 using Rubric.Rulesets.Probabilistic.Async;
 using Rubric.Rules.Probabilistic.Async;
+using Rubric.Tests.TestRules.Probabilistic.Async;
 
 namespace Rubric.Tests.Engines.Probabilistic.Async;
 
@@ -104,6 +104,14 @@ public class EngineOfTTests
     Assert.NotEmpty(engine.Rules);
   }
 
+  [Fact]
+  public void ConstructorWithEmptyRules()
+  {
+    var logger = new TestLogger();
+    var engine = new RuleEngine<TestInput>((IEnumerable<Rule<TestInput>>)null, false, null, logger);
+    Assert.Empty(engine.Rules);
+  }
+
 
   [Fact]
   public async Task Applies()
@@ -184,13 +192,13 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltInDoesApply()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithPredicate((_, _) => throw new EngineHaltException())
                                 .WithAction((_, i) => { i.Items.Add("rule1"); return Task.CompletedTask; })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction((_, i) => { i.Items.Add("rule2"); return Task.CompletedTask; })
                               .EndRule()
                               .Build();
@@ -205,13 +213,13 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltInApply()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction((_, _) => throw new EngineHaltException())
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction((_, i) => { i.Items.Add("rule2"); return Task.CompletedTask; })
                               .EndRule()
                               .Build();
@@ -225,7 +233,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltCancellationInDoesApply()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
                                 .WithPredicate(async (_, _) =>
@@ -241,7 +249,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(1000, t);
@@ -267,7 +275,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestExceptionCancellationInDoesApply()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
                                 .WithPredicate(async (_, _) =>
@@ -283,7 +291,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(1000, t);
@@ -308,10 +316,10 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltCancellationInApply()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, _) =>
                                 {
                                   //Ensure second rule gets into its execution
@@ -320,7 +328,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(1000, t);
@@ -345,10 +353,10 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltCancellationInSerial()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
-                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithPredicate((_, _) => Task.FromResult(1D))
                               .WithAction(async (_, _) =>
                               {
                                 //Ensure second rule gets into its execution
@@ -357,7 +365,7 @@ public class EngineOfTTests
                               })
                               .EndRule()
                               .WithRule("rule2")
-                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithPredicate((_, _) => Task.FromResult(1D))
                               .WithAction(async (_, i, t) =>
                               {
                                 await Task.Delay(2000, t);
@@ -381,10 +389,10 @@ public class EngineOfTTests
   [Fact]
   public async Task TestTaskCancelledExceptionSerial()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
-                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithPredicate((_, _) => Task.FromResult(1D))
                               .WithAction(async (_, _) =>
                               {
                                 //Ensure second rule gets into its execution
@@ -394,7 +402,7 @@ public class EngineOfTTests
                               })
                               .EndRule()
                               .WithRule("rule2")
-                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithPredicate((_, _) => Task.FromResult(1D))
                               .WithAction(async (_, i, t) =>
                               {
                                 await Task.Delay(1000, t);
@@ -413,10 +421,10 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltCancellationThowOnCancelParallel()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, _) =>
                                 {
                                   //Ensure second rule gets into its execution
@@ -425,7 +433,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(200, t);
@@ -446,9 +454,9 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltCancellationThowOnCancelSerial()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, _) =>
                                 {
                                   //Ensure second rule gets into its execution
@@ -457,7 +465,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(200, t);
@@ -479,10 +487,10 @@ public class EngineOfTTests
   [Fact]
   public async Task TestHaltCancellationInApplyParallelInputs()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, _) =>
                                 {
                                   //Ensure second rule gets into its execution
@@ -491,7 +499,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(1000, t);
@@ -517,10 +525,10 @@ public class EngineOfTTests
   [Fact]
   public async Task TestExceptionCancellationInApply()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, _) =>
                                 {
                                   //Ensure second rule gets into its execution
@@ -529,7 +537,7 @@ public class EngineOfTTests
                                 })
                               .EndRule()
                               .WithRule("rule2")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction(async (_, i, t) =>
                                 {
                                   await Task.Delay(1000, t);
@@ -553,7 +561,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestParallel()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
                                 .WithAction(async (_, i) =>
@@ -581,7 +589,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestParallelWithParallelInputs()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .AsParallel()
                               .WithRule("rule1")
                                 .WithAction(async (_, i) =>
@@ -618,7 +626,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestSerialWithParallelInputs()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithAction(async (_, i) =>
                                 {
@@ -652,7 +660,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestSerial()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithAction(async (_, i) =>
                                 {
@@ -679,7 +687,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestStream()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithAction(async (_, i) =>
                                 {
@@ -704,7 +712,7 @@ public class EngineOfTTests
   [Fact]
   public async Task StreamCatchEngineException()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithAction(async (_, _) => throw new())
                               .EndRule()
@@ -720,7 +728,7 @@ public class EngineOfTTests
   [Fact]
   public async Task StreamParallelCatchEngineException()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithAction(async (_, _) => throw new())
                               .EndRule()
@@ -737,7 +745,7 @@ public class EngineOfTTests
   [Fact]
   public async Task TestStreamParallel()
   {
-    var engine = EngineBuilder.ForInputAsync<TestInput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
                               .WithRule("rule1")
                                 .WithAction(async (_, i) =>
                                 {
@@ -834,7 +842,7 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>((IEnumerable<IRule<TestInput>>)(new IRule<TestInput>[] { testPreRule, testPreRule2 }), false, ExceptionHandlers.HaltItem);
+    var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltItem);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -868,7 +876,7 @@ public class EngineOfTTests
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false,
-        (IExceptionHandler)new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
+        new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
     var context = new EngineContext();
     await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(input, context));
@@ -903,9 +911,7 @@ public class EngineOfTTests
         });
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
-    var engine = new RuleEngine<TestInput>(
-        (IEnumerable<IRule<TestInput>>)(new IRule<TestInput>[] { testPreRule })
-    );
+    var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule });
     var context = new EngineContext();
     await engine.ApplyAsync(new[] { input, input2 }, context);
     Assert.True(input.InputFlag);
@@ -934,8 +940,7 @@ public class EngineOfTTests
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RuleEngine<TestInput>(
-        (IEnumerable<IRule<TestInput>>)(new IRule<TestInput>[] { testPreRule })
-    );
+        new IRule<TestInput>[] { testPreRule });
     var context = new EngineContext();
     await engine.ApplyAsync(new[] { input, input2 }, context);
     Assert.True(input.InputFlag);
@@ -964,7 +969,7 @@ public class EngineOfTTests
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RuleEngine<TestInput>(
-        (IEnumerable<IRule<TestInput>>)(new IRule<TestInput>[] { testPreRule }),
+        new IRule<TestInput>[] { testPreRule },
         false,
         ExceptionHandlers.HaltItem
     );
@@ -1028,7 +1033,7 @@ public class EngineOfTTests
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RuleEngine<TestInput>(
-        (IEnumerable<IRule<TestInput>>)(new IRule<TestInput>[] { testPreRule }),
+        new IRule<TestInput>[] { testPreRule },
         false,
         ExceptionHandlers.Rethrow
     );

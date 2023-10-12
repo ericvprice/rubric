@@ -10,19 +10,19 @@ internal class JsonRuleSet<TIn, TOut> : Ruleset<TIn, TOut>
   {
     if (model == null)
       throw new ArgumentNullException($"'{nameof(model)}' cannot be null.", nameof(model));
-    AddAsyncPreRules(model.PreRules
+    AddPreRules(model.PreRules
                           .Select(r =>
                           {
                             r.Value.Name = r.Key;
                             return LoadFromModel<TIn>(r.Value, model.BasePath, options);
                           }));
-    AddAsyncRules(model.Rules
+    AddRules(model.Rules
                        .Select(r =>
                         {
                           r.Value.Name = r.Key;
                           return LoadFromModel<TIn, TOut>(r.Value, model.BasePath, options);
                         }));
-    AddAsyncPostRules(model.PostRules
+    AddPostRules(model.PostRules
                            .Select(r =>
                            {
                              r.Value.Name = r.Key;

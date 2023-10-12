@@ -16,13 +16,13 @@ public static class EngineBuilder
       where TOut : class
       => new EngineBuilder<TIn, TOut>(logger);
 
-    public static Async.Builder.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
+    public static Builder.Async.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
         where T : class
-        => new Async.Builder.Default.EngineBuilder<T>(logger);
+        => new Builder.Async.Default.EngineBuilder<T>(logger);
 
-    public static Async.Builder.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
+    public static Builder.Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
         where TIn : class
         where TOut : class
-        => new Async.Builder.Default.EngineBuilder<TIn, TOut>(logger);
+        => new Builder.Async.Default.EngineBuilder<TIn, TOut>(logger);
 
 }

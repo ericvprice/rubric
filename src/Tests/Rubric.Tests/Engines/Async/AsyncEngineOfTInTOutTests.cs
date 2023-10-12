@@ -1,9 +1,18 @@
-using Rubric.Async;
 using Rubric.Engines.Async;
+using Rubric.Engines.Async.Default;
 using Rubric.Rulesets.Async;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
 using Rubric.Rules.Async;
+using TestDefaultPostRule = Rubric.Tests.TestRules.Async.TestDefaultPostRule;
+using TestDefaultPreRule = Rubric.Tests.TestRules.Async.TestDefaultPreRule;
+using TestDefaultRule = Rubric.Tests.TestRules.Async.TestDefaultRule;
+using TestExceptionPostRule = Rubric.Tests.TestRules.Async.TestExceptionPostRule;
+using TestExceptionPreRule = Rubric.Tests.TestRules.Async.TestExceptionPreRule;
+using TestExceptionRule = Rubric.Tests.TestRules.Async.TestExceptionRule;
+using TestPostRule = Rubric.Tests.TestRules.Async.TestPostRule;
+using TestPreRule = Rubric.Tests.TestRules.Async.TestPreRule;
+using TestRule = Rubric.Tests.TestRules.Async.TestRule;
 
 namespace Rubric.Tests.Engines.Async;
 
@@ -14,7 +23,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task Applies()
   {
-    var rule = new TestDefaultAsyncRule();
+    var rule = new TestDefaultRule();
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -30,8 +39,8 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task AppliesOrder()
   {
-    var rule = new TestDefaultAsyncPreRule();
-    var rule2 = new TestAsyncPreRule(true, false);
+    var rule = new TestDefaultPreRule();
+    var rule2 = new TestPreRule(true, false);
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -46,8 +55,8 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task AppliesOrderReverse()
   {
-    var rule = new TestDefaultAsyncPreRule();
-    var rule2 = new TestAsyncPreRule(true, false);
+    var rule = new TestDefaultPreRule();
+    var rule2 = new TestPreRule(true, false);
     var input = new TestInput { InputFlag = true };
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -99,9 +108,9 @@ public class AsyncEngineOfTInTOutTests
   {
     var logger = new TestLogger();
     var ruleSet = new Rulesets.Ruleset<TestInput, TestOutput>();
-    ruleSet.AddPreRule(new TestPreRule(true));
-    ruleSet.AddPostRule(new TestPostRule(true));
-    ruleSet.AddRule(new TestRule(true));
+    ruleSet.AddPreRule(new TestRules.TestPreRule(true));
+    ruleSet.AddPostRule(new TestRules.TestPostRule(true));
+    ruleSet.AddRule(new TestRules.TestRule(true));
     var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
     Assert.NotEmpty(engine.PreRules);
     Assert.NotEmpty(engine.Rules);
@@ -116,7 +125,7 @@ public class AsyncEngineOfTInTOutTests
   public async Task FullRun(bool parallelizeRules, bool parallelizeInputs)
   {
     var builder = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncPreRule("test")
+                              .WithPreRule("test")
                                 .WithPredicate((_, _) => Task.FromResult(true))
                                 .WithAction((_, i) =>
                                 {
@@ -124,7 +133,7 @@ public class AsyncEngineOfTInTOutTests
                                   return Task.CompletedTask;
                                 })
                               .EndRule()
-                              .WithAsyncRule("test")
+                              .WithRule("test")
                                 .WithPredicate((_, _, _) => Task.FromResult(true))
                                 .WithAction((_, i, o) =>
                                 {
@@ -133,7 +142,7 @@ public class AsyncEngineOfTInTOutTests
                                   return Task.CompletedTask;
                                 })
                               .EndRule()
-                              .WithAsyncPostRule("test")
+                              .WithPostRule("test")
                                 .WithPredicate((_, _) => Task.FromResult(true))
                                 .WithAction((_, o) =>
                                 {
@@ -169,7 +178,7 @@ public class AsyncEngineOfTInTOutTests
   public async Task FullRunStreamHandleEngineException()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncPostRule("test")
+                              .WithPostRule("test")
                                 .WithAction((_, _) => throw new())
                               .EndRule()
                               .WithExceptionHandler(ExceptionHandlers.HaltEngine)
@@ -186,7 +195,7 @@ public class AsyncEngineOfTInTOutTests
   public async Task FullRunStream()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncRule("test")
+                              .WithRule("test")
                                 .WithAction((_, _, o, _) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .Build();
@@ -201,7 +210,7 @@ public class AsyncEngineOfTInTOutTests
   public async Task FullRunStreamAsParallel()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncRule("test")
+                              .WithRule("test")
                                 .WithAction((_, _, o, _) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .AsParallel()
@@ -216,7 +225,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task NotApplies()
   {
-    var rule = new TestAsyncRule(false);
+    var rule = new TestRule(false);
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -232,7 +241,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PostApplies()
   {
-    var rule = new TestDefaultAsyncPostRule();
+    var rule = new TestDefaultPostRule();
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -247,7 +256,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PostNotApplies()
   {
-    var rule = new TestAsyncPostRule(false);
+    var rule = new TestPostRule(false);
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -262,7 +271,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PreApplies()
   {
-    var rule = new TestDefaultAsyncPreRule();
+    var rule = new TestDefaultPreRule();
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -277,7 +286,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PreNotApplies()
   {
-    var rule = new TestAsyncPreRule(false);
+    var rule = new TestPreRule(false);
     var input = new TestInput();
     var output = new TestOutput();
     var engine = new RuleEngine<TestInput, TestOutput>(
@@ -293,7 +302,7 @@ public class AsyncEngineOfTInTOutTests
   public async Task ApplyAsyncException()
   {
     var engine = new RuleEngine<TestInput, TestOutput>(
-        null, new Rule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(false) }, null);
+        null, new Rule<TestInput, TestOutput>[] { new TestExceptionRule(false) }, null);
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -308,7 +317,7 @@ public class AsyncEngineOfTInTOutTests
   public async Task DoesApplyAsyncException()
   {
     var engine = new RuleEngine<TestInput, TestOutput>(
-        null, new Rule<TestInput, TestOutput>[] { new TestExceptionAsyncRule(true) }, null);
+        null, new Rule<TestInput, TestOutput>[] { new TestExceptionRule(true) }, null);
     var input = new TestInput();
     var output = new TestOutput();
     var context = new EngineContext();
@@ -322,7 +331,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PostApplyAsyncException()
   {
-    var testPostRule = new TestExceptionAsyncPostRule(false);
+    var testPostRule = new TestExceptionPostRule(false);
     var engine =
         new RuleEngine<TestInput, TestOutput>(
             null, null, new Rule<TestOutput>[] { testPostRule });
@@ -338,7 +347,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PostDoesApplyAsyncException()
   {
-    var testPostRule = new TestExceptionAsyncPostRule(false);
+    var testPostRule = new TestExceptionPostRule(false);
     var engine =
         new RuleEngine<TestInput, TestOutput>(
             null, null, new Rule<TestOutput>[] { testPostRule });
@@ -354,7 +363,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PreApplyAsyncException()
   {
-    var testPreRule = new TestExceptionAsyncPreRule(false);
+    var testPreRule = new TestExceptionPreRule(false);
     var engine =
         new RuleEngine<TestInput, TestOutput>(
             new Rule<TestInput>[] { testPreRule }, null, null);
@@ -370,7 +379,7 @@ public class AsyncEngineOfTInTOutTests
   [Fact]
   public async Task PreDoesApplyAsyncException()
   {
-    var testPreRule = new TestExceptionAsyncPreRule(false);
+    var testPreRule = new TestExceptionPreRule(false);
     var engine =
         new RuleEngine<TestInput, TestOutput>(
             new Rule<TestInput>[] { testPreRule }, null, null);
@@ -817,12 +826,12 @@ public class AsyncEngineOfTInTOutTests
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
-  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
+  private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
     where T : Exception, new()
   {
     var builder =
       EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithAsyncPreRule("testprerule")
+                  .WithPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -830,7 +839,7 @@ public class AsyncEngineOfTInTOutTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithAsyncRule("testrule")
+                  .WithRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -838,7 +847,7 @@ public class AsyncEngineOfTInTOutTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithAsyncPostRule("testpostrule")
+                  .WithPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
@@ -852,11 +861,11 @@ public class AsyncEngineOfTInTOutTests
     return builder.Build();
   }
 
-  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>(bool parallelizeRules) where T : EngineException, new()
+  private static IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>(bool parallelizeRules) where T : EngineException, new()
   {
     var builder =
       EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithAsyncPreRule("testprerule")
+                  .WithPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -864,7 +873,7 @@ public class AsyncEngineOfTInTOutTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithAsyncRule("testrule")
+                  .WithRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -872,7 +881,7 @@ public class AsyncEngineOfTInTOutTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithAsyncPostRule("testpostrule")
+                  .WithPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");

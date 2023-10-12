@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Engines;
+using Rubric.Engines.Default;
 using Rubric.Rules;
 using Rubric.Rulesets;
 

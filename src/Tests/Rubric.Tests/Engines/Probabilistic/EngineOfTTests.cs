@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
-using Rubric.Engines.Probabilistic;
+using Rubric.Engines.Probabilistic.Default;
 using Rubric.Rules.Probabilistic;
 using Rubric.Rulesets.Probabilistic;
 using Rubric.Tests.TestRules.Probabilistic;

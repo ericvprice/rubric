@@ -1,2 +1,5 @@
-﻿namespace Rubric.Tests.TestAssembly;
-public class TestAssemblyInput { }
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Rubric.Tests.TestAssembly;
+
+[ExcludeFromCodeCoverage] public class TestAssemblyInput { }

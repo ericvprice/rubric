@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rubric.Async;
+using Rubric.Engines.Async;
 
 namespace Rubric;
 
@@ -42,20 +42,20 @@ public static class EngineContextExtensions
   ///     This can be safely called after examining <see cref="IsAsync">IsAsync</see>.
   /// </summary>
   /// <param name="context">The engine context</param>
-  public static IRuleEngine<TIn, TOut> GetEngine<TIn, TOut>(this IEngineContext context)
+  public static Engines.IRuleEngine<TIn, TOut> GetEngine<TIn, TOut>(this IEngineContext context)
       where TIn : class
       where TOut : class
-      => context.Get<IRuleEngine<TIn, TOut>>(ENGINE_KEY);
+      => context.Get<Engines.IRuleEngine<TIn, TOut>>(ENGINE_KEY);
 
   /// <summary>
   ///     Get the strongly-typed currently executing asynchronous engine.
   ///     This can be safely called after examining <see cref="IsAsync">IsAsync</see>.
   /// </summary>
   /// <param name="context">The engine context.</param>
-  public static Async.IRuleEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
+  public static Engines.Async.IRuleEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
       where TIn : class
       where TOut : class
-      => context.Get<Async.IRuleEngine<TIn, TOut>>(ENGINE_KEY);
+      => context.Get<Engines.Async.IRuleEngine<TIn, TOut>>(ENGINE_KEY);
 
   /// <summary>
   ///     Get the currently executing engine's logger.
@@ -76,7 +76,7 @@ public static class EngineContextExtensions
   /// </summary>
   /// <param name="context">The engine context.</param>
   public static bool IsParallel(this IEngineContext context)
-      => (context.GetEngine() as Async.IRuleEngine)?.IsParallel ?? false;
+      => (context.GetEngine() as Engines.Async.IRuleEngine)?.IsParallel ?? false;
 
   /// <summary>
   ///   Get the current engine's input type.

@@ -1,3 +1,6 @@
-﻿namespace Rubric.Tests.TestAssembly;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public class TestAssemblyOutput { }
+namespace Rubric.Tests.TestAssembly;
+
+
+[ExcludeFromCodeCoverage] public class TestAssemblyOutput { }

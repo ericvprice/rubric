@@ -1,5 +1,9 @@
 ﻿using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
+using DepTestAttrRule = Rubric.Tests.TestRules.Async.DepTestAttrRule;
+using TestDefaultPreRule = Rubric.Tests.TestRules.Async.TestDefaultPreRule;
+using TestPreRule = Rubric.Tests.TestRules.Async.TestPreRule;
+using TestRule = Rubric.Tests.TestRules.TestRule;
 
 namespace Rubric.Tests.Rules.Async;
 
@@ -18,7 +22,7 @@ public class RuleOfTTests
   [InlineData(false)]
   public async Task DoesApply(bool expected)
   {
-    var rule = new TestAsyncPreRule(expected);
+    var rule = new TestPreRule(expected);
     Assert.Equal(expected, await rule.DoesApply(null, null, default));
   }
 
@@ -67,14 +71,14 @@ public class RuleOfTTests
   [Fact]
   public async Task TestDefaultDoesApply()
   {
-    var rule = new TestDefaultAsyncPreRule();
+    var rule = new TestDefaultPreRule();
     Assert.True(await rule.DoesApply(null, null, default));
   }
 
   [Fact]
   public void TestDependencies()
   {
-    var rule = new DepTestAsyncPreRule(true);
+    var rule = new DepTestPreRule(true);
     var dependencies = rule.Dependencies.ToList();
     Assert.Contains("dep1", dependencies);
     Assert.Contains("dep2", dependencies);
@@ -84,10 +88,10 @@ public class RuleOfTTests
   [Fact]
   public void TestProvides()
   {
-    var rule = new DepTestAsyncRule(true);
+    var rule = new DepTestRule(true);
     var provides = rule.Provides.ToList();
     Assert.Contains("dep3", provides);
-    Assert.Contains(typeof(DepTestAsyncRule).FullName, provides);
+    Assert.Contains(typeof(DepTestRule).FullName, provides);
     Assert.Equal(3, provides.Count);
   }
 }

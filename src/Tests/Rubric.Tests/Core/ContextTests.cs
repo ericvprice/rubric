@@ -1,6 +1,4 @@
-using Rubric.Engines;
-using Rubric.Engines.Async;
-using Rubric.Rulesets.Async;
+using Rubric.Engines.Default;
 
 namespace Rubric.Tests.Core;
 
@@ -36,31 +34,13 @@ public class ContextTests
   {
     IEngineContext ctx = new EngineContext();
     var logger = new TestLogger();
-    var engine = new Rubric.Engines.RuleEngine<TestInput, TestOutput>(null, null, null, null, logger);
+    var engine = new RuleEngine<TestInput, TestOutput>(null, null, null, null, logger);
     engine.SetupContext(ctx);
     Assert.Equal(engine, ctx.GetEngine());
     Assert.Equal(engine, ctx.GetEngine<TestInput, TestOutput>());
     Assert.Equal(logger, ctx.GetLogger());
     Assert.False(ctx.IsAsync());
     Assert.False(ctx.IsParallel());
-    Assert.Equal(typeof(TestInput), ctx.GetInputType());
-    Assert.Equal(typeof(TestOutput), ctx.GetOutputType());
-  }
-
-  [Fact]
-  public void AsycContextExtensions()
-  {
-    IEngineContext ctx = new EngineContext();
-    var logger = new TestLogger();
-    var engine = new Rubric.Engines.Async.RuleEngine<TestInput, TestOutput>(new Ruleset<TestInput, TestOutput>(), false, null, logger);
-    engine.Reset(ctx);
-    Assert.Equal(engine, ctx.GetEngine());
-    Assert.Equal(engine, ctx.GetAsyncEngine<TestInput, TestOutput>());
-    Assert.Equal(logger, ctx.GetLogger());
-    Assert.True(ctx.IsAsync());
-    Assert.False(ctx.IsParallel());
-    engine.IsParallel = true;
-    Assert.True(ctx.IsParallel());
     Assert.Equal(typeof(TestInput), ctx.GetInputType());
     Assert.Equal(typeof(TestOutput), ctx.GetOutputType());
   }

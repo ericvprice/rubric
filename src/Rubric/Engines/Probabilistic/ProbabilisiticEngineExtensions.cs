@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
-
+using Rubric.Engines.Probabilistic.Default;
+using Rubric.Rules.Probabilistic;
 namespace Rubric.Engines.Probabilistic;
 
 internal static class ProbabilisiticEngineExtensions
@@ -28,19 +29,19 @@ internal static class ProbabilisiticEngineExtensions
     T i,
     CancellationToken t)
   {
-    t.ThrowIfCancellationRequested();
     try
     {
+      t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       if (e.Random.NextDouble() >= await r.DoesApply(ctx, i, t).ConfigureAwait(false))
       {
-        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
+        e.Logger.LogTrace(DOES_NOT_APPLY, r.Name);
         return;
       }
-      e.Logger.LogTrace("Rule {name} applies.", r.Name);
-      e.Logger.LogTrace("Applying {name}.", r.Name);
+      e.Logger.LogTrace(APPLIES, r.Name);
+      e.Logger.LogTrace(APPLYING, r.Name);
       await r.Apply(ctx, i, t).ConfigureAwait(false);
-      e.Logger.LogTrace("Finished applying {name}.", r.Name);
+      e.Logger.LogTrace(DONE, r.Name);
     }
     catch (Exception ex)
     {
@@ -63,9 +64,9 @@ internal static class ProbabilisiticEngineExtensions
     T o,
     CancellationToken t)
   {
-    t.ThrowIfCancellationRequested();
     try
     {
+      t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       if (e.Random.NextDouble() >= await r.DoesApply(ctx, o, t).ConfigureAwait(false))
       {
@@ -100,9 +101,9 @@ internal static class ProbabilisiticEngineExtensions
     TOut o,
     CancellationToken t)
   {
-    t.ThrowIfCancellationRequested();
     try
     {
+      t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       if (e.Random.NextDouble() <= await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
       {
@@ -133,7 +134,7 @@ internal static class ProbabilisiticEngineExtensions
   internal static void ApplyPreRule<T>(
     this BaseProbabilisticRuleEngine e,
     IEngineContext ctx,
-    Rules.Probabilistic.IRule<T> r,
+    IRule<T> r,
     T i)
   {
     try
@@ -166,7 +167,7 @@ internal static class ProbabilisiticEngineExtensions
   internal static void ApplyRule<TIn, TOut>(
     this BaseProbabilisticRuleEngine e,
     IEngineContext ctx,
-    Rules.Probabilistic.IRule<TIn, TOut> r,
+    IRule<TIn, TOut> r,
     TIn i,
     TOut o)
   {
@@ -202,7 +203,7 @@ internal static class ProbabilisiticEngineExtensions
   internal static void ApplyPostRule<T>(
     this BaseProbabilisticRuleEngine e,
     IEngineContext ctx,
-    Rules.Probabilistic.IRule<T> r,
+    IRule<T> r,
     T o)
   {
     try
@@ -217,9 +218,6 @@ internal static class ProbabilisiticEngineExtensions
       e.Logger.LogTrace(APPLYING, r.Name);
       r.Apply(ctx, o);
       e.Logger.LogTrace(DONE, r.Name);
-    }
-    catch (ItemHaltException)
-    {
     }
     catch (Exception ex)
     {

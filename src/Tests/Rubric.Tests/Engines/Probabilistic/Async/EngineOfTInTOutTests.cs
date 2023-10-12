@@ -1,4 +1,5 @@
 using Rubric.Engines.Probabilistic.Async;
+using Rubric.Engines.Probabilistic.Async.Default;
 using Rubric.Rules.Probabilistic.Async;
 using Rubric.Rulesets.Probabilistic.Async;
 using Rubric.Tests.TestRules.Probabilistic.Async;
@@ -8,6 +9,17 @@ namespace Rubric.Tests.Engines.Probabilistic.Async;
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class EngineOfTInTOutTests
 {
+  [Fact]
+  public void Properties()
+  {
+    var logger = new TestLogger();
+    var ruleSet = new Ruleset<TestInput, TestOutput>();
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, false, null, logger);
+    Assert.True(engine.IsAsync);
+    Assert.False(engine.IsParallel);
+    Assert.Equal(typeof(TestInput), engine.InputType);
+    Assert.Equal(typeof(TestOutput), engine.OutputType);
+  }
 
   [Fact]
   public async Task Applies()
@@ -113,17 +125,17 @@ public class EngineOfTInTOutTests
   [InlineData(true, true)]
   public async Task FullRun(bool parallelizeRules, bool parallelizeInputs)
   {
-    var builder = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncPreRule("test")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+    var builder = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithPreRule("test")
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction((_, i) =>
                                 {
                                   i.Items.Add("pre");
                                   return Task.CompletedTask;
                                 })
                               .EndRule()
-                              .WithAsyncRule("test")
-                                .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithRule("test")
+                                .WithPredicate((_, _, _) => Task.FromResult(1D))
                                 .WithAction((_, i, o) =>
                                 {
                                   i.Items.Add("rule");
@@ -131,8 +143,8 @@ public class EngineOfTInTOutTests
                                   return Task.CompletedTask;
                                 })
                               .EndRule()
-                              .WithAsyncPostRule("test")
-                                .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithPostRule("test")
+                                .WithPredicate((_, _) => Task.FromResult(1D))
                                 .WithAction((_, o) =>
                                 {
                                   o.Outputs.Add("postrule");
@@ -166,8 +178,8 @@ public class EngineOfTInTOutTests
   [Fact]
   public async Task FullRunStreamHandleEngineException()
   {
-    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncPostRule("test")
+    var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithPostRule("test")
                                 .WithAction((_, _) => throw new())
                               .EndRule()
                               .WithExceptionHandler(ExceptionHandlers.HaltEngine)
@@ -183,8 +195,8 @@ public class EngineOfTInTOutTests
   [Fact]
   public async Task FullRunStream()
   {
-    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncRule("test")
+    var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithRule("test")
                                 .WithAction((_, _, o, _) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .Build();
@@ -198,8 +210,8 @@ public class EngineOfTInTOutTests
   [Fact]
   public async Task FullRunStreamAsParallel()
   {
-    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncRule("test")
+    var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithRule("test")
                                 .WithAction((_, _, o, _) => { o.Counter++; return Task.CompletedTask; })
                               .EndRule()
                               .AsParallel()
@@ -815,12 +827,13 @@ public class EngineOfTInTOutTests
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
-  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
+  private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)
     where T : Exception, new()
   {
     var builder =
-      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithAsyncPreRule("testprerule")
+      ProbabilisticEngineBuilder
+                  .ForInputAndOutputAsync<TestInput, TestOutput>()
+                  .WithPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -828,7 +841,7 @@ public class EngineOfTInTOutTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithAsyncRule("testrule")
+                  .WithRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -836,7 +849,7 @@ public class EngineOfTInTOutTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithAsyncPostRule("testpostrule")
+                  .WithPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
@@ -850,11 +863,11 @@ public class EngineOfTInTOutTests
     return builder.Build();
   }
 
-  private static Rubric.Async.IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>(bool parallelizeRules) where T : EngineException, new()
+  private static IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>(bool parallelizeRules) where T : EngineException, new()
   {
-    var builder =
-      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithAsyncPreRule("testprerule")
+    var builder = ProbabilisticEngineBuilder
+                  .ForInputAndOutputAsync<TestInput, TestOutput>()
+                  .WithPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -862,7 +875,7 @@ public class EngineOfTInTOutTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithAsyncRule("testrule")
+                  .WithRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -870,7 +883,7 @@ public class EngineOfTInTOutTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithAsyncPostRule("testpostrule")
+                  .WithPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");

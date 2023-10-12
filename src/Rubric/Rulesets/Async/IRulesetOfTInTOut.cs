@@ -27,36 +27,36 @@ public interface IRuleset<TIn, TOut>
   ///   Add a new postprocessing rule.
   /// </summary>
   /// <param name="rule">The postprocessing rule to add.</param>
-  void AddAsyncPostRule(IRule<TOut> rule);
+  void AddPostRule(IRule<TOut> rule);
 
   /// <summary>
   ///   Add new postprocessing rules.
   /// </summary>
   /// <param name="rules">The postprocessing rules to add.</param>
-  void AddAsyncPostRules(IEnumerable<IRule<TOut>> rules);
+  void AddPostRules(IEnumerable<IRule<TOut>> rules);
 
   /// <summary>
   ///   Add a new preprocessing rule.
   /// </summary>
   /// <param name="rule">The preprocessing rule to add.</param>
-  void AddAsyncPreRule(IRule<TIn> rule);
+  void AddPreRule(IRule<TIn> rule);
 
   /// <summary>
   ///   Add new preprocessing rules.
   /// </summary>
   /// <param name="rules">The preprocessing rules to add.</param>
-  void AddAsyncPreRules(IEnumerable<IRule<TIn>> rules);
+  void AddPreRules(IEnumerable<IRule<TIn>> rules);
 
   /// <summary>
   ///   Add a new rule.
   /// </summary>
   /// <param name="rule">The rule to add.</param>
-  void AddAsyncRule(IRule<TIn, TOut> rule);
+  void AddRule(IRule<TIn, TOut> rule);
 
   /// <summary>
   ///   Add new rules.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
-  void AddAsyncRules(IEnumerable<IRule<TIn, TOut>> rules);
+  void AddRules(IEnumerable<IRule<TIn, TOut>> rules);
 
 }

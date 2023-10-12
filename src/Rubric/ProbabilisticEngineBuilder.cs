@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rubric.Probabilistic.Builder;
-using Rubric.Probabilistic.Builder.Default;
+using Rubric.Builder.Probabilistic;
+using Rubric.Builder.Probabilistic.Default;
 
 namespace Rubric;
 
@@ -16,13 +16,13 @@ public static class ProbabilisticEngineBuilder
       where TOut : class
       => new EngineBuilder<TIn, TOut>(logger);
 
-    public static Probabilistic.Async.Builder.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
+    public static Builder.Probabilistic.Async.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
         where T : class
-        => new Probabilistic.Async.Builder.Default.EngineBuilder<T>(logger);
+        => new Builder.Probabilistic.Async.Default.EngineBuilder<T>(logger);
 
-    public static Probabilistic.Async.Builder.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
+    public static Builder.Probabilistic.Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
         where TIn : class
         where TOut : class
-        => new Probabilistic.Async.Builder.Default.EngineBuilder<TIn, TOut>(logger);
+        => new Builder.Probabilistic.Async.Default.EngineBuilder<TIn, TOut>(logger);
 
 }

@@ -1,4 +1,4 @@
-using Rubric.Tests.TestRules;
+using Rubric.Rules;
 using Rubric.Tests.TestRules.Async;
 
 namespace Rubric.Tests.Builders;
@@ -134,7 +134,7 @@ public class AsyncBuilderOfTTests
   {
     var logger = new TestLogger();
     var engine = EngineBuilder.ForInputAsync<TestInput>(logger)
-                              .WithRule(new TestDefaultAsyncPreRule())
+                              .WithRule(new TestDefaultPreRule())
                               .WithExceptionHandler(ExceptionHandlers.Ignore)
                               .AsParallel()
                               .Build();
@@ -151,7 +151,7 @@ public class AsyncBuilderOfTTests
   public async Task LambdaRuleConstruction()
   {
     var engine = EngineBuilder.ForInputAsync<TestInput>()
-                              .WithRule(new TestAsyncPreRule(true))
+                              .WithRule(new TestPreRule(true))
                               .WithRule("test")
                                   .WithPredicate((_, _) => Task.FromResult(true))
                                   .WithAction((_, _) => Task.CompletedTask)
@@ -160,7 +160,7 @@ public class AsyncBuilderOfTTests
                               .WithRule("test2")
                                   .WithPredicate((_, _, _) => Task.FromResult(true))
                                   .WithAction((_, _, _) => Task.CompletedTask)
-                                  .ThatDependsOn(typeof(TestAsyncPreRule))
+                                  .ThatDependsOn(typeof(TestPreRule))
                                   .ThatDependsOn("test")
                               .EndRule()
                               .Build();
@@ -172,7 +172,7 @@ public class AsyncBuilderOfTTests
     Assert.True(await rule.DoesApply(null, null, default));
     rule = engine.Rules.ElementAt(2);
     Assert.Contains("test", rule.Dependencies);
-    Assert.Contains(typeof(TestAsyncPreRule).FullName, rule.Dependencies);
+    Assert.Contains(typeof(TestPreRule).FullName, rule.Dependencies);
     Assert.True(await rule.DoesApply(null, null, default));
     await engine.ApplyAsync(new TestInput());
   }
@@ -181,11 +181,11 @@ public class AsyncBuilderOfTTests
   public async Task RuleWrapping()
   {
     var engine = EngineBuilder.ForInputAsync<TestInput>()
-                              .WithRule(new TestPreRule(true))
+                              .WithRule(new TestRules.TestPreRule(true))
                               .Build();
     Assert.Single(engine.Rules);
     var rule = engine.Rules.ElementAt(0);
-    Assert.Equal($"{typeof(TestPreRule)} (wrapped async)", rule.Name);
+    Assert.Equal($"{typeof(TestRules.TestPreRule)} (wrapped async)", rule.Name);
     Assert.True(await rule.DoesApply(null, null, default));
 
   }
@@ -194,13 +194,35 @@ public class AsyncBuilderOfTTests
   public async Task MultipleRuleWrapping()
   {
     var engine = EngineBuilder.ForInputAsync<TestInput>()
-                              .WithRules(new [] {new TestPreRule(true) })
+                              .WithRules(new [] {new TestRules.TestPreRule(true) })
                               .Build();
     Assert.Single(engine.Rules);
     var rule = engine.Rules.ElementAt(0);
-    Assert.Equal($"{typeof(TestPreRule)} (wrapped async)", rule.Name);
+    Assert.Equal($"{typeof(TestRules.TestPreRule)} (wrapped async)", rule.Name);
     Assert.True(await rule.DoesApply(null, null, default));
 
+  }
+
+  [Fact]
+  public void TypeAttributeDependency()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRules(new Rubric.Rules.Async.IRule<TestInput>[] { new DepTestAttrPreRule(true), new DepTestAttrPreRule2(true) })
+                              .Build();
+    Assert.NotNull(engine);
+  }
+
+  [Fact]
+  public void SyncWrapTypeAttributeDependency()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRules(new IRule<TestInput>[]
+                              {
+                                new TestRules.DepTestAttrPreRule(true),
+                                new TestRules.DepTestAttrPreRule2(true)
+                              })
+                              .Build();
+    Assert.NotNull(engine);
   }
 
 }

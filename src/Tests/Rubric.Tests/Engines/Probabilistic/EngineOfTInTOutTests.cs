@@ -1,4 +1,5 @@
 using Rubric.Engines.Probabilistic;
+using Rubric.Engines.Probabilistic.Default;
 using Rubric.Rules.Probabilistic;
 using Rubric.Rulesets.Probabilistic;
 using Rubric.Tests.TestRules.Probabilistic;
@@ -7,6 +8,17 @@ namespace Rubric.Tests.Engines.Probabilistic;
 
 public class EngineOfTInTOutTests
 {
+  [Fact]
+  public void Properties()
+  {
+    var logger = new TestLogger();
+    var ruleSet = new Ruleset<TestInput, TestOutput>();
+    var engine = new RuleEngine<TestInput, TestOutput>(ruleSet, null, logger);
+    Assert.False(engine.IsAsync);
+    Assert.Equal(typeof(TestInput), engine.InputType);
+    Assert.Equal(typeof(TestOutput), engine.OutputType);
+  }
+
   [Fact]
   public void Applies()
   {
@@ -162,13 +174,13 @@ public class EngineOfTInTOutTests
   [Fact]
   public void FullRun()
   {
-    var engine = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+    var engine = ProbabilisticEngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                               .WithPreRule("test")
-                                .WithPredicate((_, _) => true)
+                                .WithPredicate((_, _) => 1D)
                                 .WithAction((_, i) => i.Items.Add("pre"))
                               .EndRule()
                               .WithRule("test")
-                                .WithPredicate((_, _, _) => true)
+                                .WithPredicate((_, _, _) => 1D)
                                 .WithAction((_, i, o) =>
                                 {
                                   i.Items.Add("rule");
@@ -176,7 +188,7 @@ public class EngineOfTInTOutTests
                                 })
                               .EndRule()
                               .WithPostRule("test")
-                                .WithPredicate((_, _) => true)
+                                .WithPredicate((_, _) => 1D)
                                 .WithAction((_, o) => o.Outputs.Add("postrule"))
                               .EndRule()
                               .Build();
@@ -631,7 +643,8 @@ public class EngineOfTInTOutTests
   }
 
   private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
-   => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+   => ProbabilisticEngineBuilder
+                  .ForInputAndOutput<TestInput, TestOutput>()
                   .WithPreRule("testprerule")
                     .WithAction((_, i) =>
                     {
@@ -660,7 +673,8 @@ public class EngineOfTInTOutTests
                   .Build();
 
   private static IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
-   => EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+   => ProbabilisticEngineBuilder
+                .ForInputAndOutput<TestInput, TestOutput>()
                 .WithPreRule("testprerule")
                   .WithAction((_, i) =>
                   {

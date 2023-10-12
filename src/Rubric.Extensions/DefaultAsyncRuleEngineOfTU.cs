@@ -1,24 +1,24 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
-using Rubric.Async;
 using Rubric.Rules.Async;
-using Rubric.Async.Builder;
+using Rubric.Engines.Async;
+using Rubric.Builder.Async;
 
 namespace Rubric.Extensions;
 
 [ExcludeFromCodeCoverage]
-internal class DefaultAsyncRuleEngine<TIn, TOut> : Async.IRuleEngine<TIn, TOut> where TIn : class where TOut : class
+internal class DefaultAsyncRuleEngine<TIn, TOut> : IRuleEngine<TIn, TOut> where TIn : class where TOut : class
 {
-  private readonly Async.IRuleEngine<TIn, TOut> _instance;
+  private readonly IRuleEngine<TIn, TOut> _instance;
 
   public DefaultAsyncRuleEngine(
     IEngineBuilder<TIn, TOut> builder,
     IEnumerable<IRule<TIn>> preRules,
     IEnumerable<IRule<TIn, TOut>> rules,
     IEnumerable<IRule<TOut>> postRules)
-  => _instance = builder.WithAsyncPreRules(preRules)
-                        .WithAsyncRules(rules)
-                        .WithAsyncPostRules(postRules)
+  => _instance = builder.WithPreRules(preRules)
+                        .WithRules(rules)
+                        .WithPostRules(postRules)
                         .Build();
 
   public ILogger Logger => _instance.Logger;

@@ -3,13 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rubric;
-using Rubric.Async;
+using Rubric.Builder.Async;
+using Rubric.Engines.Async;
 using Rubric.Extensions;
 using Rubric.Extensions.Serialization;
-using Rubric.Rules;
-using Rubric.Rules.Async;
 using Rubric.Rules.Scripted;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -143,7 +141,7 @@ public static class RuleEngineServiceCollectionExtensions
     var builder = EngineBuilder.ForInput<T>();
     action?.Invoke(builder);
     services.AddSingleton(typeof(Rubric.Builder.IEngineBuilder<T>), builder);
-    services.AddSingleton<Rubric.IRuleEngine<T>, DefaultRuleEngine<T>>();
+    services.AddSingleton<Rubric.Engines.IRuleEngine<T>, DefaultRuleEngine<T>>();
     return services;
   }
 
@@ -157,31 +155,31 @@ public static class RuleEngineServiceCollectionExtensions
     var builder = EngineBuilder.ForInputAndOutput<TIn, TOut>();
     action?.Invoke(builder);
     services.AddSingleton(typeof(Rubric.Builder.IEngineBuilder<TIn, TOut>), builder);
-    services.AddSingleton<Rubric.IRuleEngine<TIn, TOut>, DefaultRuleEngine<TIn, TOut>>();
+    services.AddSingleton<Rubric.Engines.IRuleEngine<TIn, TOut>, DefaultRuleEngine<TIn, TOut>>();
     return services;
   }
 
-  public static IServiceCollection AddAsyncRuleEngine<T>(this IServiceCollection services, Action<Rubric.Async.Builder.IEngineBuilder<T>> action = null)
+  public static IServiceCollection AddAsyncRuleEngine<T>(this IServiceCollection services, Action<IEngineBuilder<T>> action = null)
       where T : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
     var builder = EngineBuilder.ForInputAsync<T>();
     action?.Invoke(builder);
-    return services.AddSingleton(typeof(Rubric.Async.Builder.IEngineBuilder<T>), builder)
-                   .AddSingleton<Rubric.Async.IRuleEngine<T>, DefaultAsyncRuleEngine<T>>();
+    return services.AddSingleton(typeof(IEngineBuilder<T>), builder)
+                   .AddSingleton<IRuleEngine<T>, DefaultAsyncRuleEngine<T>>();
   }
 
   public static IServiceCollection AddAsyncRuleEngine<TIn, TOut>(
     this IServiceCollection services,
-    Action<Rubric.Async.Builder.IEngineBuilder<TIn, TOut>> action = null)
+    Action<IEngineBuilder<TIn, TOut>> action = null)
       where TIn : class
       where TOut : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
     var builder = EngineBuilder.ForInputAndOutputAsync<TIn, TOut>();
     action?.Invoke(builder);
-    return services.AddSingleton(typeof(Rubric.Async.Builder.IEngineBuilder<TIn, TOut>), builder)
-                   .AddSingleton<Rubric.Async.IRuleEngine<TIn, TOut>, DefaultAsyncRuleEngine<TIn, TOut>>();
+    return services.AddSingleton(typeof(IEngineBuilder<TIn, TOut>), builder)
+                   .AddSingleton<IRuleEngine<TIn, TOut>, DefaultAsyncRuleEngine<TIn, TOut>>();
   }
 
 

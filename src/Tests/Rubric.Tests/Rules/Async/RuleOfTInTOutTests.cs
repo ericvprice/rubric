@@ -1,6 +1,9 @@
 using Rubric.Rules.Async;
 using Rubric.Tests.TestRules;
 using Rubric.Tests.TestRules.Async;
+using DepTestAttrRule = Rubric.Tests.TestRules.Async.DepTestAttrRule;
+using TestDefaultRule = Rubric.Tests.TestRules.Async.TestDefaultRule;
+using TestRule = Rubric.Tests.TestRules.Async.TestRule;
 
 namespace Rubric.Tests.Rules.Async;
 
@@ -10,8 +13,8 @@ public class RuleOfTInTOutTests
   [Fact]
   public void Name()
   {
-    var rule = new TestRule(true);
-    Assert.EndsWith(nameof(TestRule), rule.Name);
+    var rule = new TestRules.TestRule(true);
+    Assert.EndsWith(nameof(TestRules.TestRule), rule.Name);
   }
 
 
@@ -20,7 +23,7 @@ public class RuleOfTInTOutTests
   [InlineData(false)]
   public async Task TestDoesApply(bool expected)
   {
-    var rule = new TestAsyncRule(expected);
+    var rule = new TestRule(expected);
     Assert.Equal(expected, await rule.DoesApply(null, null, null, default));
   }
 
@@ -63,14 +66,14 @@ public class RuleOfTInTOutTests
   [Fact]
   public async Task TestDefaultDoesApply()
   {
-    var rule = new TestDefaultAsyncRule();
+    var rule = new TestDefaultRule();
     Assert.True(await rule.DoesApply(null, null, null, default));
   }
 
   [Fact]
   public void TestDependencies()
   {
-    var rule = new DepTestAsyncRule(true);
+    var rule = new DepTestRule(true);
     var dependencies = rule.Dependencies.ToList();
     Assert.Contains("dep1", dependencies);
     Assert.Contains("dep2", dependencies);
@@ -80,10 +83,10 @@ public class RuleOfTInTOutTests
   [Fact]
   public void TestProvides()
   {
-    var rule = new DepTestAsyncRule(true);
+    var rule = new DepTestRule(true);
     var provides = rule.Provides.ToList();
     Assert.Contains("dep3", provides);
-    Assert.Contains(typeof(DepTestAsyncRule).FullName, provides);
+    Assert.Contains(typeof(DepTestRule).FullName, provides);
     Assert.Equal(3, provides.Count);
   }
 }

@@ -1,4 +1,3 @@
-using Rubric;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Builders;
@@ -114,5 +113,14 @@ public class BuilderOfTTests
                                                  .ForInput<TestInput>().WithRule("foo")
                                                  .ThatDependsOn((Type)null)
     );
+  }
+
+  [Fact]
+  public void TypeAttributeDependency()
+  {
+    var engine = EngineBuilder.ForInput<TestInput>()
+                              .WithRules(new [] {new DepTestAttrPreRule(true), new DepTestAttrPreRule2(true)})
+                              .Build();
+    Assert.NotNull(engine);
   }
 }

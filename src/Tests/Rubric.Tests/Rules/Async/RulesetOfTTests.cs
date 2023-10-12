@@ -9,7 +9,7 @@ public class RulesetOfTTests
   public void AddAsyncRule()
   {
     var ruleset = new Ruleset<TestInput>();
-    var rule = new TestDefaultAsyncPreRule();
+    var rule = new TestDefaultPreRule();
     ruleset.AddAsyncRule(rule);
     Assert.Contains(rule, ruleset.Rules);
   }
@@ -18,8 +18,8 @@ public class RulesetOfTTests
   public void AddAsyncRules()
   {
     var ruleset = new Ruleset<TestInput>();
-    var rule = new TestDefaultAsyncPreRule();
-    var rule2 = new TestDefaultAsyncPreRule();
+    var rule = new TestDefaultPreRule();
+    var rule2 = new TestDefaultPreRule();
     ruleset.AddAsyncRules(new[] { rule, rule2 });
     Assert.Contains(rule, ruleset.Rules);
     Assert.Contains(rule2, ruleset.Rules);

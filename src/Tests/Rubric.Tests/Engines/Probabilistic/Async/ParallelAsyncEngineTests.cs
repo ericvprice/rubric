@@ -1,5 +1,5 @@
-using Rubric.Probabilistic.Async;
 using Rubric.Engines.Probabilistic.Async;
+using Rubric.Engines.Probabilistic.Async.Default;
 using Rubric.Rules.Probabilistic.Async;
 using Rubric.Tests.TestRules.Probabilistic.Async;
 
@@ -32,7 +32,7 @@ public class ParallelAsyncEngineTests
   {
     var engine = ProbabilisticEngineBuilder
                               .ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithAsyncPreRule("test")
+                              .WithPreRule("test")
                               .WithPredicate((_, _) => Task.FromResult(1D))
                               .WithAction((_, i) =>
                               {
@@ -40,7 +40,7 @@ public class ParallelAsyncEngineTests
                                 return Task.CompletedTask;
                               })
                               .EndRule()
-                              .WithAsyncRule("test")
+                              .WithRule("test")
                               .WithPredicate((_, _, _) => Task.FromResult(1D))
                               .WithAction((_, i, o) =>
                               {
@@ -49,7 +49,7 @@ public class ParallelAsyncEngineTests
                                 return Task.CompletedTask;
                               })
                               .EndRule()
-                              .WithAsyncPostRule("test")
+                              .WithPostRule("test")
                               .WithPredicate((_, _) => Task.FromResult(1D))
                               .WithAction((_, o) =>
                               {
@@ -597,10 +597,10 @@ public class ParallelAsyncEngineTests
     Assert.Equal(2, testOutput.Outputs.Count);
   }
 
-  private static Rubric.Probabilistic.Async.IRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
+  private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine(IExceptionHandler handler)
    => ProbabilisticEngineBuilder
                   .ForInputAndOutputAsync<TestInput, TestOutput>()
-                  .WithAsyncPreRule("testprerule")
+                  .WithPreRule("testprerule")
                     .WithAction(async (_, i, _) =>
                     {
                       i.Items.Add("testprerule");
@@ -608,7 +608,7 @@ public class ParallelAsyncEngineTests
                       i.Items.Add("testprerule");
                     })
                   .EndRule()
-                  .WithAsyncRule("testrule")
+                  .WithRule("testrule")
                     .WithAction(async (_, i, _, _) =>
                     {
                       i.Items.Add("testrule");
@@ -616,7 +616,7 @@ public class ParallelAsyncEngineTests
                       i.Items.Add("testrule2");
                     })
                   .EndRule()
-                  .WithAsyncPostRule("testpostrule")
+                  .WithPostRule("testpostrule")
                     .WithAction(async (_, o, _) =>
                     {
                       o.Outputs.Add("testpostrule");
@@ -628,10 +628,10 @@ public class ParallelAsyncEngineTests
                   .AsParallel()
                   .Build();
 
-  private static Rubric.Probabilistic.Async.IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
+  private static IRuleEngine<TestInput, TestOutput> GetEngineExceptionEngine<T>() where T : EngineException, new()
    => ProbabilisticEngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithAsyncPreRule("testprerule")
+                .WithPreRule("testprerule")
                   .WithAction(async (_, i, _) =>
                   {
                     i.Items.Add("testprerule");
@@ -639,7 +639,7 @@ public class ParallelAsyncEngineTests
                     i.Items.Add("testprerule");
                   })
                 .EndRule()
-                .WithAsyncRule("testrule")
+                .WithRule("testrule")
                   .WithAction(async (_, i, _, _) =>
                   {
                     i.Items.Add("testrule");
@@ -647,7 +647,7 @@ public class ParallelAsyncEngineTests
                     i.Items.Add("testrule2");
                   })
                 .EndRule()
-                .WithAsyncPostRule("testpostrule")
+                .WithPostRule("testpostrule")
                   .WithAction(async (_, o, _) =>
                   {
                     o.Outputs.Add("testpostrule");
