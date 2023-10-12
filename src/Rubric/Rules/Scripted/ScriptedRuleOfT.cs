@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.Scripting;
-using Rubric.Rules.Async;
 using static Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript;
 using static Rubric.Rules.Scripted.ScriptingHelpers;
 

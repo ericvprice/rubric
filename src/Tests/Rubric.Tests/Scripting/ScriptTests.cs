@@ -65,6 +65,7 @@ public class ScriptTests
       await File.ReadAllTextAsync(fileName),
       options);
     Assert.NotNull(ruleSetModel);
+    Assert.Equal(typeof(TestInput), ruleSetModel.InputType);
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
     var ruleset = new JsonRuleSet<TestInput>(ruleSetModel);
     Assert.Equal(2, ruleset.Rules.Count());
@@ -88,6 +89,8 @@ public class ScriptTests
       await File.ReadAllTextAsync(fileName),
       options);
     Assert.NotNull(ruleSetModel);
+    Assert.Equal(typeof(TestInput), ruleSetModel.InputType);
+    Assert.Equal(typeof(TestOutput), ruleSetModel.OutputType);
     ruleSetModel.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
     var scriptOptions = ScriptingHelpers.GetDefaultOptions<TestInput, TestOutput>();
     var ruleset = new JsonRuleSet<TestInput, TestOutput>(ruleSetModel, scriptOptions);

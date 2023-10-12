@@ -33,7 +33,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
         IEnumerable<IRule<T>> rules,
         IExceptionHandler exceptionHandler = null,
         ILogger logger = null
-    ) : base()
+    )
     {
         rules ??= Enumerable.Empty<IRule<T>>();
         _rules = rules.ResolveDependencies()
@@ -48,7 +48,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     #region Properties
 
     public IEnumerable<IRule<T>> Rules
-        => _rules.SelectMany(_ => _);
+        => _rules.SelectMany(r => r);
 
     /// <inheritdoc />
     public override bool IsAsync => false;

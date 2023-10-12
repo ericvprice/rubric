@@ -1,8 +1,6 @@
 using Rubric.Engines.Async;
 using Rubric.Engines.Async.Default;
 using Rubric.Rulesets.Async;
-using Rubric.Tests.TestRules;
-using Rubric.Tests.TestRules.Async;
 using Rubric.Rules.Async;
 using TestDefaultPostRule = Rubric.Tests.TestRules.Async.TestDefaultPostRule;
 using TestDefaultPreRule = Rubric.Tests.TestRules.Async.TestDefaultPreRule;
@@ -115,6 +113,15 @@ public class AsyncEngineOfTInTOutTests
     Assert.NotEmpty(engine.PreRules);
     Assert.NotEmpty(engine.Rules);
     Assert.NotEmpty(engine.PostRules);
+  }
+
+  [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+    Assert.False(builder.IsParallel);
   }
 
   [Theory]

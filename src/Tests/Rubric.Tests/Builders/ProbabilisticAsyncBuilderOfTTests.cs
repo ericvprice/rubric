@@ -5,6 +5,15 @@ namespace Rubric.Tests.Builders;
 public class ProbabilisticAsyncBuilderOfTTests
 {
   [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = ProbabilisticEngineBuilder.ForInputAsync<TestInput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+    Assert.False(builder.IsParallel);
+  }
+
+  [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(

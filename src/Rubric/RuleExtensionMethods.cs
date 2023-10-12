@@ -1,4 +1,3 @@
-using Rubric.Rules;
 using Rubric.Rules.Async;
 
 namespace Rubric;
@@ -12,7 +11,7 @@ public static class RuleExtensionMethods
     /// <typeparam name="TIn">The input type.</typeparam>
     /// <typeparam name="TOut">The output type.</typeparam>
     /// <returns>An async wrapper for this rule.</returns>
-    public static Rules.Async.IRule<TIn, TOut> WrapAsync<TIn, TOut>(this Rules.IRule<TIn, TOut> syncRule) =>
+    public static IRule<TIn, TOut> WrapAsync<TIn, TOut>(this Rules.IRule<TIn, TOut> syncRule) =>
       new AsyncRuleWrapper<TIn, TOut>(syncRule);
 
     /// <summary>
@@ -21,7 +20,7 @@ public static class RuleExtensionMethods
     /// <param name="syncRule">The rule to wrap.</param>
     /// <typeparam name="T">The input type.</typeparam>
     /// <returns>An async wrapper for this rule.</returns>
-    public static Rules.Async.IRule<T> WrapAsync<T>(this Rules.IRule<T> syncRule) =>
+    public static IRule<T> WrapAsync<T>(this Rules.IRule<T> syncRule) =>
       new AsyncRuleWrapper<T>(syncRule);
 
     /// <summary>

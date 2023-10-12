@@ -1,10 +1,15 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Rubric.Dependency;
 
 /// <summary>
 ///     Determine whether this object has any other dependencies.
 /// </summary>
+#pragma warning disable IDE0079
+[SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
+[SuppressMessage("ReSharper", "ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator")]
+#pragma warning restore IDE0079
 public static class DependencyExtensions
 {
 
@@ -12,7 +17,7 @@ public static class DependencyExtensions
 
   private static readonly ConcurrentDictionary<Type, string[]> _providesCache = new();
 
-  public static string[] GetDependencies(Type type) 
+  public static IEnumerable<string> GetDependencies(Type type) 
     => _dependsCache.GetOrAdd(
                       type,
                       t => t.GetCustomAttributes(true)
@@ -20,7 +25,7 @@ public static class DependencyExtensions
                             .Select(d => d.Name)
                             .ToArray());
 
-  public static string[] GetProvides(Type type)
+  public static IEnumerable<string> GetProvides(Type type)
     => _providesCache.GetOrAdd(
                       type,
                       t => t.GetCustomAttributes(true)
@@ -47,19 +52,6 @@ public static class DependencyExtensions
                                  p => p, p => depList.Where(d => d.Provides.Contains(p)).ToList());
 
     var toReturn = new List<List<T>>();
-
-    void UpdateResolved(List<T> newlyResolvedObjects)
-    {
-      resolvedObjects.AddRange(newlyResolvedObjects);
-      //Add dependencies that have all of their providers now resolved
-      resolvedDependencies.AddRange(
-          newlyResolvedObjects.SelectMany(o => providesMap[o])
-                              .Distinct()
-                              .Where(p => providerMap[p].All(o => resolvedObjects.Contains(o)))
-      );
-      toReturn.Add(newlyResolvedObjects);
-      foreach (var res in newlyResolvedObjects) depList.Remove(res);
-    }
 
     CheckForMissing(depList, providerMap);
 
@@ -88,6 +80,19 @@ public static class DependencyExtensions
     }
 
     return toReturn;
+
+    void UpdateResolved(List<T> newlyResolvedObjects)
+    {
+      resolvedObjects.AddRange(newlyResolvedObjects);
+      //Add dependencies that have all of their providers now resolved
+      resolvedDependencies.AddRange(
+        newlyResolvedObjects.SelectMany(o => providesMap[o])
+                            .Distinct()
+                            .Where(p => providerMap[p].All(o => resolvedObjects.Contains(o)))
+      );
+      toReturn.Add(newlyResolvedObjects);
+      foreach (var res in newlyResolvedObjects) depList.Remove(res);
+    }
   }
 
   private static void CheckForMissing<T>(IReadOnlyCollection<T> depList, IReadOnlyDictionary<string, List<T>> providerMap) where T : class, IDependency

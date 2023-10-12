@@ -75,15 +75,15 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
 
     /// <inheritdoc />
     public IEnumerable<IRule<TIn>> PreRules
-        => _preprocessingRules.SelectMany(_ => _);
+        => _preprocessingRules.SelectMany(r => r);
 
     /// <inheritdoc />
     public IEnumerable<IRule<TIn, TOut>> Rules
-        => _rules.SelectMany(_ => _);
+        => _rules.SelectMany(r => r);
 
     /// <inheritdoc />
     public IEnumerable<IRule<TOut>> PostRules
-        => _postprocessingRules.SelectMany(_ => _);
+        => _postprocessingRules.SelectMany(r => r);
 
     /// <inheritdoc />
     public override bool IsAsync => false;

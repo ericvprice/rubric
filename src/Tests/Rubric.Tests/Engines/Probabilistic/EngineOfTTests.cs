@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
+using Rubric.Engines.Probabilistic;
 using Rubric.Engines.Probabilistic.Default;
 using Rubric.Rules.Probabilistic;
 using Rubric.Rulesets.Probabilistic;
@@ -171,7 +172,7 @@ public class EngineOfTTests
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var context = new EngineContext();
-    var engine = new RuleEngine<TestInput>(
+    IRuleEngine<TestInput> engine = new RuleEngine<TestInput>(
         new IRule<TestInput>[] { testPreRule },
         ExceptionHandlers.Rethrow
     );

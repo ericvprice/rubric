@@ -43,8 +43,8 @@ public class AsyncServiceCollectionTests {
 
   public void LoadAsyncFromAssemblyTInTOut()
   {
-    var services = new ServiceCollection();
-    services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
+    IServiceCollection services = new ServiceCollection();
+    services = services.AddAsyncRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
             .AddAsyncRules<TestAssemblyInput, TestAssemblyOutput>();
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();

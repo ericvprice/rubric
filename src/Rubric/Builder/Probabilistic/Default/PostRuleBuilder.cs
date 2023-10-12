@@ -1,4 +1,3 @@
-using Rubric.Builder.Probabilistic;
 using Rubric.Rules.Probabilistic;
 using static System.String;
 
@@ -8,6 +7,7 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class
 {
+    private readonly string _name;
     private readonly List<string> _deps;
     private readonly EngineBuilder<TIn, TOut> _parentBuilder;
     private readonly List<string> _provides;
@@ -17,14 +17,12 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
     internal PostRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name)
     {
         _parentBuilder = engineBuilder;
-        Name = IsNullOrWhiteSpace(name)
+        _name = IsNullOrWhiteSpace(name)
           ? throw new ArgumentException("String cannot be null or empty.", nameof(name))
           : name;
         _provides = new() { name };
         _deps = new();
     }
-
-    internal string Name { get; }
 
     /// <inheritdoc/>
     public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, double> predicate)
@@ -67,7 +65,7 @@ internal class PostRuleBuilder<TIn, TOut> : IPostRuleBuilder<TIn, TOut>
     /// <inheritdoc/>
     public IEngineBuilder<TIn, TOut> EndRule()
     {
-        _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(Name, _predicate, _action, _deps, _provides));
+        _parentBuilder.Ruleset.AddPostRule(new LambdaRule<TOut>(_name, _predicate, _action, _deps, _provides));
         return _parentBuilder;
     }
 }

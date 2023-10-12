@@ -4,17 +4,9 @@ namespace Rubric.Rulesets.Probabilistic.Async;
 
 public class Ruleset<TIn, TOut> : IRuleset<TIn, TOut>
 {
-  private readonly List<IRule<TOut>> _postprocessingRules;
-  private readonly List<IRule<TIn>> _preprocessingRules;
-
-  private readonly List<IRule<TIn, TOut>> _rules;
-
-  public Ruleset()
-  {
-    _preprocessingRules = new();
-    _rules = new();
-    _postprocessingRules = new();
-  }
+  private readonly List<IRule<TOut>> _postprocessingRules = new();
+  private readonly List<IRule<TIn>> _preprocessingRules = new();
+  private readonly List<IRule<TIn, TOut>> _rules = new();
 
   /// <inheritdoc />
   public IEnumerable<IRule<TIn>> PreRules => _preprocessingRules;

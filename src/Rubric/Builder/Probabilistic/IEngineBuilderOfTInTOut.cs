@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Rubric.Engines.Probabilistic;
 using Rubric.Rules.Probabilistic;
 
@@ -82,4 +83,7 @@ public interface IEngineBuilder<TIn, TOut>
     /// </summary>
     /// <returns>The built engine.</returns>
     IRuleEngine<TIn, TOut> Build();
+
+    ILogger Logger { get; }
+    IExceptionHandler ExceptionHandler { get; }
 }

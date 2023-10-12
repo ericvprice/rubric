@@ -3,4 +3,5 @@
 namespace Rubric.Tests.TestAssembly;
 
 
+// ReSharper disable once ClassNeverInstantiated.Global
 [ExcludeFromCodeCoverage] public class TestAssemblyOutput { }

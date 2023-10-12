@@ -59,7 +59,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     #region Properties
 
     /// <inheritdoc />
-    public bool IsParallel { get; internal set; }
+    public bool IsParallel { get; }
 
     /// <inheritdoc />
     public override bool IsAsync => true;
@@ -71,7 +71,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     public override Type OutputType => typeof(T);
 
     /// <inheritdoc />
-    public IEnumerable<IRule<T>> Rules => _rules.SelectMany(_ => _);
+    public IEnumerable<IRule<T>> Rules => _rules.SelectMany(r => r);
 
     #endregion
 

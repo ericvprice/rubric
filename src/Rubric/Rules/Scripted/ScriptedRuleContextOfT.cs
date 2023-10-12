@@ -1,9 +1,14 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Rubric.Rules.Scripted;
 
 /// <summary>
 ///   A context object passed to the dynamically executed rule execution.
 /// </summary>
 /// <typeparam name="T">The rule type.</typeparam>
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 public class ScriptedRuleContext<T>
 {
 

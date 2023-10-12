@@ -6,6 +6,15 @@ namespace Rubric.Tests.Builders;
 public class AsyncBuilderOfTTests
 {
   [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = EngineBuilder.ForInputAsync<TestInput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+    Assert.False(builder.IsParallel);
+  }
+
+  [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(

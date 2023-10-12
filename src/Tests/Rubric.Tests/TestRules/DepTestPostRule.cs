@@ -6,6 +6,7 @@ namespace Rubric.Tests.TestRules;
 [DependsOn("dep1")]
 [DependsOn("dep2")]
 [Provides("dep3")]
+// ReSharper disable once UnusedType.Global
 public class DepTestPostRule : Rule<TestOutput>
 {
   private readonly bool _shouldApply;

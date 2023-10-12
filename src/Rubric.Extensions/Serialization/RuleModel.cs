@@ -1,8 +1,14 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Rubric.Extensions.Serialization;
 
 /// <summary>
 ///   Configuration model that specifies a rule.
 /// </summary>
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 public class RuleModel
 {
   /// <summary>

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using System.IO;
 using Rubric.Tests.TestAssembly3;
 using Rubric.Engines.Async;
+using Rubric.Extensions;
 
 namespace Rubric.Tests.DependencyInjection;
 
@@ -35,7 +36,7 @@ public class ServiceCollectionScriptedRulesTests
   [Fact]
   public void AddScriptedRulesOfTConfigOptions()
   {
-    var services = new ServiceCollection();
+    IServiceCollection services = new ServiceCollection();
     var configBuilder = new ConfigurationBuilder();
     var root = Directory.GetCurrentDirectory();
     var config = configBuilder.AddInMemoryCollection(new[]
@@ -45,11 +46,11 @@ public class ServiceCollectionScriptedRulesTests
                               .SetBasePath(Directory.GetCurrentDirectory())
                               .AddJsonFile(Path.Combine("Data", "appsettings.json"))
                               .Build();
-    services.AddAsyncRuleEngine<TestInput>()
-            .AddScriptedRules<TestInput>(
-              config,
-              "ofTWithDeps",
-              options => options.AddReferences(typeof(TestDep).Assembly));
+    services = services.AddAsyncRuleEngine<TestInput>()
+                        .AddScriptedRules<TestInput>(
+                          config,
+                          "ofTWithDeps",
+                          options => options.AddReferences(typeof(TestDep).Assembly));
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IRuleEngine<TestInput>>();
     Assert.NotNull(result);
@@ -60,7 +61,7 @@ public class ServiceCollectionScriptedRulesTests
   [Fact]
   public void AddScriptedRulesOfTInTOut()
   {
-    var services = new ServiceCollection();
+    IServiceCollection services = new ServiceCollection();
     var configBuilder = new ConfigurationBuilder();
     var root = Directory.GetCurrentDirectory();
     var config = configBuilder.AddInMemoryCollection(new[]
@@ -69,8 +70,8 @@ public class ServiceCollectionScriptedRulesTests
                                 })
                               .AddJsonFile(Path.Combine("Data", "appsettings.json"))
                               .Build();
-    services.AddAsyncRuleEngine<TestInput, TestOutput>()
-            .AddScriptedRules<TestInput, TestOutput>(config, "ofTU");
+    services = services.AddAsyncRuleEngine<TestInput, TestOutput>()
+                       .AddScriptedRules<TestInput, TestOutput>(config, "ofTU");
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IRuleEngine<TestInput, TestOutput>>();
     Assert.NotNull(result);

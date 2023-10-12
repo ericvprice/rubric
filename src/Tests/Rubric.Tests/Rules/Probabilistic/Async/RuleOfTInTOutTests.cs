@@ -52,10 +52,10 @@ public class RuleOfTInTOutTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-    () => new LambdaRule<TestInput, TestOutput>("test", (IEngineContext _, TestInput _, TestOutput _, CancellationToken _) => Task.FromResult(1D), null));
+    () => new LambdaRule<TestInput, TestOutput>("test", (_, _, _, _) => Task.FromResult(1D), null));
     Assert.Throws<ArgumentNullException>(
-    () => new LambdaRule<TestInput, TestOutput>(null, (IEngineContext _, TestInput _, TestOutput _, CancellationToken _) => Task.FromResult(1D),
-                                                     (IEngineContext _, TestInput _, TestOutput _, CancellationToken _) => Task.CompletedTask));
+    () => new LambdaRule<TestInput, TestOutput>(null, (_, _, _, _) => Task.FromResult(1D),
+                                                     (_, _, _, _) => Task.CompletedTask));
   }
 
   [Fact]

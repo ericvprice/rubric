@@ -41,7 +41,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!e.HandleException(ex, e, ctx, r, i, null, t)) throw;
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, i, null, t)) throw;
     }
   }
 
@@ -72,7 +72,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!e.HandleException(ex, e, ctx, r, null, o, t)) throw;
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, null, o, t)) throw;
     }
   }
 
@@ -104,7 +104,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!e.HandleException(ex, e, ctx, r, i, o, t)) throw;
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, i, o, t)) throw;
     }
   }
 
@@ -132,7 +132,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!e.HandleException(ex, e, ctx, r, i, null)) throw;
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, i, null)) throw;
     }
   }
 
@@ -161,7 +161,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!e.HandleException(ex, e, ctx, r, i, o)) throw;
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, i, o)) throw;
     }
   }
 
@@ -189,7 +189,7 @@ internal static class EngineExtensions
     }
     catch (Exception ex)
     {
-      if (!e.HandleException(ex, e, ctx, r, null, o)) throw;
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, null, o)) throw;
     }
   }
 }

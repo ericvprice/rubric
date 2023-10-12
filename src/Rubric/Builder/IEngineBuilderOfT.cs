@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Rubric.Engines;
 using Rubric.Rules;
 
@@ -40,4 +41,8 @@ public interface IEngineBuilder<T>
   /// </summary>
   /// <returns>The built engine.</returns>
   IRuleEngine<T> Build();
+
+  ILogger Logger { get; }
+
+  IExceptionHandler ExceptionHandler { get; }
 }

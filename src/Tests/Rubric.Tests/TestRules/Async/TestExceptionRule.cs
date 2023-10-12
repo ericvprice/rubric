@@ -2,10 +2,10 @@ namespace Rubric.Tests.TestRules.Async;
 
 public class TestExceptionRule : Rubric.Rules.Async.Rule<TestInput, TestOutput>
 {
-  public TestExceptionRule(bool onDoesApply)
-    => OnDoesApply = onDoesApply;
+  private readonly bool _onDoesApply;
 
-  public bool OnDoesApply { get; }
+  public TestExceptionRule(bool onDoesApply)
+    => _onDoesApply = onDoesApply;
 
   public override Task Apply(IEngineContext context, TestInput obj, TestOutput output, CancellationToken token)
   {
@@ -14,5 +14,5 @@ public class TestExceptionRule : Rubric.Rules.Async.Rule<TestInput, TestOutput>
   }
 
   public override Task<bool> DoesApply(IEngineContext context, TestInput obj, TestOutput output, CancellationToken token)
-    => OnDoesApply ? throw new() : Task.FromResult(true);
+    => _onDoesApply ? throw new() : Task.FromResult(true);
 }

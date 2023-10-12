@@ -6,6 +6,15 @@ namespace Rubric.Tests.Builders;
 public class AsyncBuilderOfTInTOutTests
 {
   [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+    Assert.False(builder.IsParallel);
+  }
+
+  [Fact]
   public void AsyncLambdaPreRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentNullException>(

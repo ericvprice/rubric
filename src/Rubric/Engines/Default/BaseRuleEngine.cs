@@ -14,7 +14,7 @@ public abstract class BaseRuleEngine : IRuleEngine
 
     public IExceptionHandler ExceptionHandler { get; protected set; }
 
-    protected internal bool HandleException(Exception ex, IRuleEngine e, IEngineContext ctx, object rule, object input, object output, CancellationToken t = default)
+    protected internal static bool HandleException(Exception ex, IRuleEngine e, IEngineContext ctx, object rule, object input, object output, CancellationToken t = default)
     {
         switch (ex)
         {

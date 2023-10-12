@@ -6,6 +6,14 @@ namespace Rubric.Tests.Builders;
 public class ProbabilisticBuilderOfTInTOutTests
 {
   [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = ProbabilisticEngineBuilder.ForInputAndOutput<TestInput, TestOutput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+  }
+
+  [Fact]
   public void EmptyEngineConstruction()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutput<TestInput, TestOutput>()

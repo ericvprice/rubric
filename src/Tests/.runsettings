@@ -5,7 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Exclude>[Rubric.Tests.TestAssembly2*]*</Exclude>
+          <Exclude>[Rubric.Tests.TestAssembly*]*</Exclude>
           <Exclude>[Rubric.Tests]*</Exclude>
           <!--<Include>[coverlet.*]*,[*]Coverlet.Core*</Include>
           <IncludeDirectory>../dir1/,../dir2/,</IncludeDirectory>

@@ -5,6 +5,15 @@ namespace Rubric.Tests.Builders;
 public class ProbabilisticAsyncBuilderOfTInTOutTests
 {
   [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+    Assert.False(builder.IsParallel);
+  }
+
+  [Fact]
   public void AsyncLambdaPreRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentNullException>(
@@ -414,9 +423,9 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public void TypeAttributeDependency()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRules(new [] {new TestRules.Probabilistic.Async.DepTestAttrPreRule(1D), new TestRules.Probabilistic.Async.DepTestAttrPreRule2(1D)})
-                              .WithRules( new [] { new TestRules.Probabilistic.Async.DepTestAttrRule(1D), new DepTestAttrRule2(1D)})
-                              .WithPostRules(new [] { new TestRules.Probabilistic.Async.DepTestAttrPostRule(1D), new TestRules.Probabilistic.Async.DepTestAttrPostRule2(1D)})
+                              .WithPreRules(new [] {new DepTestAttrPreRule(1D), new DepTestAttrPreRule2(1D)})
+                              .WithRules( new [] { new DepTestAttrRule(1D), new DepTestAttrRule2(1D)})
+                              .WithPostRules(new [] { new DepTestAttrPostRule(1D), new DepTestAttrPostRule2(1D)})
                               .Build();
     Assert.NotNull(engine);
   }

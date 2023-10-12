@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rubric.Engines;
+using Rubric.Extensions;
 using Rubric.Tests.TestAssembly;
 using Rubric.Tests.TestAssembly2;
 
@@ -10,8 +11,8 @@ public class ServiceCollectionTests
   [Fact]
   public void LoadSyncFromAssemblyT()
   {
-    var services = new ServiceCollection();
-    services.AddRuleEngine<TestAssemblyInput>()
+    IServiceCollection services = new ServiceCollection();
+    services = services.AddRuleEngine<TestAssemblyInput>()
             .AddRules<TestAssemblyInput>();
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IRuleEngine<TestAssemblyInput>>();
@@ -39,8 +40,8 @@ public class ServiceCollectionTests
 
   public void LoadSyncFromAssemblyTInTOut()
   {
-    var services = new ServiceCollection();
-    services.AddRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
+    IServiceCollection services = new ServiceCollection();
+    services = services.AddRuleEngine<TestAssemblyInput, TestAssemblyOutput>()
             .AddRules<TestAssemblyInput, TestAssemblyOutput>();
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IRuleEngine<TestAssemblyInput, TestAssemblyOutput>>();

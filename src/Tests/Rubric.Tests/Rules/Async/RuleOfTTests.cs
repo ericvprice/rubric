@@ -1,9 +1,7 @@
 ﻿using Rubric.Tests.TestRules;
-using Rubric.Tests.TestRules.Async;
-using DepTestAttrRule = Rubric.Tests.TestRules.Async.DepTestAttrRule;
 using TestDefaultPreRule = Rubric.Tests.TestRules.Async.TestDefaultPreRule;
 using TestPreRule = Rubric.Tests.TestRules.Async.TestPreRule;
-using TestRule = Rubric.Tests.TestRules.TestRule;
+using TestRule = Rubric.Tests.TestRules.Async.TestRule;
 
 namespace Rubric.Tests.Rules.Async;
 
@@ -58,13 +56,13 @@ public class RuleOfTTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-    () => new Rubric.Rules.Async.LambdaRule<TestInput>("test", (IEngineContext _, TestInput _, CancellationToken _) => Task.FromResult(true), null));
+    () => new Rubric.Rules.Async.LambdaRule<TestInput>("test", (_, _, _) => Task.FromResult(true), null));
     Assert.Throws<ArgumentException>(
-    () => new Rubric.Rules.Async.LambdaRule<TestInput>(null, (IEngineContext _, TestInput _, CancellationToken _) => Task.FromResult(true),
-                                            (IEngineContext _, TestInput _, CancellationToken _) => Task.CompletedTask));
+    () => new Rubric.Rules.Async.LambdaRule<TestInput>(null, (_, _, _) => Task.FromResult(true),
+                                            (_, _, _) => Task.CompletedTask));
     Assert.Throws<ArgumentException>(
-    () => new Rubric.Rules.Async.LambdaRule<TestInput>("", (IEngineContext _, TestInput _, CancellationToken _) => Task.FromResult(true),
-                                            (IEngineContext _, TestInput _, CancellationToken _) => Task.CompletedTask));
+    () => new Rubric.Rules.Async.LambdaRule<TestInput>("", (_, _, _) => Task.FromResult(true),
+                                            (_, _, _) => Task.CompletedTask));
 
   }
 

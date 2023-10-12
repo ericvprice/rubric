@@ -1,5 +1,4 @@
 using Rubric.Dependency;
-using Rubric.Rules.Async;
 
 namespace Rubric.Tests.TestRules.Async;
 

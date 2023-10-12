@@ -5,6 +5,14 @@ namespace Rubric.Tests.Builders;
 public class ProbabilisticBuilderOfTTests
 {
   [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = ProbabilisticEngineBuilder.ForInput<TestInput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+  }
+
+  [Fact]
   public void EmptyEngineConstruction()
   {
     var engine = ProbabilisticEngineBuilder.ForInput<TestInput>()

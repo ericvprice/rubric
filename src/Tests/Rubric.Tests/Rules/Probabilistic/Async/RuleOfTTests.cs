@@ -54,13 +54,13 @@ public class RuleOfTTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-    () => new LambdaRule<TestInput>("test", (IEngineContext _, TestInput _, CancellationToken _) => Task.FromResult(1D), null));
+    () => new LambdaRule<TestInput>("test", (_, _, _) => Task.FromResult(1D), null));
     Assert.Throws<ArgumentException>(
-    () => new LambdaRule<TestInput>(null, (IEngineContext _, TestInput _, CancellationToken _) => Task.FromResult(1D),
-                                            (IEngineContext _, TestInput _, CancellationToken _) => Task.CompletedTask));
+    () => new LambdaRule<TestInput>(null, (_, _, _) => Task.FromResult(1D),
+                                            (_, _, _) => Task.CompletedTask));
     Assert.Throws<ArgumentException>(
-    () => new LambdaRule<TestInput>("", (IEngineContext _, TestInput _, CancellationToken _) => Task.FromResult(1D),
-                                            (IEngineContext _, TestInput _, CancellationToken _) => Task.CompletedTask));
+    () => new LambdaRule<TestInput>("", (_, _, _) => Task.FromResult(1D),
+                                            (_, _, _) => Task.CompletedTask));
 
   }
 

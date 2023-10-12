@@ -237,8 +237,7 @@ public class EngineOfTTests
     var engine = new RuleEngine<TestInput>(ruleSet);
     Assert.Equal(NullLogger.Instance, engine.Logger);
   }
-
-
+  
   [Fact]
   public void ApplyException()
   {

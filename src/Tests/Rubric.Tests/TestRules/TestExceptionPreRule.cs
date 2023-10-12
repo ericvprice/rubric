@@ -4,10 +4,10 @@ namespace Rubric.Tests.TestRules;
 
 public class TestExceptionPreRule : Rule<TestInput>
 {
-  public TestExceptionPreRule(bool onDoesApply) => OnDoesApply = onDoesApply;
+  private readonly bool _onDoesApply;
 
-  public bool OnDoesApply { get; }
-
+  public TestExceptionPreRule(bool onDoesApply) => _onDoesApply = onDoesApply;
+  
   public override void Apply(IEngineContext context, TestInput obj)
   {
     obj.InputFlag = true;
@@ -15,5 +15,5 @@ public class TestExceptionPreRule : Rule<TestInput>
   }
 
   public override bool DoesApply(IEngineContext context, TestInput obj) =>
-    OnDoesApply ? throw new() : true;
+    _onDoesApply ? throw new() : true;
 }

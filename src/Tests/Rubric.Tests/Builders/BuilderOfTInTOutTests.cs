@@ -4,6 +4,15 @@ namespace Rubric.Tests.Builders;
 
 public class BuilderOfTInTOutTests
 {
+
+  [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+  }
+
   [Fact]
   public void EmptyEngineConstruction()
   {

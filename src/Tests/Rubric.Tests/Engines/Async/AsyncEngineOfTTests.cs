@@ -1,5 +1,4 @@
-﻿using Rubric.Tests.TestRules;
-using Rubric.Tests.TestRules.Async;
+﻿using Rubric.Tests.TestRules.Async;
 using System.Diagnostics;
 using Rubric.Engines.Async.Default;
 using Rubric.Rulesets.Async;
@@ -107,7 +106,6 @@ public class AsyncEngineOfTTests
     var engine = new RuleEngine<TestInput>(ruleSet, false, null, logger);
     Assert.NotEmpty(engine.Rules);
   }
-
 
   [Fact]
   public async Task Applies()
@@ -872,7 +870,7 @@ public class AsyncEngineOfTTests
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => true, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => true, async (_, i, _) => i.InputFlag = true);
     var engine = new RuleEngine<TestInput>(new IRule<TestInput>[] { testPreRule, testPreRule2 }, false,
-        (IExceptionHandler)new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
+        new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
     var context = new EngineContext();
     await Assert.ThrowsAsync<InvalidOperationException>(() => engine.ApplyAsync(input, context));

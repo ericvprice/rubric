@@ -52,10 +52,10 @@ public static class EngineContextExtensions
   ///     This can be safely called after examining <see cref="IsAsync">IsAsync</see>.
   /// </summary>
   /// <param name="context">The engine context.</param>
-  public static Engines.Async.IRuleEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
+  public static IRuleEngine<TIn, TOut> GetAsyncEngine<TIn, TOut>(this IEngineContext context)
       where TIn : class
       where TOut : class
-      => context.Get<Engines.Async.IRuleEngine<TIn, TOut>>(ENGINE_KEY);
+      => context.Get<IRuleEngine<TIn, TOut>>(ENGINE_KEY);
 
   /// <summary>
   ///     Get the currently executing engine's logger.

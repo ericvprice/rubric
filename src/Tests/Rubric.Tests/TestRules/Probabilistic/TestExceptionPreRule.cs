@@ -4,9 +4,9 @@ namespace Rubric.Tests.TestRules.Probabilistic;
 
 public class TestExceptionPreRule : Rule<TestInput>
 {
-  public TestExceptionPreRule(bool onDoesApply) => OnDoesApply = onDoesApply;
+  private readonly bool _onDoesApply;
 
-  public bool OnDoesApply { get; }
+  public TestExceptionPreRule(bool onDoesApply) => _onDoesApply = onDoesApply;
 
   public override void Apply(IEngineContext context, TestInput obj)
   {
@@ -15,5 +15,5 @@ public class TestExceptionPreRule : Rule<TestInput>
   }
 
   public override double DoesApply(IEngineContext context, TestInput obj) =>
-    OnDoesApply ? throw new() : 1;
+    _onDoesApply ? throw new() : 1;
 }

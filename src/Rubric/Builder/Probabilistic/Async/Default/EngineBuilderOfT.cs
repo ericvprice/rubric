@@ -12,13 +12,13 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 {
     internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
-    internal ILogger Logger { get; }
+    public ILogger Logger { get; }
 
-    internal bool IsParallel { get; private set; }
+    public bool IsParallel { get; private set; }
 
     internal IRuleset<T> AsyncRuleset { get; } = new Ruleset<T>();
 
-    internal IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
+    public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
     /// <inheritdoc />
     public IRuleBuilder<T> WithRule(string name)

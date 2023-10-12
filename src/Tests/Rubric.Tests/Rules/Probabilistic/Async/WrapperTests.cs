@@ -1,4 +1,3 @@
-using Rubric;
 using Rubric.Tests.TestRules.Probabilistic.Async;
 
 namespace Rubric.Tests.Rules.Probabilistic.Async;

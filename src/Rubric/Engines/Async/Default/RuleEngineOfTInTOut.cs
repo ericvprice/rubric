@@ -107,7 +107,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     /// <param name="exceptionHandler">An optional exception handler.</param>
     /// <param name="isParallel">Whether to execute rules in parallel.</param>
     /// <param name="logger">A logger.</param>
-    public RuleEngine(
+    private RuleEngine(
         IEnumerable<Rules.IRule<TIn>> preRulesFull = null,
         IEnumerable<IRule<TIn>> asyncPreRulesFull = null,
         IEnumerable<Rules.IRule<TIn, TOut>> rulesFull = null,
@@ -159,11 +159,11 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     /// <inheritdoc />
     public override Type OutputType => typeof(TOut);
 
-    public IEnumerable<IRule<TIn>> PreRules => _preRules.SelectMany(_ => _);
+    public IEnumerable<IRule<TIn>> PreRules => _preRules.SelectMany(r => r);
 
-    public IEnumerable<IRule<TIn, TOut>> Rules => _rules.SelectMany(_ => _);
+    public IEnumerable<IRule<TIn, TOut>> Rules => _rules.SelectMany(r => r);
 
-    public IEnumerable<IRule<TOut>> PostRules => _postRules.SelectMany(_ => _);
+    public IEnumerable<IRule<TOut>> PostRules => _postRules.SelectMany(r => r);
 
     #endregion
 

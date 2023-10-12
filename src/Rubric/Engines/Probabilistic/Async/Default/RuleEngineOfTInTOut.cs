@@ -28,6 +28,7 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
     ///     Construct a rule engine from a ruleset.
     /// </summary>
     /// <param name="ruleset">A collection of various rules</param>
+    /// <param name="isParallel">Whether to execute rules in parallel.</param>
     /// <param name="exceptionHandler">An optional exception handler.</param>
     /// <param name="logger">An optional logger</param>
     public RuleEngine(IRuleset<TIn, TOut> ruleset,
@@ -36,15 +37,16 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
                       ILogger logger = null)
         : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, isParallel, exceptionHandler, logger) { }
 
-    /// <summary>
-    ///     Default public constructor.
-    /// </summary>
-    /// <param name="preprocessingRules">Collection of synchronous preprocessing rules.</param>
-    /// <param name="rules">Collection of synchronous processing rules.</param>
-    /// <param name="postprocessingRules">Collection of synchronous postprocessing rules.</param>
-    /// <param name="exceptionHandler">An optional exception handler.</param>
-    /// <param name="logger">An optional logger.</param>
-    public RuleEngine(
+  /// <summary>
+  ///     Default public constructor.
+  /// </summary>
+  /// <param name="preprocessingRules">Collection of synchronous preprocessing rules.</param>
+  /// <param name="rules">Collection of synchronous processing rules.</param>
+  /// <param name="postprocessingRules">Collection of synchronous postprocessing rules.</param>
+  /// <param name="isParallel">Whether to execute rules in parallel.</param>
+  /// <param name="exceptionHandler">An optional exception handler.</param>
+  /// <param name="logger">An optional logger.</param>
+  public RuleEngine(
         IEnumerable<IRule<TIn>> preprocessingRules,
         IEnumerable<IRule<TIn, TOut>> rules,
         IEnumerable<IRule<TOut>> postprocessingRules,
@@ -87,11 +89,11 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
     /// <inheritdoc />
     public override Type OutputType => typeof(TOut);
 
-    public IEnumerable<IRule<TIn>> PreRules => _preRules.SelectMany(_ => _);
+    public IEnumerable<IRule<TIn>> PreRules => _preRules.SelectMany(r => r);
 
-    public IEnumerable<IRule<TIn, TOut>> Rules => _rules.SelectMany(_ => _);
+    public IEnumerable<IRule<TIn, TOut>> Rules => _rules.SelectMany(r => r);
 
-    public IEnumerable<IRule<TOut>> PostRules => _postRules.SelectMany(_ => _);
+    public IEnumerable<IRule<TOut>> PostRules => _postRules.SelectMany(r => r);
 
     #endregion
 
@@ -392,7 +394,7 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
 
     #endregion
 
-    internal IEngineContext Reset(IEngineContext context)
+    private IEngineContext Reset(IEngineContext context)
     {
         context ??= new EngineContext();
         context[EngineContextExtensions.ENGINE_KEY] = this;

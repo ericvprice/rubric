@@ -3,8 +3,7 @@ namespace Rubric.Rules.Probabilistic.Async;
 /// <summary>
 ///   Asynchronous wrapper for a synchronous rule.
 /// </summary>
-/// <typeparam name="TIn">The input type.</typeparam>
-/// <typeparam name="TOut">The output type.</typeparam>
+/// <typeparam name="T">The input type.</typeparam>
 public class AsyncRuleWrapper<T> : IRule<T>
 {
   private readonly Probabilistic.IRule<T> _syncRule;

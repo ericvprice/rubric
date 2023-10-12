@@ -1,9 +1,6 @@
 using Rubric.Rules.Async;
 using Rubric.Tests.TestRules;
-using Rubric.Tests.TestRules.Async;
-using DepTestAttrRule = Rubric.Tests.TestRules.Async.DepTestAttrRule;
 using TestDefaultRule = Rubric.Tests.TestRules.Async.TestDefaultRule;
-using TestRule = Rubric.Tests.TestRules.Async.TestRule;
 
 namespace Rubric.Tests.Rules.Async;
 
@@ -13,8 +10,8 @@ public class RuleOfTInTOutTests
   [Fact]
   public void Name()
   {
-    var rule = new TestRules.TestRule(true);
-    Assert.EndsWith(nameof(TestRules.TestRule), rule.Name);
+    var rule = new TestRule(true);
+    Assert.EndsWith(nameof(TestRule), rule.Name);
   }
 
 
@@ -23,7 +20,7 @@ public class RuleOfTInTOutTests
   [InlineData(false)]
   public async Task TestDoesApply(bool expected)
   {
-    var rule = new TestRule(expected);
+    var rule = new TestRules.Async.TestRule(expected);
     Assert.Equal(expected, await rule.DoesApply(null, null, null, default));
   }
 
@@ -57,10 +54,10 @@ public class RuleOfTInTOutTests
   public void LambdaConstructorException()
   {
     Assert.Throws<ArgumentNullException>(
-    () => new LambdaRule<TestInput, TestOutput>("test", (IEngineContext _, TestInput _, TestOutput _, CancellationToken _) => Task.FromResult(true), null));
+    () => new LambdaRule<TestInput, TestOutput>("test", (_, _, _, _) => Task.FromResult(true), null));
     Assert.Throws<ArgumentNullException>(
-    () => new LambdaRule<TestInput, TestOutput>(null, (IEngineContext _, TestInput _, TestOutput _, CancellationToken _) => Task.FromResult(true),
-                                                     (IEngineContext _, TestInput _, TestOutput _, CancellationToken _) => Task.CompletedTask));
+    () => new LambdaRule<TestInput, TestOutput>(null, (_, _, _, _) => Task.FromResult(true),
+                                                     (_, _, _, _) => Task.CompletedTask));
   }
 
   [Fact]

@@ -78,7 +78,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     /// <param name="isParallel">Whether to execute rules in parallel.</param>
     /// <param name="handler">An optional exception handler.</param>
     /// <param name="logger">A logger.</param>
-    public RuleEngine(
+    private RuleEngine(
         IEnumerable<Rules.IRule<T>> rules,
         IEnumerable<IRule<T>> asyncRules,
         bool isParallel = false,
@@ -104,7 +104,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     #region Properties
 
     /// <inheritdoc />
-    public bool IsParallel { get; internal set; }
+    public bool IsParallel { get; }
 
     /// <inheritdoc />
     public override bool IsAsync => true;
@@ -116,7 +116,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     public override Type OutputType => typeof(T);
 
     /// <inheritdoc />
-    public IEnumerable<IRule<T>> Rules => _rules.SelectMany(_ => _);
+    public IEnumerable<IRule<T>> Rules => _rules.SelectMany(r => r);
 
     #endregion
 

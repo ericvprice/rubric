@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Rubric.Engines.Async;
 using Rubric.Rules.Async;
 
@@ -131,4 +132,10 @@ public interface IEngineBuilder<TIn, TOut>
     /// </summary>
     /// <returns>The completed engine.</returns>
     IRuleEngine<TIn, TOut> Build();
+
+    ILogger Logger { get; }
+
+    bool IsParallel { get; }
+
+    IExceptionHandler ExceptionHandler { get; }
 }

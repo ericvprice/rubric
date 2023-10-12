@@ -15,9 +15,9 @@ internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
 
     internal IRuleset<TIn, TOut> Ruleset { get; } = new Ruleset<TIn, TOut>();
 
-    internal ILogger Logger { get; }
+    public ILogger Logger { get; }
 
-    internal IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
+    public IExceptionHandler ExceptionHandler { get; private set; } = ExceptionHandlers.Rethrow;
 
     /// <inheritdoc/>
     public IPreRuleBuilder<TIn, TOut> WithPreRule(string name)

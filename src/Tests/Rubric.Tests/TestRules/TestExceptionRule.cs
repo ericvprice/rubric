@@ -4,9 +4,9 @@ namespace Rubric.Tests.TestRules;
 
 public class TestExceptionRule : Rule<TestInput, TestOutput>
 {
-  public TestExceptionRule(bool onDoesApply) => OnDoesApply = onDoesApply;
+  public TestExceptionRule(bool onDoesApply) => _onDoesApply = onDoesApply;
 
-  public bool OnDoesApply { get; }
+  private readonly bool _onDoesApply;
 
   public override void Apply(IEngineContext context, TestInput obj, TestOutput output)
   {
@@ -15,5 +15,5 @@ public class TestExceptionRule : Rule<TestInput, TestOutput>
   }
 
   public override bool DoesApply(IEngineContext context, TestInput obj, TestOutput output)
-    => OnDoesApply ? throw new() : true;
+    => _onDoesApply ? throw new() : true;
 }

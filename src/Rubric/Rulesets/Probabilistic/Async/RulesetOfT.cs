@@ -4,9 +4,7 @@ namespace Rubric.Rulesets.Probabilistic.Async;
 
 public class Ruleset<T> : IRuleset<T>
 {
-  private readonly List<IRule<T>> _rules;
-
-  public Ruleset() => _rules = new();
+  private readonly List<IRule<T>> _rules = new();
 
   /// <inheritdoc />
   public IEnumerable<IRule<T>> Rules => _rules;

@@ -4,6 +4,15 @@ namespace Rubric.Tests.Builders;
 
 public class BuilderOfTTests
 {
+
+  [Fact]
+  public void EmptyBuilder()
+  {
+    var builder = EngineBuilder.ForInput<TestInput>();
+    Assert.NotNull(builder.ExceptionHandler);
+    Assert.NotNull(builder.Logger);
+  }
+
   [Fact]
   public void EmptyEngineConstruction()
   {
