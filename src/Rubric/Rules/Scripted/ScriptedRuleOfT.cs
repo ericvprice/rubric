@@ -5,7 +5,7 @@ using static Rubric.Rules.Scripted.ScriptingHelpers;
 namespace Rubric.Rules.Scripted;
 
 /// <summary>
-///   Represent a dynamically compiled rule.
+///   A dynamically compiled rule.
 /// </summary>
 /// <typeparam name="T">The rule type.</typeparam>
 public class ScriptedRule<T> : Async.IRule<T>
@@ -16,6 +16,15 @@ public class ScriptedRule<T> : Async.IRule<T>
   private readonly ScriptRunner<Task> _apply;
   private readonly ScriptRunner<Task<bool>> _doesApply;
 
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  /// <param name="name">The name for this rule.</param>
+  /// <param name="script">The C# script to compile.</param>
+  /// <param name="options">The script compilation options.</param>
+  /// <param name="dependsOn">The list of required dependencies.</param>
+  /// <param name="provides">The list of provided dependencies.</param>
+  /// <param name="cacheBehavior">The desired predicate caching behavior.</param>
   public ScriptedRule(
     string name,
     string script,
@@ -27,7 +36,7 @@ public class ScriptedRule<T> : Async.IRule<T>
   {
     Name = name;
     Provides = provides?.Append(Name).ToArray() ?? new[] { Name };
-    Dependencies = dependsOn?.ToArray() ?? new string[] { };
+    Dependencies = dependsOn?.ToArray() ?? Array.Empty<string>();
     options ??= GetDefaultOptions<T>();
     var baseCode = Create<bool>(script.FilterScript(),
                                 options,
@@ -52,10 +61,10 @@ public class ScriptedRule<T> : Async.IRule<T>
   public PredicateCaching CacheBehavior { get; }
 
   /// <inheritdoc />
-  public async Task Apply(IEngineContext context, T input, CancellationToken t)
-    => await await _apply(new ScriptedRuleContext<T>(context, input, t), t);
+  public async Task Apply(IEngineContext context, T input, CancellationToken token)
+    => await (await _apply(new ScriptedRuleContext<T>(context, input, token), token).ConfigureAwait(false)).ConfigureAwait(false);
 
   /// <inheritdoc />
-  public async Task<bool> DoesApply(IEngineContext context, T input, CancellationToken t)
-    => await await _doesApply(new ScriptedRuleContext<T>(context, input, t), t);
+  public async Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token)
+    => await (await _doesApply(new ScriptedRuleContext<T>(context, input, token), token).ConfigureAwait(false)).ConfigureAwait(false);
 }

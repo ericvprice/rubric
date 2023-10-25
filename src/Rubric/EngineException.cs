@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace Rubric;
 
 /// <summary>
@@ -7,10 +9,34 @@ namespace Rubric;
 public class EngineException : Exception
 {
 
+  /// <summary>
+  ///   Default constructor
+  /// </summary>
+  public EngineException() : base() { }
+
+  /// <summary>
+  ///   Message constructor.
+  /// </summary>
+  public EngineException(string message) : base(message) { }
+
+  /// <summary>
+  ///   Message and exception constructor.
+  /// </summary>
+  /// <param name="message">The exception message.</param>
+  /// <param name="innerException">The original exception thrown.</param>
   public EngineException(string message, Exception innerException) : base(message, innerException)
   {
   }
 
+  /// <summary>
+  ///   Serialization constructor.
+  /// </summary>
+  /// <param name="serializationInfo">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+  /// <param name="streamingContext">The StreamingContext that contains contextual information about the source or destination.</param>
+  protected EngineException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
+  {
+  }
+  
   /// <summary>
   ///   The current engine context.
   /// </summary>
@@ -34,5 +60,6 @@ public class EngineException : Exception
   /// </summary>
   /// <value>The rule.</value>
   public object Rule { get; internal set; }
+
 
 }

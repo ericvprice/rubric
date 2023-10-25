@@ -1,5 +1,8 @@
 namespace Rubric.Engines.Async;
 
+/// <summary>
+///   A base interface for all rule engines.
+/// </summary>
 public interface IRuleEngine : Rubric.IRuleEngine
 {
     /// <summary>

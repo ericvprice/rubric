@@ -1,5 +1,5 @@
 using Rubric.Engines.Probabilistic.Async;
-using Rubric.Engines.Probabilistic.Async.Default;
+using Rubric.Engines.Probabilistic.Async.Implementation;
 using Rubric.Rules.Probabilistic.Async;
 using Rubric.Rulesets.Probabilistic.Async;
 using Rubric.Tests.TestRules.Probabilistic.Async;

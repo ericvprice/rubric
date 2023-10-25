@@ -2,6 +2,11 @@ using Rubric.Rules.Async;
 
 namespace Rubric.Engines.Async;
 
+/// <summary>
+///   A rule engine that processes inputs and accumulates the results into an output type.
+/// </summary>
+/// <typeparam name="TIn">The input type</typeparam>
+/// <typeparam name="TOut">The output type</typeparam>
 public interface IRuleEngine<in TIn, in TOut> : IRuleEngine
     where TIn : class
     where TOut : class

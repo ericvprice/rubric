@@ -9,7 +9,18 @@ public class LambdaRule<T> : IRule<T>
   private readonly Action<IEngineContext, T> _action;
 
   private readonly Func<IEngineContext, T, bool> _predicate;
-
+  
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  /// <param name="name">Then name for this rule.</param>
+  /// <param name="predicate">The predicate.</param>
+  /// <param name="action">The action.</param>
+  /// <param name="dependencies">A list of dependencies to run before this rule.</param>
+  /// <param name="provides">A list of dependencies provided.</param>
+  /// <param name="cacheBehavior">The predicate caching behavior desired.</param>
+  /// <exception cref="ArgumentException">Name is null or empty.</exception>
+  /// <exception cref="ArgumentNullException">Predicate or action is null.</exception>
   public LambdaRule(
     string name,
     Func<IEngineContext, T, bool> predicate,

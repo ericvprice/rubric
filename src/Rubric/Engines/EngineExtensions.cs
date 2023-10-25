@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rubric.Engines.Default;
+using Rubric.Engines.Implementation;
 
 namespace Rubric.Engines;
 
@@ -9,10 +9,19 @@ namespace Rubric.Engines;
 internal static class EngineExtensions
 {
 
-  private const string DOES_NOT_APPLY = "Rule {name} does not apply.";
-  private const string APPLIES = "Rule {name} does not applies.";
-  private const string APPLYING = "Applying {name}.";
-  private const string DONE = "Finished applying {name}.";
+  private const string DoesNotApply = "Rule {Name} does not apply.";
+  private const string Applies = "Rule {Name} does not applies.";
+  private const string Applying = "Applying {Name}.";
+  private const string Done = "Finished applying {Name}.";
+
+  private static readonly Action<ILogger, string, Exception> _doesNotApplyLogger
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Rule does not apply"), DoesNotApply);
+  private static readonly Action<ILogger, string, Exception> _appliesLogger
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(2, "Rule applies"), Applies);
+  private static readonly Action<ILogger, string, Exception> _applyingLogger
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Appling rule"), Applying);
+  private static readonly Action<ILogger, string, Exception> _doneLogger
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Rule applied"), Done);
 
   /// <summary>
   ///     Apply an async preprocessing rule.  Handle trace logging, exception handling, etc.
@@ -28,16 +37,18 @@ internal static class EngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!await r.DoesApply(ctx, i, t).ConfigureAwait(false))
+      if (await r.DoesApply(ctx, i, t).ConfigureAwait(false))
       {
-        e.Logger.LogTrace(DOES_NOT_APPLY, r.Name);
-        return;
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        _appliesLogger(e.Logger, r.Name, null);
+        _applyingLogger(e.Logger, r.Name, null);
+        await r.Apply(ctx, i, t).ConfigureAwait(false);
+        _doneLogger(e.Logger, r.Name, null);
       }
-      using var logCtx = e.Logger.BeginScope(r.Name);
-      e.Logger.LogTrace(APPLIES, r.Name);
-      e.Logger.LogTrace(APPLYING, r.Name);
-      await r.Apply(ctx, i, t).ConfigureAwait(false);
-      e.Logger.LogTrace(DONE, r.Name);
+      else
+      {
+        _doesNotApplyLogger(e.Logger, r.Name, null);
+      }
     }
     catch (Exception ex)
     {
@@ -59,16 +70,18 @@ internal static class EngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!await r.DoesApply(ctx, o, t).ConfigureAwait(false))
+      if (await r.DoesApply(ctx, o, t).ConfigureAwait(false))
       {
-        e.Logger.LogTrace(DOES_NOT_APPLY, r.Name);
-        return;
-      }
-      using var logCtx = e.Logger.BeginScope(r.Name);
-        e.Logger.LogTrace(APPLIES, r.Name);
-        e.Logger.LogTrace(APPLYING, r.Name);
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        _appliesLogger(e.Logger, r.Name, null);
+        _applyingLogger(e.Logger, r.Name, null);
         await r.Apply(ctx, o, t).ConfigureAwait(false);
-        e.Logger.LogTrace(DONE, r.Name);
+        _doneLogger(e.Logger, r.Name, null);
+      }
+      else
+      {
+        _doesNotApplyLogger(e.Logger, r.Name, null);
+      }
     }
     catch (Exception ex)
     {
@@ -91,16 +104,18 @@ internal static class EngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
+      if (await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
       {
-        e.Logger.LogTrace("Rule {name} does not apply.", r.Name);
-        return;
+        using var logCtx = e.Logger.BeginScope(r.Name);
+        _appliesLogger(e.Logger, r.Name, null);
+        _applyingLogger(e.Logger, r.Name, null);
+        await r.Apply(ctx, i, o, t).ConfigureAwait(false);
+        _doneLogger(e.Logger, r.Name, null);
       }
-      using var logCtx = e.Logger.BeginScope(r.Name);
-      e.Logger.LogTrace(APPLIES, r.Name);
-      e.Logger.LogTrace(APPLYING, r.Name);
-      await r.Apply(ctx, i, o, t).ConfigureAwait(false);
-      e.Logger.LogTrace(DONE, r.Name);
+      else
+      {
+        _doesNotApplyLogger(e.Logger, r.Name, null);
+      }
     }
     catch (Exception ex)
     {
@@ -120,15 +135,17 @@ internal static class EngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!r.DoesApply(ctx, i))
+      if (r.DoesApply(ctx, i))
       {
-        e.Logger.LogTrace(DOES_NOT_APPLY, r.Name);
-        return;
+        _appliesLogger(e.Logger, r.Name, null);
+        _applyingLogger(e.Logger, r.Name, null);
+        r.Apply(ctx, i);
+        _doneLogger(e.Logger, r.Name, null);
       }
-      e.Logger.LogTrace(APPLIES, r.Name);
-      e.Logger.LogTrace(APPLYING, r.Name);
-      r.Apply(ctx, i);
-      e.Logger.LogTrace(DONE, r.Name);
+      else
+      {
+        _doesNotApplyLogger(e.Logger, r.Name, null);
+      }
     }
     catch (Exception ex)
     {
@@ -149,15 +166,17 @@ internal static class EngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!r.DoesApply(ctx, i, o))
+      if (r.DoesApply(ctx, i, o))
       {
-        e.Logger.LogTrace(DOES_NOT_APPLY, r.Name);
-        return;
+        _appliesLogger(e.Logger, r.Name, null);
+        _applyingLogger(e.Logger, r.Name, null);
+        r.Apply(ctx, i, o);
+        _doneLogger(e.Logger, r.Name, null);
       }
-      e.Logger.LogTrace(APPLIES, r.Name);
-      e.Logger.LogTrace(APPLYING, r.Name);
-      r.Apply(ctx, i, o);
-      e.Logger.LogTrace(DONE, r.Name);
+      else
+      {
+        _doesNotApplyLogger(e.Logger, r.Name, null);
+      }
     }
     catch (Exception ex)
     {
@@ -177,15 +196,17 @@ internal static class EngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!r.DoesApply(ctx, o))
+      if (r.DoesApply(ctx, o))
       {
-        e.Logger.LogTrace(APPLIES, r.Name);
-        return;
+        _appliesLogger(e.Logger, r.Name, null);
+        _applyingLogger(e.Logger, r.Name, null);
+        r.Apply(ctx, o);
+        _doneLogger(e.Logger, r.Name, null);
       }
-      e.Logger.LogTrace(DOES_NOT_APPLY, r.Name);
-      e.Logger.LogTrace(APPLYING, r.Name);
-      r.Apply(ctx, o);
-      e.Logger.LogTrace(DONE, r.Name);
+      else
+      {
+        _doesNotApplyLogger(e.Logger, r.Name, null);
+      }
     }
     catch (Exception ex)
     {

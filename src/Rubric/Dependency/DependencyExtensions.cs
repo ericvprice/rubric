@@ -17,6 +17,11 @@ public static class DependencyExtensions
 
   private static readonly ConcurrentDictionary<Type, string[]> _providesCache = new();
 
+  /// <summary>
+  ///   GetAs the list of required dependencies of a given type.
+  /// </summary>
+  /// <param name="type">The type to scan.</param>
+  /// <returns>A list of required dependencies.</returns>
   public static IEnumerable<string> GetDependencies(Type type) 
     => _dependsCache.GetOrAdd(
                       type,
@@ -25,6 +30,11 @@ public static class DependencyExtensions
                             .Select(d => d.Name)
                             .ToArray());
 
+  /// <summary>
+  ///   GetAs the list of provides attributes of a given type.
+  /// </summary>
+  /// <param name="type">The type to scan.</param>
+  /// <returns>A list of provided dependencies.</returns>
   public static IEnumerable<string> GetProvides(Type type)
     => _providesCache.GetOrAdd(
                       type,
@@ -34,6 +44,15 @@ public static class DependencyExtensions
                             .Append(t.FullName)
                             .ToArray());
 
+  /// <summary>
+  ///   Resolve a set of dependencies into a series of arrays.  Each element of the inner arrays are independent of the other elements, and only depend on elements
+  ///   in previous arrays.
+  /// </summary>
+  /// <typeparam name="T">The dependency type.</typeparam>
+  /// <param name="dependencies">The dependencies to resolve.</param>
+  /// <returns>An enumeration of enumerations suitable for parallelization of the dependencies.</returns>
+  /// <exception cref="ArgumentNullException">Dependencies is null.</exception>
+  /// <exception cref="DependencyException">An error occurs making it impossible to resolve the dependencies.</exception>
   public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies)
       where T : class, IDependency
   {

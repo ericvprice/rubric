@@ -7,7 +7,7 @@
 public abstract class DebugRule<T> : Rule<T> where T : class
 {
       /// <inheritdoc />
-      public override Task<double> DoesApply(IEngineContext context, T input, CancellationToken t)
+      public override Task<double> DoesApply(IEngineContext context, T input, CancellationToken token)
 #if DEBUG
           => Task.FromResult(1D);
 #else

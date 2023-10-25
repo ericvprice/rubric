@@ -25,7 +25,7 @@ internal static class ScriptingHelpers
     using var sr = new StringReader(script);
     var output = new StringBuilder();
     while (sr.ReadLine() is { } line)
-      if (!line.Trim().StartsWith("#r"))
+      if (!line.Trim().StartsWith("#r", StringComparison.InvariantCulture))
         output.Append(line);
     return output.ToString();
   }

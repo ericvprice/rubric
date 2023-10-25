@@ -1,4 +1,4 @@
-﻿using Rubric.Engines.Async.Default;
+﻿using Rubric.Engines.Async.Implementation;
 using Rubric.Rulesets.Async;
 
 namespace Rubric.Tests.Core;

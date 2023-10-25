@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace Rubric;
 
 /// <summary>
@@ -11,7 +13,29 @@ namespace Rubric;
 [Serializable]
 public class EngineHaltException : EngineException
 {
-  public EngineHaltException() : this("User requested", null) { }
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  public EngineHaltException() { }
 
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  public EngineHaltException(string message) : base(message) { }
+
+  /// <summary>
+  ///   Constructor with custom message and optional wrapped exception.
+  /// </summary>
+  /// <param name="message">The custom message.</param>
+  /// <param name="innerException">The wrapped exception.</param>
   public EngineHaltException(string message, Exception innerException) : base(message, innerException) { }
+
+  /// <summary>
+  ///   Serialization constructor.
+  /// </summary>
+  /// <param name="serializationInfo">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+  /// <param name="streamingContext">The StreamingContext that contains contextual information about the source or destination.</param>
+  protected EngineHaltException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
+  {
+  }
 }

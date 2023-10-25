@@ -4,6 +4,10 @@ using Rubric.Rules.Probabilistic.Async;
 
 namespace Rubric.Builder.Probabilistic.Async;
 
+/// <summary>
+///   A fluent interface for building a rule engine.
+/// </summary>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IEngineBuilder<T>
     where T : class
 {
@@ -62,7 +66,18 @@ public interface IEngineBuilder<T>
     /// <returns>The built engine.</returns>
     IRuleEngine<T> Build();
 
+    /// <summary>
+    ///   The logger to use for this engine.
+    /// </summary>
     ILogger Logger { get; }
+
+    /// <summary>
+    ///   Whether this engine should process in parallel.
+    /// </summary>
     bool IsParallel { get; }
+
+    /// <summary>
+    ///   The exception handler to use for this engine.
+    /// </summary>
     IExceptionHandler ExceptionHandler { get; }
 }

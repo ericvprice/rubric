@@ -12,11 +12,17 @@ namespace Rubric.Rules.Scripted;
 public class ScriptedRuleContext<T>
 {
 
-  public ScriptedRuleContext(IEngineContext context, T input, CancellationToken t)
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  /// <param name="context">The current engine execution context.</param>
+  /// <param name="input">The input object.</param>
+  /// <param name="token">The cancellation token to use.</param>
+  public ScriptedRuleContext(IEngineContext context, T input, CancellationToken token)
   {
     Input = input;
     Context = context;
-    Token = t;
+    Token = token;
   }
 
   /// <summary>

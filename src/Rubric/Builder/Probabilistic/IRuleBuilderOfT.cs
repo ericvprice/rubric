@@ -1,5 +1,9 @@
 namespace Rubric.Builder.Probabilistic;
 
+/// <summary>
+///    An fluent interface for rule building.
+/// </summary>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IRuleBuilder<T>
   where T : class
 {

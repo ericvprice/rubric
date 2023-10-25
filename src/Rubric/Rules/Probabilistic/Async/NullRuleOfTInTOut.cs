@@ -9,10 +9,10 @@
 public class NullRule<TIn, TOut> : Rule<TIn, TOut>
 {
   /// <inheritdoc />
-  public override Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken t)
+  public override Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token)
     => Task.CompletedTask;
 
   /// <inheritdoc />
-  public override Task<double> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken t)
+  public override Task<double> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token)
     => Task.FromResult(0D);
 }

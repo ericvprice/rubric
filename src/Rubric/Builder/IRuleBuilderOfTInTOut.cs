@@ -1,5 +1,10 @@
 namespace Rubric.Builder;
 
+/// <summary>
+///   A fluent rule builder.
+/// </summary>
+/// <typeparam name="TIn">The input type.</typeparam>
+/// <typeparam name="TOut">The output type.</typeparam>
 public interface IRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

@@ -2,6 +2,10 @@ using Rubric.Rules;
 
 namespace Rubric.Rulesets;
 
+/// <summary>
+///   A set of rules for a rule engine.
+/// </summary>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IRuleset<T> where T : class
 {
   /// <summary>

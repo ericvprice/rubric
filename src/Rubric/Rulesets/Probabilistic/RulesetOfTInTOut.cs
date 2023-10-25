@@ -2,6 +2,7 @@ using Rubric.Rules.Probabilistic;
 
 namespace Rubric.Rulesets.Probabilistic;
 
+/// <inheritdoc />
 public class Ruleset<TIn, TOut> : IRuleset<TIn, TOut>
 {
   private readonly List<IRule<TOut>> _postRules = new();

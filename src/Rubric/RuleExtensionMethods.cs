@@ -2,7 +2,10 @@ using Rubric.Rules.Async;
 
 namespace Rubric;
 
-public static class RuleExtensionMethods
+/// <summary>
+///   Extension methods for wrapping and converting synchronous rules into asynchronous rules.
+/// </summary>
+public static class AsyncRuleExtensionMethods
 {
     /// <summary>
     ///   Wrap an synchronous rule in an asynchronous wrapper.

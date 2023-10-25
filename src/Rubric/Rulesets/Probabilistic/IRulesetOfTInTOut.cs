@@ -2,6 +2,11 @@ using Rubric.Rules.Probabilistic;
 
 namespace Rubric.Rulesets.Probabilistic;
 
+/// <summary>
+///   A set of rules for a rule engine.
+/// </summary>
+/// <typeparam name="TIn">The input type.</typeparam>
+/// <typeparam name="TOut">The output type.</typeparam>
 public interface IRuleset<TIn, TOut>
 {
 

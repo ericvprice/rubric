@@ -8,11 +8,11 @@
 public class NullRule<T> : Rule<T> where T : class
 {
   /// <inheritdoc />
-  public override Task Apply(IEngineContext context, T input, CancellationToken t)
+  public override Task Apply(IEngineContext context, T input, CancellationToken token)
     => Task.CompletedTask;
 
   /// <inheritdoc />
-  public override Task<bool> DoesApply(IEngineContext context, T input, CancellationToken t)
+  public override Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token)
     => Task.FromResult(false);
 
 }

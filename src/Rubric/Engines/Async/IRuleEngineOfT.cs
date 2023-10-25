@@ -2,6 +2,10 @@ using Rubric.Rules.Async;
 
 namespace Rubric.Engines.Async;
 
+/// <summary>
+///   A rule engine that processes inputs of a certain type.
+/// </summary>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IRuleEngine<in T> : IRuleEngine
     where T : class
 {

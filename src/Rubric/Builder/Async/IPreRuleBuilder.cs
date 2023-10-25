@@ -1,5 +1,10 @@
 namespace Rubric.Builder.Async;
 
+/// <summary>
+///    An fluent interface for rule building.
+/// </summary>
+/// <typeparam name="TIn">The input type.</typeparam>
+/// <typeparam name="TOut">The output type.</typeparam>
 public interface IPreRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

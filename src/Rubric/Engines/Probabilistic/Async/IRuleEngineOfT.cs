@@ -2,9 +2,16 @@ using Rubric.Rules.Probabilistic.Async;
 
 namespace Rubric.Engines.Probabilistic.Async;
 
+/// <summary>
+///   A rule engine the processes one or many inputs.
+/// </summary>
+/// <typeparam name="T">The input type.</typeparam>
 public interface IRuleEngine<in T> : Engines.Async.IRuleEngine
 {
 
+  /// <summary>
+  ///   The rules for this engine.
+  /// </summary>
   IEnumerable<IRule<T>> Rules { get; }
 
   /// <summary>

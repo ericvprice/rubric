@@ -13,13 +13,24 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
 
   private readonly Func<IEngineContext, TIn, TOut, bool> _predicate;
 
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  /// <param name="name">Then name for this rule.</param>
+  /// <param name="predicate">The predicate.</param>
+  /// <param name="action">The action.</param>
+  /// <param name="dependencies">A list of dependencies to run before this rule.</param>
+  /// <param name="provides">A list of dependencies provided.</param>
+  /// <param name="cacheBehavior">The predicate cacheBehavior behavior desired.</param>
+  /// <exception cref="ArgumentException">Name is null or empty.</exception>
+  /// <exception cref="ArgumentNullException">Predicate or action is null.</exception>
   public LambdaRule(
     string name,
     Func<IEngineContext, TIn, TOut, bool> predicate,
     Action<IEngineContext, TIn, TOut> action,
     IEnumerable<string> dependencies = null,
     IEnumerable<string> provides = null,
-    PredicateCaching caching = default
+    PredicateCaching cacheBehavior = default
   )
   {
     Name = IsNullOrWhiteSpace(name)
@@ -29,7 +40,7 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
     _action = action ?? throw new ArgumentNullException(nameof(action));
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
-    CacheBehavior = caching;
+    CacheBehavior = cacheBehavior;
   }
 
   /// <inheritdoc />

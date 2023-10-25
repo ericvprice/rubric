@@ -18,7 +18,7 @@ internal class RuleBuilderBase
 
   internal void AddDependency(string dep)
   {
-    if (string.IsNullOrEmpty(dep)) throw new ArgumentException(nameof(dep));
+    if (string.IsNullOrEmpty(dep)) throw new ArgumentException("Dependency cannot be null or empty", nameof(dep));
     Dependencies.Add(dep);
   }
 
@@ -27,7 +27,7 @@ internal class RuleBuilderBase
 
   internal void AddProvides(string provides)
   {
-    if (string.IsNullOrWhiteSpace(provides)) throw new ArgumentException(null, nameof(provides));
+    if (string.IsNullOrWhiteSpace(provides)) throw new ArgumentException("Provides cannot be null or empty", nameof(provides));
     Provides.Add(provides);
   }
 }

@@ -2,6 +2,7 @@ using Rubric.Rules.Probabilistic.Async;
 
 namespace Rubric.Rulesets.Probabilistic.Async;
 
+/// <inheritdoc />
 public class Ruleset<T> : IRuleset<T>
 {
   private readonly List<IRule<T>> _rules = new();

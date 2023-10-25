@@ -1,14 +1,17 @@
 namespace Rubric.Dependency;
 
+/// <summary>
+///   An object that can participate in a dependency graph.
+/// </summary>
 public interface IDependency
 {
   /// <summary>
-  ///     Get the dependencies for this dependency.
+  ///     GetAs the dependencies for this dependency.
   /// </summary>
   IEnumerable<string> Dependencies { get; }
 
   /// <summary>
-  ///     Get the dependencies this provides to other dependencies.
+  ///     GetAs the dependencies this provides to other dependencies.
   /// </summary>
   IEnumerable<string> Provides { get; }
 

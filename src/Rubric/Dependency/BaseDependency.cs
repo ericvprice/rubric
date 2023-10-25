@@ -1,5 +1,8 @@
 ﻿namespace Rubric.Dependency;
 
+/// <summary>
+///   Base implementation of a dependency.
+/// </summary>
 public abstract class BaseDependency : IDependency
 {
   /// <summary>
@@ -14,5 +17,8 @@ public abstract class BaseDependency : IDependency
   /// <returns>The provided dependencies for this rule.</returns>
   public virtual IEnumerable<string> Provides => DependencyExtensions.GetProvides(GetType()).Append(Name);
 
+  /// <summary>
+  ///   The name for this dependency.
+  /// </summary>
   public abstract string Name { get; }
 }

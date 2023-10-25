@@ -1,4 +1,4 @@
-using Rubric.Engines.Default;
+using Rubric.Engines.Implementation;
 
 namespace Rubric.Tests.Core;
 
@@ -9,8 +9,8 @@ public class ContextTests
   {
     IEngineContext context = new EngineContext { ["foo"] = "bar", ["baz"] = "qux" };
     var cloned = context.Clone();
-    Assert.Equal(context.Get<string>("foo"), cloned.Get<string>("foo"));
-    Assert.Equal(context.Get<string>("baz"), cloned.Get<string>("baz"));
+    Assert.Equal(context.GetAs<string>("foo"), cloned.GetAs<string>("foo"));
+    Assert.Equal(context.GetAs<string>("baz"), cloned.GetAs<string>("baz"));
   }
 
   [Fact]
@@ -20,10 +20,10 @@ public class ContextTests
     Assert.False(context.ContainsKey("test"));
     context["test"] = true;
     Assert.True(context.ContainsKey("test"));
-    Assert.True(context.Get<bool>("test"));
+    Assert.True(context.GetAs<bool>("test"));
     Assert.True((bool)context["test"]);
     context["test"] = false;
-    Assert.False(context.Get<bool>("test"));
+    Assert.False(context.GetAs<bool>("test"));
     Assert.False((bool)context["test"]);
     context.Remove("test");
     Assert.False(context.ContainsKey("test"));

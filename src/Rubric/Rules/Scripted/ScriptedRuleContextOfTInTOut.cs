@@ -10,8 +10,15 @@ namespace Rubric.Rules.Scripted;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class ScriptedRuleContext<TIn, TOut> : ScriptedRuleContext<TIn>
 {
-  public ScriptedRuleContext(IEngineContext context, TIn input, TOut output, CancellationToken t)
-    : base(context, input, t)
+  /// <summary>
+  ///   Default constructor.
+  /// </summary>
+  /// <param name="context">The current engine execution context.</param>
+  /// <param name="input">The input object.</param>
+  /// <param name="output">The output object.</param>
+  /// <param name="token">The cancellation token to use.</param>
+  public ScriptedRuleContext(IEngineContext context, TIn input, TOut output, CancellationToken token)
+    : base(context, input, token)
     => Output = output;
 
   /// <summary>

@@ -8,7 +8,7 @@
 public abstract class DebugRule<TIn, TOut> : Rule<TIn, TOut>
 {
   /// <inheritdoc />
-  public override Task<double> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken t)
+  public override Task<double> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token)
     #if DEBUG
         => Task.FromResult(1D);
     #else
