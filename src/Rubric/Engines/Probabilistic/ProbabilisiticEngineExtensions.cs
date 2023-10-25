@@ -1,13 +1,12 @@
 using Microsoft.Extensions.Logging;
 using Rubric.Engines.Implementation;
 using Rubric.Engines.Probabilistic.Implementation;
-using Rubric.Rules.Probabilistic;
-#pragma warning disable CA5394
+using Rubric.Rules.Probabilistic.Async;
+
 namespace Rubric.Engines.Probabilistic;
 
 internal static class ProbabilisiticEngineExtensions
 {
-
   public const string RandomKey = "__RANDOM";
 
   private const string DoesNotApply = "Rule {Name} does not apply.";
@@ -15,18 +14,20 @@ internal static class ProbabilisiticEngineExtensions
   private const string Applying = "Applying {Name}.";
   private const string Done = "Finished applying {Name}.";
 
-  private static readonly Action<ILogger, string, Exception> _doesNOTApplyLogger 
-    = LoggerMessage.Define<string>(LogLevel.Trace, new (1, "Rule does not apply"), DoesNotApply);
-  private static readonly Action<ILogger, string, Exception> _appliesLogger 
+  private static readonly Action<ILogger, string, Exception> _doesNotApplyLogger
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Rule does not apply"), DoesNotApply);
+
+  private static readonly Action<ILogger, string, Exception> _appliesLogger
     = LoggerMessage.Define<string>(LogLevel.Trace, new(2, "Rule applies"), Applies);
-  private static readonly Action<ILogger, string, Exception> _applyingLogger 
+
+  private static readonly Action<ILogger, string, Exception> _applyingLogger
     = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Appling rule"), Applying);
-  private static readonly Action<ILogger, string, Exception> _doneLogger 
+
+  private static readonly Action<ILogger, string, Exception> _doneLogger
     = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Rule applied"), Done);
-  
+
   /// <summary>
-  ///
-  ///     Apply an async preprocessing rule.  Handle trace logging, exception handling, etc.
+  ///   Apply an async preprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -36,7 +37,7 @@ internal static class ProbabilisiticEngineExtensions
   internal static async Task ApplyAsyncPreRule<T>(
     this BaseProbabilisticRuleEngine e,
     IEngineContext ctx,
-    Rules.Probabilistic.Async.IRule<T> r,
+    IRule<T> r,
     T i,
     CancellationToken t)
   {
@@ -53,7 +54,7 @@ internal static class ProbabilisiticEngineExtensions
       }
       else
       {
-        _doesNOTApplyLogger(e.Logger, r.Name, null);
+        _doesNotApplyLogger(e.Logger, r.Name, null);
       }
     }
     catch (Exception ex)
@@ -63,7 +64,7 @@ internal static class ProbabilisiticEngineExtensions
   }
 
   /// <summary>
-  ///     Apply an async postprocessing rule.  Handle trace logging, exception handling, etc.
+  ///   Apply an async postprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -73,7 +74,7 @@ internal static class ProbabilisiticEngineExtensions
   internal static async Task ApplyAsyncPostRule<T>(
     this BaseProbabilisticRuleEngine e,
     IEngineContext ctx,
-    Rules.Probabilistic.Async.IRule<T> r,
+    IRule<T> r,
     T o,
     CancellationToken t)
   {
@@ -83,9 +84,10 @@ internal static class ProbabilisiticEngineExtensions
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       if (e.Random.NextDouble() >= await r.DoesApply(ctx, o, t).ConfigureAwait(false))
       {
-        _doesNOTApplyLogger(e.Logger, r.Name, null);
+        _doesNotApplyLogger(e.Logger, r.Name, null);
         return;
       }
+
       _appliesLogger(e.Logger, r.Name, null);
       _applyingLogger(e.Logger, r.Name, null);
       await r.Apply(ctx, o, t).ConfigureAwait(false);
@@ -98,7 +100,7 @@ internal static class ProbabilisiticEngineExtensions
   }
 
   /// <summary>
-  ///     Apply an async rule.  Handle trace logging, exception handling, etc.
+  ///   Apply an async rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -109,7 +111,7 @@ internal static class ProbabilisiticEngineExtensions
   internal static async Task ApplyAsyncRule<TIn, TOut>(
     this BaseProbabilisticRuleEngine e,
     IEngineContext ctx,
-    Rules.Probabilistic.Async.IRule<TIn, TOut> r,
+    IRule<TIn, TOut> r,
     TIn i,
     TOut o,
     CancellationToken t)
@@ -128,7 +130,7 @@ internal static class ProbabilisiticEngineExtensions
       }
       else
       {
-        _doesNOTApplyLogger(e.Logger, r.Name, null);
+        _doesNotApplyLogger(e.Logger, r.Name, null);
       }
     }
     catch (Exception ex)
@@ -138,7 +140,7 @@ internal static class ProbabilisiticEngineExtensions
   }
 
   /// <summary>
-  ///     Apply a pre-rule.  Handle trace logging, exception handling, etc.
+  ///   Apply a pre-rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -146,8 +148,7 @@ internal static class ProbabilisiticEngineExtensions
   /// <param name="i">The current i item.</param>
   internal static void ApplyPreRule<T>(
     this BaseProbabilisticRuleEngine e,
-    IEngineContext ctx,
-    IRule<T> r,
+    IEngineContext ctx, Rules.Probabilistic.IRule<T> r,
     T i)
   {
     try
@@ -162,7 +163,7 @@ internal static class ProbabilisiticEngineExtensions
       }
       else
       {
-        _doesNOTApplyLogger(e.Logger, r.Name, null);
+        _doesNotApplyLogger(e.Logger, r.Name, null);
       }
     }
     catch (Exception ex)
@@ -172,7 +173,7 @@ internal static class ProbabilisiticEngineExtensions
   }
 
   /// <summary>
-  ///     Apply a rule.  Handle trace logging, exception handling, etc.
+  ///   Apply a rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">Engine.</param>
   /// <param name="ctx">Engine context.</param>
@@ -181,8 +182,7 @@ internal static class ProbabilisiticEngineExtensions
   /// <param name="o">The current o item.</param>
   internal static void ApplyRule<TIn, TOut>(
     this BaseProbabilisticRuleEngine e,
-    IEngineContext ctx,
-    IRule<TIn, TOut> r,
+    IEngineContext ctx, Rules.Probabilistic.IRule<TIn, TOut> r,
     TIn i,
     TOut o)
   {
@@ -198,20 +198,17 @@ internal static class ProbabilisiticEngineExtensions
       }
       else
       {
-        _doesNOTApplyLogger(e.Logger, r.Name, null);
+        _doesNotApplyLogger(e.Logger, r.Name, null);
       }
     }
     catch (Exception ex)
     {
-      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, i, o))
-      {
-        throw;
-      }
+      if (!BaseRuleEngine.HandleException(ex, e, ctx, r, i, o)) throw;
     }
   }
 
   /// <summary>
-  ///     Apply a postprocessing rule.  Handle trace logging, exception handling, etc.
+  ///   Apply a postprocessing rule.  Handle trace logging, exception handling, etc.
   /// </summary>
   /// <param name="e">The e</param>
   /// <param name="ctx">Engine context.</param>
@@ -219,8 +216,7 @@ internal static class ProbabilisiticEngineExtensions
   /// <param name="o">The o item.</param>
   internal static void ApplyPostRule<T>(
     this BaseProbabilisticRuleEngine e,
-    IEngineContext ctx,
-    IRule<T> r,
+    IEngineContext ctx, Rules.Probabilistic.IRule<T> r,
     T o)
   {
     try
@@ -235,7 +231,7 @@ internal static class ProbabilisiticEngineExtensions
       }
       else
       {
-        _doesNOTApplyLogger(e.Logger, r.Name, null);
+        _doesNotApplyLogger(e.Logger, r.Name, null);
       }
     }
     catch (Exception ex)

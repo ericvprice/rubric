@@ -1,6 +1,7 @@
 namespace Rubric.Builder.Async;
+
 /// <summary>
-///    An fluent interface for rule building.
+///   A fluent interface for rule building.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>

@@ -9,7 +9,6 @@ namespace Rubric;
 /// </summary>
 public static class ProbabilisticEngineBuilder
 {
-
   /// <summary>
   ///   Start building a synchronous engine for a single input type.
   /// </summary>
@@ -49,9 +48,9 @@ public static class ProbabilisticEngineBuilder
   /// <typeparam name="TOut">The output type.</typeparam>
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
-  public static Builder.Probabilistic.Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
+  public static Builder.Probabilistic.Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(
+    ILogger logger = null)
     where TIn : class
     where TOut : class
     => new Builder.Probabilistic.Async.Implementation.EngineBuilder<TIn, TOut>(logger);
-
 }

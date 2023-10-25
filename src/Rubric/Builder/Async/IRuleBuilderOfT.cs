@@ -1,6 +1,7 @@
 namespace Rubric.Builder.Async;
+
 /// <summary>
-///    An fluent interface for rule building.
+///   A fluent interface for rule building.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRuleBuilder<T>

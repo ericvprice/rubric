@@ -12,6 +12,6 @@ public abstract class DebugRule<TIn, TOut> : Rule<TIn, TOut>
     #if DEBUG
         => Task.FromResult(1D);
     #else
-        => Task.FromResult(0D);
-    #endif
+    => Task.FromResult(0D);
+  #endif
 }

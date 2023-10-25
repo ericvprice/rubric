@@ -7,7 +7,6 @@ namespace Rubric.Engines.Implementation;
 /// </summary>
 public abstract class BaseRuleEngine : IRuleEngine
 {
-
   /// <inheritdoc />
   public ILogger Logger { get; protected set; }
 
@@ -43,8 +42,8 @@ public abstract class BaseRuleEngine : IRuleEngine
     object output,
     CancellationToken t = default)
   {
-    if(ctx == null) throw new ArgumentNullException(nameof(ctx));
-    if(e == null) throw new ArgumentNullException(nameof(e));
+    if (ctx == null) throw new ArgumentNullException(nameof(ctx));
+    if (e == null) throw new ArgumentNullException(nameof(e));
     switch (ex)
     {
       //Ignore user-requested task cancellation exceptions

@@ -1,7 +1,7 @@
 namespace Rubric.Builder;
 
 /// <summary>
-///    An fluent interface for rule building.
+///   An fluent interface for rule building.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>

@@ -27,7 +27,8 @@ internal class RuleBuilderBase
 
   internal void AddProvides(string provides)
   {
-    if (string.IsNullOrWhiteSpace(provides)) throw new ArgumentException("Provides cannot be null or empty", nameof(provides));
+    if (string.IsNullOrWhiteSpace(provides))
+      throw new ArgumentException("Provides cannot be null or empty", nameof(provides));
     Provides.Add(provides);
   }
 }

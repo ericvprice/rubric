@@ -6,7 +6,7 @@ using Rubric.Rulesets;
 
 namespace Rubric.Engines.Implementation;
 
-/// <inheritdoc cref="IRuleEngine{T}"/>
+/// <inheritdoc cref="IRuleEngine{T}" />
 public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   where T : class
 {
@@ -49,10 +49,9 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
-  #endregion
+#endregion
 
-  #region Properties
-
+#region Properties
 
   /// <inheritdoc />
   public IEnumerable<IRule<T>> Rules

@@ -23,7 +23,7 @@ public class EngineContext : IEngineContext
   /// <inheritdoc />
   public T GetOrSet<T>(string key, Func<T> factory)
   {
-    if (factory == null) throw new ArgumentNullException(nameof(factory)); 
+    if (factory == null) throw new ArgumentNullException(nameof(factory));
     return (T)_stash.GetOrAdd(key, factory());
   }
 

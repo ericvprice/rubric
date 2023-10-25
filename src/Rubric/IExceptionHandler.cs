@@ -1,11 +1,10 @@
 namespace Rubric;
 
 /// <summary>
-///     Define a policy for handling unhandled exceptions.
+///   Define a policy for handling unhandled exceptions.
 /// </summary>
 public interface IExceptionHandler
 {
-
   /// <summary>
   ///   Handle an otherwise unhandled exception during an engine run.
   /// </summary>
@@ -16,5 +15,4 @@ public interface IExceptionHandler
   /// <param name="rule">The rule that generated the exception.</param>
   /// <returns>Whether the exception should be considered handled.</returns>
   bool HandleException(Exception e, IEngineContext context, object input, object output, object rule);
-
 }

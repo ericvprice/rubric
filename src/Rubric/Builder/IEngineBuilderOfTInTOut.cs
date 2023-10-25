@@ -10,9 +10,19 @@ namespace Rubric.Builder;
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
 public interface IEngineBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
+  /// <summary>
+  ///   The logger to use for this engine.
+  /// </summary>
+  ILogger Logger { get; }
+
+  /// <summary>
+  ///   The exception handler to use for this engine.
+  /// </summary>
+  IExceptionHandler ExceptionHandler { get; }
+
   /// <summary>
   ///   Begin building a preprocessing rule by name.
   /// </summary>
@@ -88,14 +98,4 @@ public interface IEngineBuilder<TIn, TOut>
   /// </summary>
   /// <returns>The built engine.</returns>
   IRuleEngine<TIn, TOut> Build();
-
-  /// <summary>
-  ///   The logger to use for this engine.
-  /// </summary>
-  ILogger Logger { get; }
-
-  /// <summary>
-  ///   The exception handler to use for this engine.
-  /// </summary>
-  IExceptionHandler ExceptionHandler { get; }
 }

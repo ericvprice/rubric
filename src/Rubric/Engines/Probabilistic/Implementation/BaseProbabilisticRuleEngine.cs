@@ -8,7 +8,7 @@ namespace Rubric.Engines.Probabilistic.Implementation;
 public abstract class BaseProbabilisticRuleEngine : BaseRuleEngine
 {
   /// <summary>
-  /// Random number source.
+  ///   Random number source.
   /// </summary>
   public Random Random { get; } = new((int)DateTime.Now.Ticks);
 }

@@ -5,7 +5,6 @@ namespace Rubric.Rulesets.Async;
 /// <inheritdoc />
 public class Ruleset<T> : IRuleset<T>
 {
-  
   private readonly List<IRule<T>> _rules = new();
 
   /// <inheritdoc />

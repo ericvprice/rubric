@@ -9,7 +9,7 @@ public class LambdaRule<T> : IRule<T>
   private readonly Action<IEngineContext, T> _action;
 
   private readonly Func<IEngineContext, T, bool> _predicate;
-  
+
   /// <summary>
   ///   Default constructor.
   /// </summary>

@@ -9,7 +9,6 @@ namespace Rubric.Rulesets.Async;
 /// <typeparam name="TOut">The output type.</typeparam>
 public interface IRuleset<TIn, TOut>
 {
-
   /// <summary>
   ///   The preprocessing rules in this ruleset.
   /// </summary>
@@ -63,5 +62,4 @@ public interface IRuleset<TIn, TOut>
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   void AddRules(IEnumerable<IRule<TIn, TOut>> rules);
-
 }

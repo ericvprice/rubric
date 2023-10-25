@@ -9,8 +9,17 @@ namespace Rubric.Builder.Probabilistic;
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IEngineBuilder<T>
-    where T : class
+  where T : class
 {
+  /// <summary>
+  ///   The logger to use for this engine.
+  /// </summary>
+  ILogger Logger { get; }
+
+  /// <summary>
+  ///   The exception handler to use for this engine.
+  /// </summary>
+  IExceptionHandler ExceptionHandler { get; }
 
   /// <summary>
   ///   Begin building a rule by name.
@@ -45,14 +54,4 @@ public interface IEngineBuilder<T>
   /// </summary>
   /// <returns>The built engine.</returns>
   IRuleEngine<T> Build();
-  
-  /// <summary>
-  ///   The logger to use for this engine.
-  /// </summary>
-  ILogger Logger { get; }
-
-  /// <summary>
-  ///   The exception handler to use for this engine.
-  /// </summary>
-  IExceptionHandler ExceptionHandler { get; }
 }

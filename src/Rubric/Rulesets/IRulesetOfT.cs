@@ -25,5 +25,4 @@ public interface IRuleset<T> where T : class
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   void AddRules(IEnumerable<IRule<T>> rules);
-
 }

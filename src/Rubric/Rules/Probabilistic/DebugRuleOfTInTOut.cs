@@ -12,6 +12,6 @@ public abstract class DebugRule<TIn, TOut> : Rule<TIn, TOut>
     #if DEBUG
         => 1;
     #else
-        => 0;
-    #endif
+    => 0;
+  #endif
 }

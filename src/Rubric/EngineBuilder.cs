@@ -9,7 +9,6 @@ namespace Rubric;
 /// </summary>
 public static class EngineBuilder
 {
-
   /// <summary>
   ///   Start building a synchronous engine for a single input type.
   /// </summary>
@@ -17,8 +16,8 @@ public static class EngineBuilder
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
   public static IEngineBuilder<T> ForInput<T>(ILogger logger = null)
-      where T : class
-      => new EngineBuilder<T>(logger);
+    where T : class
+    => new EngineBuilder<T>(logger);
 
   /// <summary>
   ///   Start building a synchronous engine for input and output types.
@@ -39,8 +38,8 @@ public static class EngineBuilder
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
   public static Builder.Async.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
-      where T : class
-      => new Builder.Async.Implementation.EngineBuilder<T>(logger);
+    where T : class
+    => new Builder.Async.Implementation.EngineBuilder<T>(logger);
 
   /// <summary>
   ///   Start building an asynchronous engine for input and output types.
@@ -50,8 +49,7 @@ public static class EngineBuilder
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
   public static Builder.Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
-          where TIn : class
-          where TOut : class
-          => new Builder.Async.Implementation.EngineBuilder<TIn, TOut>(logger);
-
+    where TIn : class
+    where TOut : class
+    => new Builder.Async.Implementation.EngineBuilder<TIn, TOut>(logger);
 }

@@ -62,9 +62,11 @@ public class ScriptedRule<T> : Async.IRule<T>
 
   /// <inheritdoc />
   public async Task Apply(IEngineContext context, T input, CancellationToken token)
-    => await (await _apply(new ScriptedRuleContext<T>(context, input, token), token).ConfigureAwait(false)).ConfigureAwait(false);
+    => await (await _apply(new ScriptedRuleContext<T>(context, input, token), token).ConfigureAwait(false))
+      .ConfigureAwait(false);
 
   /// <inheritdoc />
   public async Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token)
-    => await (await _doesApply(new ScriptedRuleContext<T>(context, input, token), token).ConfigureAwait(false)).ConfigureAwait(false);
+    => await (await _doesApply(new ScriptedRuleContext<T>(context, input, token), token).ConfigureAwait(false))
+      .ConfigureAwait(false);
 }

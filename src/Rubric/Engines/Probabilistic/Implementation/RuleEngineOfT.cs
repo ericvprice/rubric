@@ -6,18 +6,17 @@ using Rubric.Rulesets.Probabilistic;
 
 namespace Rubric.Engines.Probabilistic.Implementation;
 
-/// <inheritdoc cref="IRuleEngine{T}"/>
+/// <inheritdoc cref="IRuleEngine{T}" />
 public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
-    where T : class
+  where T : class
 {
-
-  #region Fields
+#region Fields
 
   private readonly IRule<T>[][] _rules;
 
-  #endregion
+#endregion
 
-  #region Constructors
+#region Constructors
 
   /// <summary>
   ///   Ruleset constructor.
@@ -28,35 +27,35 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   public RuleEngine(IRuleset<T> ruleset,
                     IExceptionHandler uncaughtExceptionHandler = null,
                     ILogger logger = null)
-      : this(ruleset?.Rules, uncaughtExceptionHandler, logger) { }
+    : this(ruleset?.Rules, uncaughtExceptionHandler, logger) { }
 
   /// <summary>
-  ///     Default public constructor.
+  ///   Default public constructor.
   /// </summary>
   /// <param name="rules">Collection of synchronous processing rules.</param>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger.</param>
   public RuleEngine(
-      IEnumerable<IRule<T>> rules,
-      IExceptionHandler exceptionHandler = null,
-      ILogger logger = null
+    IEnumerable<IRule<T>> rules,
+    IExceptionHandler exceptionHandler = null,
+    ILogger logger = null
   )
   {
     rules ??= Enumerable.Empty<IRule<T>>();
     _rules = rules.ResolveDependencies()
-                    .Select(e => e.ToArray())
-                    .ToArray();
+                  .Select(e => e.ToArray())
+                  .ToArray();
     Logger = logger ?? NullLogger.Instance;
     ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
-  #endregion
+#endregion
 
-  #region Properties
+#region Properties
 
   /// <inheritdoc />
   public IEnumerable<IRule<T>> Rules
-        => _rules.SelectMany(r => r);
+    => _rules.SelectMany(r => r);
 
   /// <inheritdoc />
   public override bool IsAsync => false;
@@ -67,30 +66,32 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   /// <inheritdoc />
   public override Type OutputType => typeof(T);
 
-  #endregion
+#endregion
 
-  #region Methods
+#region Methods
 
-  ///<inheritdoc/>
+  /// <inheritdoc />
   public void Apply(T input, IEngineContext context = null)
   {
     var ctx = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
+    {
       try
       {
         ApplyItem(input, ctx);
       }
       catch (EngineHaltException) { }
+    }
   }
 
-  ///<inheritdoc/>
+  /// <inheritdoc />
   public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
   {
-    if(inputs == null) throw new ArgumentNullException(nameof(inputs));
+    if (inputs == null) throw new ArgumentNullException(nameof(inputs));
     var ctx = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
+    {
       foreach (var input in inputs)
-      {
         try
         {
           ApplyItem(input, ctx);
@@ -99,12 +100,13 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
         {
           break;
         }
-      }
+    }
   }
 
   private void ApplyItem(T input, IEngineContext ctx)
   {
     using (Logger.BeginScope("Input", input))
+    {
       foreach (var set in _rules)
         foreach (var rule in set)
           try
@@ -115,8 +117,8 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
           {
             return;
           }
+    }
   }
 
-  #endregion
-
+#endregion
 }

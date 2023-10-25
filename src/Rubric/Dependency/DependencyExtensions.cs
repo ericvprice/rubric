@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Rubric.Dependency;
 
 /// <summary>
-///     Determine whether this object has any other dependencies.
+///   Determine whether this object has any other dependencies.
 /// </summary>
 #pragma warning disable IDE0079
 [SuppressMessage("ReSharper", "LoopCanBeConvertedToQuery")]
@@ -12,7 +12,6 @@ namespace Rubric.Dependency;
 #pragma warning restore IDE0079
 public static class DependencyExtensions
 {
-
   private static readonly ConcurrentDictionary<Type, string[]> _dependsCache = new();
 
   private static readonly ConcurrentDictionary<Type, string[]> _providesCache = new();
@@ -22,13 +21,13 @@ public static class DependencyExtensions
   /// </summary>
   /// <param name="type">The type to scan.</param>
   /// <returns>A list of required dependencies.</returns>
-  public static IEnumerable<string> GetDependencies(Type type) 
+  public static IEnumerable<string> GetDependencies(Type type)
     => _dependsCache.GetOrAdd(
-                      type,
-                      t => t.GetCustomAttributes(true)
-                            .OfType<DependsOnAttribute>()
-                            .Select(d => d.Name)
-                            .ToArray());
+      type,
+      t => t.GetCustomAttributes(true)
+            .OfType<DependsOnAttribute>()
+            .Select(d => d.Name)
+            .ToArray());
 
   /// <summary>
   ///   GetAs the list of provides attributes of a given type.
@@ -37,15 +36,16 @@ public static class DependencyExtensions
   /// <returns>A list of provided dependencies.</returns>
   public static IEnumerable<string> GetProvides(Type type)
     => _providesCache.GetOrAdd(
-                      type,
-                      t => t.GetCustomAttributes(true)
-                            .OfType<ProvidesAttribute>()
-                            .Select(d => d.Name)
-                            .Append(t.FullName)
-                            .ToArray());
+      type,
+      t => t.GetCustomAttributes(true)
+            .OfType<ProvidesAttribute>()
+            .Select(d => d.Name)
+            .Append(t.FullName)
+            .ToArray());
 
   /// <summary>
-  ///   Resolve a set of dependencies into a series of arrays.  Each element of the inner arrays are independent of the other elements, and only depend on elements
+  ///   Resolve a set of dependencies into a series of arrays.  Each element of the inner arrays are independent of the other
+  ///   elements, and only depend on elements
   ///   in previous arrays.
   /// </summary>
   /// <typeparam name="T">The dependency type.</typeparam>
@@ -54,7 +54,7 @@ public static class DependencyExtensions
   /// <exception cref="ArgumentNullException">Dependencies is null.</exception>
   /// <exception cref="DependencyException">An error occurs making it impossible to resolve the dependencies.</exception>
   public static IEnumerable<IEnumerable<T>> ResolveDependencies<T>(this IEnumerable<T> dependencies)
-      where T : class, IDependency
+    where T : class, IDependency
   {
     if (dependencies == null) throw new ArgumentNullException(nameof(dependencies));
     var depList = dependencies.ToList();
@@ -68,7 +68,7 @@ public static class DependencyExtensions
     var providerMap = depList.SelectMany(d => d.Provides)
                              .Distinct()
                              .ToDictionary(
-                                 p => p, p => depList.Where(d => d.Provides.Contains(p)).ToList());
+                               p => p, p => depList.Where(d => d.Provides.Contains(p)).ToList());
 
     var toReturn = new List<List<T>>();
 
@@ -85,8 +85,8 @@ public static class DependencyExtensions
     while (depList.Any())
     {
       var newlyResolvedDependencies =
-          depList.Where(d => depMap[d].All(d1 => resolvedDependencies.Contains(d1)))
-                 .ToList();
+        depList.Where(d => depMap[d].All(d1 => resolvedDependencies.Contains(d1)))
+               .ToList();
       //Uh oh, we hit a brick wall.
       //We know we have a closed set of dependencies from above, so
       //the only way this happens is if we have a circular dependency somewhere in the dependencies left.
@@ -114,7 +114,8 @@ public static class DependencyExtensions
     }
   }
 
-  private static void CheckForMissing<T>(IReadOnlyCollection<T> depList, IReadOnlyDictionary<string, List<T>> providerMap) where T : class, IDependency
+  private static void CheckForMissing<T>(IReadOnlyCollection<T> depList,
+                                         IReadOnlyDictionary<string, List<T>> providerMap) where T : class, IDependency
   {
     //Check that all dependencies have at least one provider.
     var depNotFound = depList.SelectMany(d => d.Dependencies)
@@ -128,9 +129,9 @@ public static class DependencyExtensions
       var oList = depList.Where(d => d.Dependencies.Contains(dep)).Select(d => d.Name).ToArray();
       errorList.Add($"{string.Join(", ", oList)} depend(s) on missing dependency {dep}.");
     }
+
     e.Details = errorList;
     throw e;
-
   }
 
   private static string FindCycle<T>(IEnumerable<T> deps) where T : class, IDependency
@@ -153,6 +154,7 @@ public static class DependencyExtensions
         var cycleList = newPath.GetRange(index, newPath.Count - 1).Select(d => d.Name);
         return $"Dependency cycle {string.Join("->", cycleList)}";
       }
+
       paths.AddRange(newPaths);
     }
   }

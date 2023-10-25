@@ -143,10 +143,9 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
-  #endregion
+#endregion
 
-  #region Properties
-
+#region Properties
 
   /// <inheritdoc />
   public bool IsParallel { get; internal set; }
@@ -399,16 +398,16 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <returns>An awaitable task.</returns>
   private Task ParallelizeInputs(IEngineContext ctx, IEnumerable<TIn> inputs, TOut o, CancellationToken t)
   {
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
-    t = cts.Token;
-    return Task.WhenAll(
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    var t2 = cts.Token;
+    var tasks =
       inputs.Select(
         i => Task.Run(async () =>
         {
           t.ThrowIfCancellationRequested();
           try
           {
-            await ApplyItemAsync(i, o, ctx, t).ConfigureAwait(false);
+            await ApplyItemAsync(i, o, ctx, t2).ConfigureAwait(false);
           }
           catch (ItemHaltException) { }
           catch (Exception)
@@ -416,7 +415,12 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
             cts.Cancel();
             throw;
           }
-        }, t)));
+        }, t2));
+    return Task.WhenAll(tasks)
+               .ContinueWith(_ => cts.Dispose(),
+                             t,
+                             TaskContinuationOptions.HideScheduler,
+                             TaskScheduler.Default);
   }
 
   /// <summary>
@@ -429,22 +433,27 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <returns>An awaitable task.</returns>
   private Task ParallelizePre(IEngineContext ctx, IEnumerable<IRule<TIn>> rules, TIn i, CancellationToken t)
   {
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
-    t = cts.Token;
-    return Task.WhenAll(
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    var t2 = cts.Token;
+    var tasks =
       rules.Select(
         r => Task.Run(async () =>
         {
           try
           {
-            await this.ApplyAsyncPreRule(ctx, r, i, t).ConfigureAwait(false);
+            await this.ApplyAsyncPreRule(ctx, r, i, t2).ConfigureAwait(false);
           }
           catch (Exception)
           {
             cts.Cancel();
             throw;
           }
-        }, t)));
+        }, t2));
+    return Task.WhenAll(tasks)
+               .ContinueWith(_ => cts.Dispose(),
+                             t,
+                             TaskContinuationOptions.HideScheduler,
+                             TaskScheduler.Default);
   }
 
   /// <summary>
@@ -458,22 +467,26 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <returns>An awaitable task.</returns>
   private Task Parallelize(IEngineContext ctx, IEnumerable<IRule<TIn, TOut>> rules, TIn i, TOut o, CancellationToken t)
   {
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
-    t = cts.Token;
-    return Task.WhenAll(
-      rules.Select(
-        r => Task.Run(async () =>
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    var t2 = cts.Token;
+    var tasks =
+      rules.Select(r => Task.Run(async () =>
+      {
+        try
         {
-          try
-          {
-            await this.ApplyAsyncRule(ctx, r, i, o, t).ConfigureAwait(false);
-          }
-          catch (Exception)
-          {
-            cts.Cancel();
-            throw;
-          }
-        }, t)));
+          await this.ApplyAsyncRule(ctx, r, i, o, t2).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+          cts.Cancel();
+          throw;
+        }
+      }, t2));
+    return Task.WhenAll(tasks)
+               .ContinueWith(_ => cts.Dispose(),
+                            t,
+                            TaskContinuationOptions.HideScheduler,
+                            TaskScheduler.Default);
   }
 
   /// <summary>
@@ -486,22 +499,27 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <returns>An awaitable task.</returns>
   private Task ParallelizePost(IEngineContext ctx, IEnumerable<IRule<TOut>> rules, TOut o, CancellationToken t)
   {
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
-    t = cts.Token;
-    return Task.WhenAll(
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    var t2 = cts.Token;
+    var tasks =
       rules.Select(
         r => Task.Run(async () =>
         {
           try
           {
-            await this.ApplyAsyncPreRule(ctx, r, o, t).ConfigureAwait(false);
+            await this.ApplyAsyncPreRule(ctx, r, o, t2).ConfigureAwait(false);
           }
           catch (Exception)
           {
             cts.Cancel();
             throw;
           }
-        }, t)));
+        }, t2));
+    return Task.WhenAll(tasks)
+               .ContinueWith(_ => cts.Dispose(),
+                             t,
+                             TaskContinuationOptions.HideScheduler,
+                             TaskScheduler.Default);
   }
 
 #endregion

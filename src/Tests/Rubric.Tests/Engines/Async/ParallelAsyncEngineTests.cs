@@ -2,10 +2,10 @@ using Rubric.Engines.Async;
 using Rubric.Engines.Async.Implementation;
 using Rubric.Rules.Async;
 using Rubric.Tests.TestRules.Async;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace Rubric.Tests.Engines.Async;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class ParallelAsyncEngineTests
 {
   [Fact]

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Rubric.Engines.Probabilistic.Async;
-using Rubric.Rules.Probabilistic.Async;
+using Rubric.Rules.Probabilistic;
 
 namespace Rubric.Builder.Probabilistic.Async;
 
@@ -10,9 +10,24 @@ namespace Rubric.Builder.Probabilistic.Async;
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
 public interface IEngineBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
+  /// <summary>
+  ///   The logger to use for this engine.
+  /// </summary>
+  /// e
+  ILogger Logger { get; }
+
+  /// <summary>
+  ///   Whether the engine should execute in parallel.
+  /// </summary>
+  bool IsParallel { get; }
+
+  /// <summary>
+  ///   The exception handler to use for this engine.
+  /// </summary>
+  IExceptionHandler ExceptionHandler { get; }
 
   /// <summary>
   ///   Start building a named preprocessing rule.
@@ -26,28 +41,28 @@ public interface IEngineBuilder<TIn, TOut>
   /// </summary>
   /// <param name="rule">The rule to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPreRule(Rules.Probabilistic.IRule<TIn> rule);
+  IEngineBuilder<TIn, TOut> WithPreRule(IRule<TIn> rule);
 
   /// <summary>
   ///   Add an async preprocessing rule to this engine.
   /// </summary>
   /// <param name="rule">The rule to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPreRule(IRule<TIn> rule);
+  IEngineBuilder<TIn, TOut> WithPreRule(Rules.Probabilistic.Async.IRule<TIn> rule);
 
   /// <summary>
   ///   Add multiple preprocessing rule to this engine.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<Rules.Probabilistic.IRule<TIn>> rules);
+  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<IRule<TIn>> rules);
 
   /// <summary>
   ///   Add multiple async preprocessing rule to this engine.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<IRule<TIn>> rules);
+  IEngineBuilder<TIn, TOut> WithPreRules(IEnumerable<Rules.Probabilistic.Async.IRule<TIn>> rules);
 
   /// <summary>
   ///   Start building a named rule.
@@ -61,28 +76,28 @@ public interface IEngineBuilder<TIn, TOut>
   /// </summary>
   /// <param name="rule">The rule to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithRule(IRule<TIn, TOut> rule);
+  IEngineBuilder<TIn, TOut> WithRule(Rules.Probabilistic.Async.IRule<TIn, TOut> rule);
 
   /// <summary>
   ///   Add a rule to this engine.
   /// </summary>
   /// <param name="rule">The rule to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithRule(Rules.Probabilistic.IRule<TIn, TOut> rule);
+  IEngineBuilder<TIn, TOut> WithRule(IRule<TIn, TOut> rule);
 
   /// <summary>
   ///   Add multiple rules to this engine.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithRules(IEnumerable<Rules.Probabilistic.IRule<TIn, TOut>> rules);
+  IEngineBuilder<TIn, TOut> WithRules(IEnumerable<IRule<TIn, TOut>> rules);
 
   /// <summary>
   ///   Add multiple async rules to this engine.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithRules(IEnumerable<IRule<TIn, TOut>> rules);
+  IEngineBuilder<TIn, TOut> WithRules(IEnumerable<Rules.Probabilistic.Async.IRule<TIn, TOut>> rules);
 
   /// <summary>
   ///   Starting building an async postprocessing rule by name.
@@ -96,28 +111,28 @@ public interface IEngineBuilder<TIn, TOut>
   /// </summary>
   /// <param name="rule">The rule to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPostRule(Rules.Probabilistic.IRule<TOut> rule);
+  IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
 
   /// <summary>
   ///   Add an async postprocessing rule to this engine.
   /// </summary>
   /// <param name="rule">The rule to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPostRule(IRule<TOut> rule);
+  IEngineBuilder<TIn, TOut> WithPostRule(Rules.Probabilistic.Async.IRule<TOut> rule);
 
   /// <summary>
   ///   Add multiple postprocessing rule to this engine.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<Rules.Probabilistic.IRule<TOut>> rules);
+  IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rules);
 
   /// <summary>
   ///   Add multiple async postprocessing rule to this engine.
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rules);
+  IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<Rules.Probabilistic.Async.IRule<TOut>> rules);
 
   /// <summary>
   ///   Set this engine to execute rules in parallel.
@@ -133,23 +148,8 @@ public interface IEngineBuilder<TIn, TOut>
   IEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler handler);
 
   /// <summary>
-  ///    Finish building the engine and return the result.
+  ///   Finish building the engine and return the result.
   /// </summary>
   /// <returns>The completed engine.</returns>
   IRuleEngine<TIn, TOut> Build();
-
-  /// <summary>
-  ///   The logger to use for this engine.
-  /// </summary>e
-  ILogger Logger { get; }
-
-  /// <summary>
-  ///   Whether the engine should execute in parallel.
-  /// </summary>
-  bool IsParallel { get; }
-
-  /// <summary>
-  ///   The exception handler to use for this engine.
-  /// </summary>
-  IExceptionHandler ExceptionHandler { get; }
 }

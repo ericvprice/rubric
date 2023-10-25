@@ -3,7 +3,7 @@ using Rubric.Dependency;
 namespace Rubric.Rules.Probabilistic;
 
 /// <summary>
-///    An fluent interface for rule building.
+///   An fluent interface for rule building.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRule<in T> : IDependency

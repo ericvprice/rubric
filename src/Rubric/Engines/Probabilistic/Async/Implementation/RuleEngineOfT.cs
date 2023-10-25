@@ -7,57 +7,57 @@ using Rubric.Rulesets.Probabilistic.Async;
 
 namespace Rubric.Engines.Probabilistic.Async.Implementation;
 
-/// <inheritdoc cref="IRuleEngine{T}"/>
+/// <inheritdoc cref="IRuleEngine{T}" />
 public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
-    where T : class
+  where T : class
 {
-
-  #region Fields
+#region Fields
 
   private readonly IRule<T>[][] _rules;
 
-  #endregion
+#endregion
 
-  #region Constructors
+#region Constructors
+
   /// <summary>
-  ///     Default public constructor.
+  ///   Default public constructor.
   /// </summary>
   /// <param name="rules">Collection of synchronous processing rules.</param>
   /// <param name="isParallel">Whether to execute rules in parallel.</param>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger.</param>
   public RuleEngine(IRuleset<T> rules,
-                      bool isParallel = false,
-                      IExceptionHandler exceptionHandler = null,
-                      ILogger logger = null)
-        : this(rules?.Rules, isParallel, exceptionHandler, logger) { }
+                    bool isParallel = false,
+                    IExceptionHandler exceptionHandler = null,
+                    ILogger logger = null)
+    : this(rules?.Rules, isParallel, exceptionHandler, logger) { }
 
   /// <summary>
-  ///     Default public constructor.
+  ///   Default public constructor.
   /// </summary>
   /// <param name="rules">Collection of synchronous processing rules.</param>
   /// <param name="isParallel">Whether to execute rules in parallel.</param>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger.</param>
   public RuleEngine(
-        IEnumerable<IRule<T>> rules,
-        bool isParallel = false,
-        IExceptionHandler exceptionHandler = null,
-        ILogger logger = null
-    )
+    IEnumerable<IRule<T>> rules,
+    bool isParallel = false,
+    IExceptionHandler exceptionHandler = null,
+    ILogger logger = null
+  )
   {
     rules ??= Enumerable.Empty<IRule<T>>();
     _rules = rules.ResolveDependencies()
-                    .Select(e => e.ToArray())
-                    .ToArray();
+                  .Select(e => e.ToArray())
+                  .ToArray();
     IsParallel = isParallel;
     Logger = logger ?? NullLogger.Instance;
     ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
-  #endregion
+#endregion
 
-  #region Properties
+#region Properties
 
   /// <inheritdoc />
   public bool IsParallel { get; }
@@ -74,9 +74,9 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   /// <inheritdoc />
   public IEnumerable<IRule<T>> Rules => _rules.SelectMany(r => r);
 
-  #endregion
+#endregion
 
-  #region Public Methods
+#region Public Methods
 
   /// <inheritdoc />
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
@@ -99,6 +99,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     if (inputs == null) throw new ArgumentNullException(nameof(inputs));
     context = Reset(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+    {
       try
       {
         if (parallelizeInputs)
@@ -107,6 +108,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
           await ApplyManySerialAsync(inputs, context, token).ConfigureAwait(false);
       }
       catch (EngineHaltException) { }
+    }
   }
 
   /// <inheritdoc />
@@ -117,23 +119,27 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   {
     context = Reset(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+    {
       try
       {
         await ApplyManyAsync(inputStream, context, token).ConfigureAwait(false);
       }
       catch (EngineHaltException) { }
+    }
   }
 
-  #endregion
+#endregion
 
-  #region Private Methods
+#region Private Methods
 
   private Task ApplyItemAsync(T input, IEngineContext context = null, CancellationToken token = default)
   {
     using (Logger.BeginScope("Input", input))
+    {
       return IsParallel
         ? ApplyParallel(context, input, token)
         : ApplySerial(context, input, token);
+    }
   }
 
   private async Task ApplySerial(IEngineContext ctx, T i, CancellationToken t)
@@ -164,15 +170,27 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
 
   private Task Parallelize(IEngineContext ctx, IEnumerable<IRule<T>> rules, T i, CancellationToken t)
   {
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
-    t = cts.Token;
-    return Task.WhenAll(
+    var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
+    var t2 = cts.Token;
+    var tasks =
       rules.Select(
         r => Task.Run(async () =>
         {
-          try { await this.ApplyAsyncPreRule(ctx, r, i, t).ConfigureAwait(false); }
-          catch (Exception) { cts.Cancel(); throw; }
-        }, t)));
+          try
+          {
+            await this.ApplyAsyncPreRule(ctx, r, i, t2).ConfigureAwait(false);
+          }
+          catch (Exception)
+          {
+            cts.Cancel();
+            throw;
+          }
+        }, t2));
+    return Task.WhenAll(tasks)
+               .ContinueWith(_ => cts.Dispose(),
+                             t,
+                             TaskContinuationOptions.HideScheduler,
+                             TaskScheduler.Default);
   }
 
   private IEngineContext Reset(IEngineContext context)
@@ -187,9 +205,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   private async Task ApplyManyAsync(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
     await foreach (var input in inputs.WithCancellation(t))
-    {
       await ApplyItemAsync(input, context, t).ConfigureAwait(false);
-    }
   }
 
   private async Task ApplyManySerialAsync(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
@@ -202,8 +218,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   }
 
   private Task ApplyManyParallelAsync(IEngineContext ctx, IEnumerable<T> inputs, CancellationToken t)
-      => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyItemAsync(i, ctx, t), t)));
+    => Task.WhenAll(inputs.Select(i => Task.Run(() => ApplyItemAsync(i, ctx, t), t)));
 
-  #endregion
-
+#endregion
 }

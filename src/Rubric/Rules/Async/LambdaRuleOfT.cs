@@ -7,7 +7,7 @@ public class LambdaRule<T> : IRule<T>
 
   private readonly Func<IEngineContext, T, CancellationToken, Task<bool>> _predicate = (_, _, _)
     => Task.FromResult(true);
-  
+
   /// <summary>
   ///   Default constructor.
   /// </summary>

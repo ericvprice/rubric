@@ -11,6 +11,6 @@ public abstract class DebugRule<T> : Rule<T>
     #if DEBUG
       => true;
     #else
-      => false;
-    #endif
+    => false;
+  #endif
 }

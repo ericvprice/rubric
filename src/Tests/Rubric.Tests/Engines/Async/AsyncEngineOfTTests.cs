@@ -6,10 +6,10 @@ using Rubric.Rules.Async;
 using TestDefaultPreRule = Rubric.Tests.TestRules.Async.TestDefaultPreRule;
 using TestExceptionPreRule = Rubric.Tests.TestRules.Async.TestExceptionPreRule;
 using TestPreRule = Rubric.Tests.TestRules.Async.TestPreRule;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace Rubric.Tests.Engines.Async;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class AsyncEngineOfTTests
 {
 

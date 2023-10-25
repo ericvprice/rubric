@@ -3,10 +3,10 @@ using Rubric.Engines.Probabilistic.Async.Implementation;
 using Rubric.Rulesets.Probabilistic.Async;
 using Rubric.Rules.Probabilistic.Async;
 using Rubric.Tests.TestRules.Probabilistic.Async;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace Rubric.Tests.Engines.Probabilistic.Async;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class EngineOfTTests
 {
 

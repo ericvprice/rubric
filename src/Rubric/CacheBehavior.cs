@@ -9,12 +9,14 @@ public enum CacheBehavior
   ///   Do not cache this predicate result.
   /// </summary>
   None,
+
   /// <summary>
   ///   Execute the predicate once per input object.
   /// </summary>
   PerInput,
+
   /// <summary>
-  /// .Execute the predicate only once per engine execution.
+  ///   .Execute the predicate only once per engine execution.
   /// </summary>
   PerExecution
 }

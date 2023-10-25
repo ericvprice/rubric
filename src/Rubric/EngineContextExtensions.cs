@@ -4,7 +4,6 @@ using Rubric.Engines;
 
 namespace Rubric;
 
-
 /// <summary>
 ///   Provide access to well-known engine context entries.
 /// </summary>

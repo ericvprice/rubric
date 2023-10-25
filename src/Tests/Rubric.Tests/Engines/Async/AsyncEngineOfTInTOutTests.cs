@@ -11,10 +11,10 @@ using TestExceptionRule = Rubric.Tests.TestRules.Async.TestExceptionRule;
 using TestPostRule = Rubric.Tests.TestRules.Async.TestPostRule;
 using TestPreRule = Rubric.Tests.TestRules.Async.TestPreRule;
 using TestRule = Rubric.Tests.TestRules.Async.TestRule;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace Rubric.Tests.Engines.Async;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 public class AsyncEngineOfTInTOutTests
 {
 

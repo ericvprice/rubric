@@ -14,5 +14,4 @@ public class NullRule<T> : Rule<T> where T : class
   /// <inheritdoc />
   public override Task<double> DoesApply(IEngineContext context, T input, CancellationToken token)
     => Task.FromResult(0D);
-
 }

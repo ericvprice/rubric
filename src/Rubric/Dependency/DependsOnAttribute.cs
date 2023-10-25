@@ -7,11 +7,6 @@ namespace Rubric.Dependency;
 public sealed class DependsOnAttribute : Attribute
 {
   /// <summary>
-  ///  The type specified, if any.
-  /// </summary>
-  public Type Type { get; }
-
-  /// <summary>
   ///   Construct a named dependency.
   /// </summary>
   /// <param name="name">The name.</param>
@@ -34,8 +29,12 @@ public sealed class DependsOnAttribute : Attribute
   }
 
   /// <summary>
+  ///   The type specified, if any.
+  /// </summary>
+  public Type Type { get; }
+
+  /// <summary>
   ///   The name of this dependency.
   /// </summary>
   public string Name { get; }
-
 }

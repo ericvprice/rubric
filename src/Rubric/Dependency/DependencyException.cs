@@ -5,11 +5,10 @@ namespace Rubric.Dependency;
 /// </summary>
 public class DependencyException : Exception
 {
-
   /// <summary>
   ///   Default constructor
   /// </summary>
-  public DependencyException() : base() { }
+  public DependencyException() { }
 
   /// <summary>
   ///   Message constructor.
@@ -22,7 +21,7 @@ public class DependencyException : Exception
   /// </summary>
   /// <param name="message">The message</param>
   /// <param name="innerException">The inner exception</param>
-  public DependencyException(string message, Exception innerException = null)  : base(message, innerException) { }
+  public DependencyException(string message, Exception innerException = null) : base(message, innerException) { }
 
   /// <summary>
   ///   A list of detailed error results.

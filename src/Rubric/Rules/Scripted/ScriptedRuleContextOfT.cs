@@ -11,7 +11,6 @@ namespace Rubric.Rules.Scripted;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class ScriptedRuleContext<T>
 {
-
   /// <summary>
   ///   Default constructor.
   /// </summary>
@@ -42,5 +41,4 @@ public class ScriptedRuleContext<T>
   /// </summary>
   /// <value>The execution token.</value>
   public CancellationToken Token { get; }
-
 }

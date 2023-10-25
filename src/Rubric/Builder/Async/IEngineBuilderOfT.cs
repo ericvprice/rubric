@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Rubric.Engines.Async;
+using Rubric.Rules;
 
 namespace Rubric.Builder.Async;
 
@@ -8,8 +9,22 @@ namespace Rubric.Builder.Async;
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IEngineBuilder<T>
-    where T : class
+  where T : class
 {
+  /// <summary>
+  ///   The logger to use for this engine.
+  /// </summary>
+  ILogger Logger { get; }
+
+  /// <summary>
+  ///   Whether the engine should execute in parallel.
+  /// </summary>
+  bool IsParallel { get; }
+
+  /// <summary>
+  ///   The exception handler to use for this engine.
+  /// </summary>
+  IExceptionHandler ExceptionHandler { get; }
 
   /// <summary>
   ///   Start building a named rule.
@@ -23,7 +38,7 @@ public interface IEngineBuilder<T>
   /// </summary>
   /// <param name="rule"></param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<T> WithRule(Rules.IRule<T> rule);
+  IEngineBuilder<T> WithRule(IRule<T> rule);
 
   /// <summary>
   ///   Add an asynchronous rule for this engine.
@@ -37,7 +52,7 @@ public interface IEngineBuilder<T>
   /// </summary>
   /// <param name="rules">The rules to add.</param>
   /// <returns>A fluent continuation.</returns>
-  IEngineBuilder<T> WithRules(IEnumerable<Rules.IRule<T>> rules);
+  IEngineBuilder<T> WithRules(IEnumerable<IRule<T>> rules);
 
   /// <summary>
   ///   Add multiple asynchronous rules to this engine.
@@ -64,19 +79,4 @@ public interface IEngineBuilder<T>
   /// </summary>
   /// <returns>The built engine.</returns>
   IRuleEngine<T> Build();
-
-  /// <summary>
-  ///   The logger to use for this engine.
-  /// </summary>
-  ILogger Logger { get; }
-
-  /// <summary>
-  ///   Whether the engine should execute in parallel.
-  /// </summary>
-  bool IsParallel { get; }
-
-  /// <summary>
-  ///   The exception handler to use for this engine.
-  /// </summary>
-  IExceptionHandler ExceptionHandler { get; }
 }

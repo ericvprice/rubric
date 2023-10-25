@@ -1,7 +1,7 @@
 namespace Rubric.Builder.Async;
 
 /// <summary>
-///    An fluent interface for rule building.
+///   A fluent interface for rule building.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
@@ -64,7 +64,6 @@ public interface IPreRuleBuilder<TIn, TOut>
   /// <param name="caching">The desired caching behavior</param>
   /// <returns>A fluent continuation.</returns>
   IPreRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching);
-
 
   /// <summary>
   ///   End this rule builder.

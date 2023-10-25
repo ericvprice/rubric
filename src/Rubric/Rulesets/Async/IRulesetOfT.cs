@@ -8,7 +8,6 @@ namespace Rubric.Rulesets.Async;
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRuleset<T>
 {
-
   /// <summary>
   ///   The rules in this ruleset.
   /// </summary>

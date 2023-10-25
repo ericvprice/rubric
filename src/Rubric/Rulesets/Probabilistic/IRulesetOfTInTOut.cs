@@ -9,7 +9,6 @@ namespace Rubric.Rulesets.Probabilistic;
 /// <typeparam name="TOut">The output type.</typeparam>
 public interface IRuleset<TIn, TOut>
 {
-
   /// <summary>
   ///   The preprocessing rules in this ruleset.
   /// </summary>
