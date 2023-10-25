@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Rubric.Engines.Async;
 
 namespace Rubric;
@@ -10,6 +11,10 @@ public static class EngineContextExtensions
   public const string TRACE_ID_KEY = "__TRACE_ID";
 
   public const string LAST_EXCEPTION_KEY = "__LAST_EXCEPTION";
+
+  public const string EXCEUTION_PREDICATE_CACHE_KEY = "__EX_PRED_CACHE";
+
+  public const string ITEM_PREDICATE_CACHE_KEY = "__EX_PRED_CACHE";
 
   /// <summary>
   ///     Get the currently execution id.
@@ -94,4 +99,9 @@ public static class EngineContextExtensions
   public static Type GetOutputType(this IEngineContext context)
       => context.GetEngine().OutputType;
 
+  public static ConcurrentDictionary<string, bool> GetItemPredicateCache(this IEngineContext context)
+    => context.GetOrSet<ConcurrentDictionary<string, bool>>(ITEM_PREDICATE_CACHE_KEY, () => new());
+
+  public static ConcurrentDictionary<string, bool> GetExecutionPredicateCache(this IEngineContext context)
+    => context.GetOrSet<ConcurrentDictionary<string, bool>>(ITEM_PREDICATE_CACHE_KEY, () => new ());
 }

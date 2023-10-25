@@ -39,4 +39,8 @@ public class AsyncRuleWrapper<TIn, TOut> : IRule<TIn, TOut>
 
   /// <inheritdoc />
   public IEnumerable<string> Provides => _syncRule.Provides;
+
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior => _syncRule.CacheBehavior;
+
 }

@@ -60,4 +60,14 @@ public abstract class BaseRuleEngine : IRuleEngine
                 }
         }
     }
+
+    internal IEngineContext SetupContext(IEngineContext ctx)
+    {
+      ctx ??= new EngineContext();
+      ctx[EngineContextExtensions.ENGINE_KEY] = this;
+      ctx[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
+      ctx.GetExecutionPredicateCache().Clear();
+      ctx.GetItemPredicateCache().Clear();
+      return ctx;
+    }
 }

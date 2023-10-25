@@ -39,6 +39,14 @@ public interface IRuleBuilder<T>
   IRuleBuilder<T> ThatProvides(string provides);
 
   /// <summary>
+  ///   Predicate result caching behavior.
+  /// </summary>
+  /// <param name="caching">The desired caching behavior</param>
+  /// <returns>A fluent continuation.</returns>
+  IRuleBuilder<T> WithCaching(PredicateCaching caching);
+
+
+  /// <summary>
   ///   End this rule builder.
   /// </summary>
   /// <returns>A fluent continuation for the parent engine.</returns>

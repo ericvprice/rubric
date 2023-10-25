@@ -15,6 +15,5 @@ public class NullRule<TIn, TOut> : Rule<TIn, TOut>
   public override void Apply(IEngineContext context, TIn input, TOut output) { }
 
   /// <inheritdoc />
-  public override bool DoesApply(IEngineContext context, TIn input, TOut output)
-    => false;
+  public override bool DoesApply(IEngineContext context, TIn input, TOut output) => false;
 }

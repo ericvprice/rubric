@@ -163,15 +163,6 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
       { }
     }
 
-    private IEngineContext SetupContext(IEngineContext ctx)
-    {
-        ctx ??= new EngineContext();
-        ctx[EngineContextExtensions.ENGINE_KEY] = this;
-        ctx[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
-        ctx[ProbabilisiticEngineExtensions.RANDOM_KEY] = Random;
-        return ctx;
-    }
-
     #endregion
 
 }

@@ -4,6 +4,12 @@ namespace Rubric.Rules.Probabilistic;
 
 public interface IRule<in T> : IDependency
 {
+  
+  /// <summary>
+  ///   Return the predicate result caching behavior for this rule.
+  /// </summary>
+  PredicateCaching CacheBehavior { get; }
+  
   /// <summary>
   ///   Return a value between 0 and 1 indicating the probability of this rule being applied
   ///   applies in the given context on the given input.

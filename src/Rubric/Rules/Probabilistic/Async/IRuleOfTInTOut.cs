@@ -9,6 +9,12 @@ namespace Rubric.Rules.Probabilistic.Async;
 /// <typeparam name="TOut">The output type.</typeparam>
 public interface IRule<in TIn, in TOut> : IDependency
 {
+
+  /// <summary>
+  ///   Return the predicate result caching behavior for this rule.
+  /// </summary>
+  PredicateCaching CacheBehavior { get; }
+  
   /// <summary>
   ///   Whether this rule should apply to the given input, output, and
   ///   execution context.

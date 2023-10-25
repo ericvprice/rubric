@@ -17,13 +17,13 @@ public class AsyncBuilderOfTInTOutTests
   [Fact]
   public void AsyncLambdaPreRuleConstructionThrowsOnNullOrEmpty()
   {
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
                 .WithPreRule((string)null)
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
@@ -57,28 +57,28 @@ public class AsyncBuilderOfTInTOutTests
                 .WithPreRule("foo")
                 .WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<bool>>)null)
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
                 .WithPreRule("foo")
                 .ThatProvides(null)
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
                 .WithPreRule("foo")
                 .ThatProvides("")
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
                 .WithPreRule("foo")
                 .ThatDependsOn("")
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
@@ -97,13 +97,13 @@ public class AsyncBuilderOfTInTOutTests
   [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
   {
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule((string)null)
-);
-    Assert.Throws<ArgumentNullException>(
+                .WithRule((string)null));
+
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("")
@@ -136,25 +136,25 @@ public class AsyncBuilderOfTInTOutTests
                 .WithRule("foo")
                 .WithPredicate((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task<bool>>)null)
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
                 .ThatProvides(null)
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
                 .ThatProvides("")
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
                 .ThatDependsOn("")
     );
-    Assert.Throws<ArgumentNullException>(
+    Assert.Throws<ArgumentException>(
         () =>
             EngineBuilder
                 .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")

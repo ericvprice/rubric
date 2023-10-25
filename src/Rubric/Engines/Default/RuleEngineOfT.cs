@@ -66,7 +66,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     ///<inheritdoc/>
     public void Apply(T input, IEngineContext context = null)
     {
-        var ctx = Reset(context);
+        var ctx = SetupContext(context);
         using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
             try
             {
@@ -78,7 +78,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     ///<inheritdoc/>
     public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
     {
-        var ctx = Reset(context);
+        var ctx = SetupContext(context);
         using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
             foreach (var input in inputs)
             {
@@ -107,15 +107,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
                         return;
                     }
     }
-
-    private IEngineContext Reset(IEngineContext ctx)
-    {
-        ctx ??= new EngineContext();
-        ctx[EngineContextExtensions.ENGINE_KEY] = this;
-        ctx[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
-        return ctx;
-    }
-
+  
     #endregion
 
 }

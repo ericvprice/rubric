@@ -38,7 +38,14 @@ public interface IPreRuleBuilder<TIn, TOut>
   /// <param name="provides">The provided dependency name.</param>
   /// <returns>A fluent continuation.</returns>
   IPreRuleBuilder<TIn, TOut> ThatProvides(string provides);
-  
+
+  /// <summary>
+  ///   Predicate result caching behavior.
+  /// </summary>
+  /// <param name="caching">The desired caching behavior</param>
+  /// <returns>A fluent continuation.</returns>
+  IPreRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching);
+
   /// <summary>
   ///   End this rule builder.
   /// </summary>

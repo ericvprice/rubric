@@ -12,7 +12,8 @@ public class LambdaRule<T> : IRule<T>
     Func<IEngineContext, T, CancellationToken, Task<double>> predicate,
     Func<IEngineContext, T, CancellationToken, Task> body,
     IEnumerable<string> dependencies = null,
-    IEnumerable<string> provides = null
+    IEnumerable<string> provides = null,
+    PredicateCaching cacheBehavior = default
   )
   {
     Name = string.IsNullOrEmpty(name) ? throw new ArgumentException(null, nameof(name)) : name;
@@ -20,6 +21,7 @@ public class LambdaRule<T> : IRule<T>
     _predicate = predicate ?? _predicate;
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
+    CacheBehavior = cacheBehavior;
   }
 
   /// <inheritdoc/>
@@ -30,6 +32,9 @@ public class LambdaRule<T> : IRule<T>
 
   /// <inheritdoc/>
   public IEnumerable<string> Provides { get; }
+  
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior { get; }
 
   /// <inheritdoc/>
   public Task Apply(IEngineContext context, T input, CancellationToken token)

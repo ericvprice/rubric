@@ -29,4 +29,6 @@ public interface IEngineContext
   /// </summary>
   /// <returns>A copy of the engine context.</returns>
   EngineContext Clone();
+
+  T GetOrSet<T>(string name, Func<T> factory);
 }

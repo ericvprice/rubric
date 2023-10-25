@@ -14,6 +14,5 @@ public class NullRule<T> : Rule<T>
   public override void Apply(IEngineContext context, T input) { }
 
   /// <inheritdoc />
-  public override bool DoesApply(IEngineContext context, T input)
-    => false;
+  public override bool DoesApply(IEngineContext context, T input) => false;
 }

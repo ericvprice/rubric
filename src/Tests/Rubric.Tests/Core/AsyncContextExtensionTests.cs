@@ -10,7 +10,7 @@ public class AsyncContextExtensionTests {
     IEngineContext ctx = new EngineContext();
     var logger = new TestLogger();
     var engine = new RuleEngine<TestInput, TestOutput>(new Ruleset<TestInput, TestOutput>(), false, null, logger);
-    engine.Reset(ctx);
+    engine.SetupContext(ctx);
     Assert.Equal(engine, ctx.GetEngine());
     Assert.Equal(engine, ctx.GetAsyncEngine<TestInput, TestOutput>());
     Assert.Equal(logger, ctx.GetLogger());

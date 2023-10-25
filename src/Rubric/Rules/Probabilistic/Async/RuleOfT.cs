@@ -10,6 +10,9 @@ namespace Rubric.Rules.Probabilistic.Async;
 public abstract class Rule<T> : BaseDependency, IRule<T>
 {
   /// <inheritdoc />
+  public virtual PredicateCaching CacheBehavior => GetType().GetPredicateCaching();
+
+  /// <inheritdoc />
   public override string Name => GetType().FullName;
 
   /// <inheritdoc />

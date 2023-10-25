@@ -30,7 +30,6 @@ public interface IPostRuleBuilder<TIn, TOut>
   /// </summary>
   /// <param name="type">The dependency type.</param>
   /// <returns>A fluent continuation.</returns>
-
   IPostRuleBuilder<TIn, TOut> ThatDependsOn(Type type);
   
   /// <summary>
@@ -39,6 +38,13 @@ public interface IPostRuleBuilder<TIn, TOut>
   /// <param name="provides">The provided dependency name.</param>
   /// <returns>A fluent continuation.</returns>
   IPostRuleBuilder<TIn, TOut> ThatProvides(string provides);
+
+  /// <summary>
+  ///   Predicate result caching behavior.
+  /// </summary>
+  /// <param name="caching">The desired caching behavior</param>
+  /// <returns>A fluent continuation.</returns>
+  IPostRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching);
 
   /// <summary>
   ///   End this rule builder.

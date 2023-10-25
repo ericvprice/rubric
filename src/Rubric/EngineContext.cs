@@ -1,8 +1,10 @@
+using System.Collections.Concurrent;
+
 namespace Rubric;
 
 public class EngineContext : IEngineContext
 {
-  private readonly Dictionary<string, object> _stash = new();
+  private readonly ConcurrentDictionary<string, object> _stash = new();
 
   /// <inheritdoc />
   public object this[string name]
@@ -17,8 +19,10 @@ public class EngineContext : IEngineContext
   /// <inheritdoc />
   public T Get<T>(string name) => (T)_stash[name];
 
+  public T GetOrSet<T>(string name, Func<T> factory) => (T) _stash.GetOrAdd(name, factory());
+
   /// <inheritdoc />
-  public void Remove(string name) => _stash.Remove(name);
+  public void Remove(string name) => _stash.Remove(name, out _);
 
   /// <inheritdoc />
   public EngineContext Clone()

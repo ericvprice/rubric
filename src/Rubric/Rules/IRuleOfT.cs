@@ -8,6 +8,12 @@ namespace Rubric.Rules;
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRule<in T> : IDependency
 {
+
+  /// <summary>
+  ///   Return the predicate result caching behavior for this rule.
+  /// </summary>
+  PredicateCaching CacheBehavior { get; }
+
   /// <summary>
   ///   Determine whether this rule applies in the given context on the given input.
   /// </summary>

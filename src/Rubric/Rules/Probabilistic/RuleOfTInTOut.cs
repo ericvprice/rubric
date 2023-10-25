@@ -10,6 +10,10 @@ namespace Rubric.Rules.Probabilistic;
 /// <typeparam name="TOut">The output type.</typeparam>
 public abstract class Rule<TIn, TOut> : BaseDependency, IRule<TIn, TOut>
 {
+  
+  /// <inheritdoc />
+  public virtual PredicateCaching CacheBehavior => GetType().GetPredicateCaching();
+
   /// <inheritdoc />
   public override string Name => GetType().FullName;
 

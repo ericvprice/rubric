@@ -15,7 +15,8 @@ public class LambdaRule<T> : IRule<T>
     Func<IEngineContext, T, bool> predicate,
     Action<IEngineContext, T> action,
     IEnumerable<string> dependencies = null,
-    IEnumerable<string> provides = null
+    IEnumerable<string> provides = null,
+    PredicateCaching cacheBehavior = default
   )
   {
     Name = string.IsNullOrWhiteSpace(name)
@@ -25,22 +26,26 @@ public class LambdaRule<T> : IRule<T>
     _action = action ?? throw new ArgumentNullException(nameof(action));
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
+    CacheBehavior = cacheBehavior;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public string Name { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Dependencies { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Provides { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior { get; }
+
+  /// <inheritdoc />
   public void Apply(IEngineContext context, T input)
     => _action(context, input);
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public bool DoesApply(IEngineContext context, T input)
     => _predicate(context, input);
 }

@@ -21,7 +21,8 @@ public class ScriptedRule<T> : Async.IRule<T>
     string script,
     ScriptOptions options = null,
     IEnumerable<string> dependsOn = null,
-    IEnumerable<string> provides = null
+    IEnumerable<string> provides = null,
+    PredicateCaching cacheBehavior = default
   )
   {
     Name = name;
@@ -35,6 +36,7 @@ public class ScriptedRule<T> : Async.IRule<T>
                          .CreateDelegate();
     _apply = baseCode.ContinueWith<Task>(APPLY_TRAILER)
                      .CreateDelegate();
+    CacheBehavior = cacheBehavior;
   }
 
   /// <inheritdoc/>
@@ -45,6 +47,9 @@ public class ScriptedRule<T> : Async.IRule<T>
 
   /// <inheritdoc/>
   public string Name { get; }
+
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior { get; }
 
   /// <inheritdoc/>
   public async Task Apply(IEngineContext context, T input, CancellationToken t)

@@ -30,6 +30,8 @@ public class AsyncRuleWrapper<TIn, TOut> : IRule<TIn, TOut>
     return Task.FromResult(_syncRule.DoesApply(context, input, output));
   }
 
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior => _syncRule.CacheBehavior;
 
   /// <inheritdoc />
   public string Name => _syncRule.Name + " (wrapped async)";

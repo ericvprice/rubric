@@ -23,6 +23,9 @@ public class AsyncRuleWrapper<T> : IRule<T>
   }
 
   /// <inheritdoc />
+  public PredicateCaching CacheBehavior => _syncRule.CacheBehavior;
+
+  /// <inheritdoc />
   public Task<bool> DoesApply(IEngineContext context, T input, CancellationToken token)
     => Task.FromResult(_syncRule.DoesApply(context, input));
 
@@ -34,4 +37,6 @@ public class AsyncRuleWrapper<T> : IRule<T>
 
   /// <inheritdoc />
   public IEnumerable<string> Provides => _syncRule.Provides;
+
+
 }

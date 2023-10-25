@@ -176,7 +176,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
       IEngineContext context = null,
       CancellationToken token = default)
     {
-        context = Reset(context);
+        context = SetupContext(context);
         using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
             try
             {
@@ -194,7 +194,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
       IEngineContext context = null,
       CancellationToken token = default)
     {
-        context = Reset(context);
+        context = SetupContext(context);
         using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
             try
             {
@@ -212,7 +212,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
       IEngineContext context,
       CancellationToken token = default)
     {
-        context = Reset(context);
+        context = SetupContext(context);
         using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
             try
             {
@@ -228,7 +228,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
       IEngineContext context,
       CancellationToken token = default)
     {
-        context = Reset(context);
+        context = SetupContext(context);
         using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
             try
             {
@@ -464,12 +464,5 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
 
     #endregion
 
-    internal IEngineContext Reset(IEngineContext context)
-    {
-        context ??= new EngineContext();
-        context[EngineContextExtensions.ENGINE_KEY] = this;
-        context[EngineContextExtensions.TRACE_ID_KEY] = Guid.NewGuid().ToString();
-        return context;
-    }
 
 }

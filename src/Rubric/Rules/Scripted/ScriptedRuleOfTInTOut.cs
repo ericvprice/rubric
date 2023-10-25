@@ -24,7 +24,8 @@ public class ScriptedRule<TIn, TOut> : Async.IRule<TIn, TOut>
     string script,
     ScriptOptions options = null,
     string[] dependsOn = null,
-    string[] provides = null)
+    string[] provides = null,
+    PredicateCaching cacheBehavior = default)
   {
     Dependencies = dependsOn ?? new string[] { };
     Provides = provides ?? new string[] { };
@@ -37,6 +38,7 @@ public class ScriptedRule<TIn, TOut> : Async.IRule<TIn, TOut>
                            .CreateDelegate();
     _apply = baseScript.ContinueWith<Task>(APPLY_TRAILER)
                        .CreateDelegate();
+    CacheBehavior = cacheBehavior;
   }
 
   /// <inheritdoc />
@@ -47,6 +49,9 @@ public class ScriptedRule<TIn, TOut> : Async.IRule<TIn, TOut>
 
   /// <inheritdoc />
   public string Name { get; }
+
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior { get; }
 
   /// <inheritdoc />
   public async Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken t)

@@ -7,5 +7,6 @@ namespace Rubric.Rules;
 /// <typeparam name="TOut">The engine output.</typeparam>
 public abstract class DefaultRule<TIn, TOut> : Rule<TIn, TOut>
 {
+  ///<inheritdoc />
   public override bool DoesApply(IEngineContext context, TIn input, TOut output) => true;
 }

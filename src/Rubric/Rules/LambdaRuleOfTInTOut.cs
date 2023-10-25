@@ -18,7 +18,8 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
       Func<IEngineContext, TIn, TOut, bool> predicate,
       Action<IEngineContext, TIn, TOut> action,
       IEnumerable<string> dependencies = null,
-      IEnumerable<string> provides = null
+      IEnumerable<string> provides = null,
+      PredicateCaching caching = default
   )
   {
     Name = IsNullOrWhiteSpace(name)
@@ -28,6 +29,7 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
     _action = action ?? throw new ArgumentNullException(nameof(action));
     Dependencies = dependencies?.ToArray() ?? Array.Empty<string>();
     Provides = provides?.ToArray() ?? Array.Empty<string>();
+    CacheBehavior = caching;
   }
 
   /// <inheritdoc/>
@@ -39,6 +41,9 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
   /// <inheritdoc/>
   public IEnumerable<string> Provides { get; }
 
+  /// <inheritdoc />
+  public PredicateCaching CacheBehavior { get; }
+  
   /// <inheritdoc/>
   public void Apply(IEngineContext context, TIn input, TOut output)
       => _action(context, input, output);
