@@ -3,17 +3,16 @@
 namespace Rubric.Rules;
 
 /// <summary>
-///     Abstract rule suitable for extension using attributes
-///     for declarative dependencies.
+///   Abstract rule suitable for extension using attributes
+///   for declarative dependencies.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
 public abstract class Rule<TIn, TOut> : BaseDependency, IRule<TIn, TOut>
 {
-  
   /// <inheritdoc />
   public virtual PredicateCaching CacheBehavior => GetType().GetPredicateCaching();
-  
+
   /// <inheritdoc />
   public override string Name => GetType().FullName;
 

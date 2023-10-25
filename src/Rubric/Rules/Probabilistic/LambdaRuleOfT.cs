@@ -29,23 +29,23 @@ public class LambdaRule<T> : IRule<T>
     CacheBehavior = cacheBehavior;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public string Name { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Dependencies { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Provides { get; }
-  
+
   /// <inheritdoc />
   public PredicateCaching CacheBehavior { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public void Apply(IEngineContext context, T input)
     => _action(context, input);
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public double DoesApply(IEngineContext context, T input)
     => _predicate(context, input);
 }

@@ -1,7 +1,7 @@
 namespace Rubric.Rules;
 
 /// <summary>
-///     A rule that is always executed.
+///   A rule that is always executed.
 /// </summary>
 /// <typeparam name="TIn">The engine input.</typeparam>
 /// <typeparam name="TOut">The engine output.</typeparam>

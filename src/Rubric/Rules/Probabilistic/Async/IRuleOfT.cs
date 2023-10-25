@@ -8,7 +8,6 @@ namespace Rubric.Rules.Probabilistic.Async;
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRule<in T> : IDependency
 {
-
   /// <summary>
   ///   Return the predicate result caching behavior for this rule.
   /// </summary>

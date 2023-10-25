@@ -3,8 +3,8 @@ using Rubric.Dependency;
 namespace Rubric.Rules.Probabilistic.Async;
 
 /// <summary>
-///     Abstract rule suitable for extension using attributes
-///     for declarative dependencies.
+///   Abstract rule suitable for extension using attributes
+///   for declarative dependencies.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public abstract class Rule<T> : BaseDependency, IRule<T>

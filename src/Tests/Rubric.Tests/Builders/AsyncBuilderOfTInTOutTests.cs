@@ -18,153 +18,153 @@ public class AsyncBuilderOfTInTOutTests
   public void AsyncLambdaPreRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule((string)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule((string)null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("")
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("")
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, Task>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, CancellationToken, Task>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, CancellationToken, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, Task<bool>>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<bool>>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<bool>>)null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatProvides(null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatProvides(null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatProvides("")
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatProvides("")
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatDependsOn("")
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatDependsOn("")
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatDependsOn((string)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatDependsOn((string)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatDependsOn((Type)null)
-);
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatDependsOn((Type)null)
+    );
   }
 
   [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule((string)null));
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule((string)null));
 
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("")
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("")
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, TestOutput, Task>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, TestOutput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, TestOutput, Task<bool>>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, TestOutput, Task<bool>>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task<bool>>)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task<bool>>)null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatProvides(null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatProvides(null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatProvides("")
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatProvides("")
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatDependsOn("")
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatDependsOn("")
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatDependsOn((string)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatDependsOn((string)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            EngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo").ThatDependsOn((Type)null)
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo").ThatDependsOn((Type)null)
     );
   }
 
@@ -248,71 +248,71 @@ public class AsyncBuilderOfTInTOutTests
   public void LambdaPostRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(() =>
-         EngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule((string)null)
+                                       EngineBuilder
+                                         .ForInputAndOutputAsync<TestInput, TestOutput>()
+                                         .WithPostRule((string)null)
     );
     Assert.Throws<ArgumentException>(() =>
-         EngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>().WithPostRule("")
+                                       EngineBuilder
+                                         .ForInputAndOutputAsync<TestInput, TestOutput>().WithPostRule("")
     );
     Assert.Throws<ArgumentNullException>(
       () =>
-         EngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithAction((Func<IEngineContext, TestOutput, Task>)null)
-    );
-    Assert.Throws<ArgumentNullException>(
-        () =>
-          EngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithAction((Func<IEngineContext, TestOutput, CancellationToken, Task>)null)
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithAction((Func<IEngineContext, TestOutput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>
-         EngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithPredicate((Func<IEngineContext, TestOutput, CancellationToken, Task<bool>>)null)
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithAction((Func<IEngineContext, TestOutput, CancellationToken, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>
-         EngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithPredicate((Func<IEngineContext, TestOutput, Task<bool>>)null)
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithPredicate((Func<IEngineContext, TestOutput, CancellationToken, Task<bool>>)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+      () =>
+        EngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithPredicate((Func<IEngineContext, TestOutput, Task<bool>>)null)
     );
     Assert.Throws<ArgumentException>(
       () =>
         EngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatProvides(null)
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatProvides(null)
     );
     Assert.Throws<ArgumentException>(
       () =>
         EngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatProvides("")
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatProvides("")
     );
     Assert.Throws<ArgumentException>(
       () =>
         EngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatDependsOn("")
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatDependsOn("")
     );
     Assert.Throws<ArgumentException>(
       () =>
         EngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatDependsOn((string)null)
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatDependsOn((string)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>
         EngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatDependsOn((Type)null)
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatDependsOn((Type)null)
     );
   }
 
@@ -402,9 +402,9 @@ public class AsyncBuilderOfTInTOutTests
   public async Task RuleWrappingMultiple()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRules(new [] {new TestRules.TestPreRule(true)})
-                              .WithRules(new [] {new TestRules.TestRule(true)})
-                              .WithPostRules(new [] {new TestRules.TestPostRule(true)})
+                              .WithPreRules(new[] { new TestRules.TestPreRule(true) })
+                              .WithRules(new[] { new TestRules.TestRule(true) })
+                              .WithPostRules(new[] { new TestRules.TestPostRule(true) })
                               .Build();
     Assert.Single(engine.PreRules);
     var preRule = engine.PreRules.ElementAt(0);
@@ -424,9 +424,12 @@ public class AsyncBuilderOfTInTOutTests
   public void TypeAttributeDependency()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRules(new IRule<TestInput>[] { new DepTestAttrPreRule(true), new DepTestAttrPreRule2(true)})
-                              .WithRules(new IRule<TestInput, TestOutput>[] { new DepTestAttrRule(true), new DepTestAttrRule2(true) })
-                              .WithPostRules(new IRule<TestOutput>[] { new DepTestAttrPostRule(true), new DepTestAttrPostRule2(true)})
+                              .WithPreRules(new IRule<TestInput>[]
+                                              { new DepTestAttrPreRule(true), new DepTestAttrPreRule2(true) })
+                              .WithRules(new IRule<TestInput, TestOutput>[]
+                                           { new DepTestAttrRule(true), new DepTestAttrRule2(true) })
+                              .WithPostRules(new IRule<TestOutput>[]
+                                               { new DepTestAttrPostRule(true), new DepTestAttrPostRule2(true) })
                               .Build();
     Assert.NotNull(engine);
   }
@@ -435,9 +438,18 @@ public class AsyncBuilderOfTInTOutTests
   public void TypeAttributeDependencyWrapped()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRules(new [] { new TestRules.DepTestAttrPreRule(true), new TestRules.DepTestAttrPreRule2(true) })
-                              .WithRules(new [] { new TestRules.DepTestAttrRule(true), new TestRules.DepTestAttrRule2(true) })
-                              .WithPostRules(new [] { new TestRules.DepTestAttrPostRule(true), new TestRules.DepTestAttrPostRule2(true) })
+                              .WithPreRules(new[]
+                              {
+                                new TestRules.DepTestAttrPreRule(true), new TestRules.DepTestAttrPreRule2(true)
+                              })
+                              .WithRules(new[]
+                              {
+                                new TestRules.DepTestAttrRule(true), new TestRules.DepTestAttrRule2(true)
+                              })
+                              .WithPostRules(new[]
+                              {
+                                new TestRules.DepTestAttrPostRule(true), new TestRules.DepTestAttrPostRule2(true)
+                              })
                               .Build();
     Assert.NotNull(engine);
   }

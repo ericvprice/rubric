@@ -9,7 +9,6 @@ namespace Rubric.Rules.Async;
 /// <typeparam name="TOut">The engine output type.</typeparam>
 public abstract class Rule<TIn, TOut> : BaseDependency, IRule<TIn, TOut>
 {
-
   /// <inheritdoc />
   public virtual PredicateCaching CacheBehavior => GetType().GetPredicateCaching();
 

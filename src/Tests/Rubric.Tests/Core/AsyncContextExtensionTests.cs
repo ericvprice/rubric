@@ -1,9 +1,10 @@
-﻿using Rubric.Rulesets.Async;
-using Rubric.Engines.Async.Default;
+﻿using Rubric.Engines.Async.Default;
+using Rubric.Rulesets.Async;
 
 namespace Rubric.Tests.Core;
 
-public class AsyncContextExtensionTests { 
+public class AsyncContextExtensionTests
+{
   [Fact]
   public void AsycContextExtensions()
   {

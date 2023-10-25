@@ -7,11 +7,10 @@ using Rubric.Rulesets;
 namespace Rubric.Engines.Default;
 
 public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
-
-  #region Fields
+#region Fields
 
   private readonly IRule<TOut>[][] _postprocessingRules;
 
@@ -19,12 +18,12 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
 
   private readonly IRule<TIn, TOut>[][] _rules;
 
-  #endregion
+#endregion
 
-  #region Constructors
+#region Constructors
 
   /// <summary>
-  ///     Construct a rule engine from a ruleset.
+  ///   Construct a rule engine from a ruleset.
   /// </summary>
   /// <param name="ruleset">A collection of various rules</param>
   /// <param name="exceptionHandler">An optional exception handler.</param>
@@ -32,10 +31,10 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public RuleEngine(IRuleset<TIn, TOut> ruleset,
                     IExceptionHandler exceptionHandler = null,
                     ILogger logger = null)
-      : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, exceptionHandler, logger) { }
+    : this(ruleset.PreRules, ruleset.Rules, ruleset.PostRules, exceptionHandler, logger) { }
 
   /// <summary>
-  ///     Default public constructor.
+  ///   Default public constructor.
   /// </summary>
   /// <param name="preprocessingRules">Collection of synchronous preprocessing rules.</param>
   /// <param name="rules">Collection of synchronous processing rules.</param>
@@ -43,47 +42,47 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <param name="exceptionHandler">An optional exception handler.</param>
   /// <param name="logger">An optional logger.</param>
   public RuleEngine(
-      IEnumerable<IRule<TIn>> preprocessingRules,
-      IEnumerable<IRule<TIn, TOut>> rules,
-      IEnumerable<IRule<TOut>> postprocessingRules,
-      IExceptionHandler exceptionHandler = null,
-      ILogger logger = null
+    IEnumerable<IRule<TIn>> preprocessingRules,
+    IEnumerable<IRule<TIn, TOut>> rules,
+    IEnumerable<IRule<TOut>> postprocessingRules,
+    IExceptionHandler exceptionHandler = null,
+    ILogger logger = null
   )
   {
     preprocessingRules ??= Enumerable.Empty<IRule<TIn>>();
     _preprocessingRules =
-        preprocessingRules.ResolveDependencies()
-                          .Select(e => e.ToArray())
-                          .ToArray();
+      preprocessingRules.ResolveDependencies()
+                        .Select(e => e.ToArray())
+                        .ToArray();
     postprocessingRules ??= Enumerable.Empty<IRule<TOut>>();
     _postprocessingRules
-        = postprocessingRules.ResolveDependencies()
-                             .Select(e => e.ToArray())
-                             .ToArray();
+      = postprocessingRules.ResolveDependencies()
+                           .Select(e => e.ToArray())
+                           .ToArray();
     rules ??= Enumerable.Empty<IRule<TIn, TOut>>();
     _rules
-        = rules.ResolveDependencies()
-               .Select(e => e.ToArray())
-               .ToArray();
+      = rules.ResolveDependencies()
+             .Select(e => e.ToArray())
+             .ToArray();
     ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
     Logger = logger ?? NullLogger.Instance;
   }
 
-  #endregion
+#endregion
 
-  #region Properties
+#region Properties
 
   /// <inheritdoc />
   public IEnumerable<IRule<TIn>> PreRules
-      => _preprocessingRules.SelectMany(r => r);
+    => _preprocessingRules.SelectMany(r => r);
 
   /// <inheritdoc />
   public IEnumerable<IRule<TIn, TOut>> Rules
-      => _rules.SelectMany(r => r);
+    => _rules.SelectMany(r => r);
 
   /// <inheritdoc />
   public IEnumerable<IRule<TOut>> PostRules
-      => _postprocessingRules.SelectMany(r => r);
+    => _postprocessingRules.SelectMany(r => r);
 
   /// <inheritdoc />
   public override bool IsAsync => false;
@@ -94,48 +93,49 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <inheritdoc />
   public override Type OutputType => typeof(TOut);
 
-  #endregion
+#endregion
 
-  #region Public Methods
+#region Public Methods
 
-  ///<inheritdoc/>
+  /// <inheritdoc />
   public void Apply(TIn input, TOut output, IEngineContext context = null)
   {
     context = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
+    {
       try
       {
         ApplyItem(input, output, context);
         ApplyPostRules(output, context);
       }
-      catch (EngineHaltException)
-      {
-      }
+      catch (EngineHaltException) { }
+    }
   }
 
-  ///<inheritdoc/>
+  /// <inheritdoc />
   public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
   {
     var ctx = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
+    {
       try
       {
         foreach (var input in inputs)
           ApplyItem(input, output, ctx);
         ApplyPostRules(output, ctx);
       }
-      catch (EngineHaltException)
-      {
-      }
+      catch (EngineHaltException) { }
+    }
   }
 
-  #endregion
+#endregion
 
-  #region Nonpublic Methods
+#region Nonpublic Methods
 
   private void ApplyItem(TIn input, TOut output, IEngineContext ctx)
   {
     using (Logger.BeginScope("Input", input))
+    {
       try
       {
         foreach (var set in _preprocessingRules)
@@ -145,9 +145,8 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           foreach (var rule in set)
             this.ApplyRule(ctx, rule, input, output);
       }
-      catch (ItemHaltException)
-      {
-      }
+      catch (ItemHaltException) { }
+    }
   }
 
   private void ApplyPostRules(TOut output, IEngineContext ctx)
@@ -164,6 +163,5 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
   }
 
-    #endregion
-
-  }
+#endregion
+}

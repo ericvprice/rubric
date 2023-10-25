@@ -1,8 +1,8 @@
 namespace Rubric.Builder;
 
 public interface IPostRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   /// <summary>
   ///   Set the predicate function for this rule.
@@ -31,7 +31,7 @@ public interface IPostRuleBuilder<TIn, TOut>
   /// <param name="type">The dependency type.</param>
   /// <returns>A fluent continuation.</returns>
   IPostRuleBuilder<TIn, TOut> ThatDependsOn(Type type);
-  
+
   /// <summary>
   ///   Add a provided dependency by this rule.
   /// </summary>

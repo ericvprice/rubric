@@ -1,8 +1,8 @@
 namespace Rubric.Builder.Probabilistic.Async;
 
 public interface IPreRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   /// <summary>
   ///   Set the predicate function for this rule.

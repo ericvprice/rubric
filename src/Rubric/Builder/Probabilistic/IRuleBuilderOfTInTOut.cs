@@ -1,8 +1,8 @@
 namespace Rubric.Builder.Probabilistic;
 
 public interface IRuleBuilder<TIn, TOut>
-     where TIn : class
-     where TOut : class
+  where TIn : class
+  where TOut : class
 {
   /// <summary>
   ///   Set the predicate function for this rule.
@@ -38,7 +38,7 @@ public interface IRuleBuilder<TIn, TOut>
   /// <param name="provides">The provided dependency name.</param>
   /// <returns>A fluent continuation.</returns>
   IRuleBuilder<TIn, TOut> ThatProvides(string provides);
-  
+
   /// <summary>
   ///   Predicate result caching behavior.
   /// </summary>

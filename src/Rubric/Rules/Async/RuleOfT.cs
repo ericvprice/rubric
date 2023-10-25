@@ -9,7 +9,6 @@ namespace Rubric.Rules.Async;
 public abstract class Rule<T> : BaseDependency, IRule<T>
   where T : class
 {
-
   /// <inheritdoc />
   public virtual PredicateCaching CacheBehavior => GetType().GetPredicateCaching();
 

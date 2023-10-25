@@ -17,153 +17,153 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public void AsyncLambdaPreRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule((string)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule((string)null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("")
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("")
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, Task>)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, CancellationToken, Task>)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, CancellationToken, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, Task<double>>)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, Task<double>>)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<double>>)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, CancellationToken, Task<double>>)null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatProvides(null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatProvides(null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatProvides("")
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatProvides("")
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatDependsOn("")
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatDependsOn("")
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatDependsOn((string)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatDependsOn((string)null)
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithPreRule("foo")
-                .ThatDependsOn((Type)null)
-);
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPreRule("foo")
+          .ThatDependsOn((Type)null)
+    );
   }
 
   [Fact]
   public void AsyncLambdaRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule((string)null)
-);
-    Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("")
-    );
-    Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, TestOutput, Task>)null)
-    );
-    Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithAction((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task>)null)
-    );
-    Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, TestOutput, Task<double>>)null)
-    );
-    Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo")
-                .WithPredicate((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task<double>>)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule((string)null)
     );
     Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatProvides(null)
-    );
-    Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatProvides("")
-    );
-    Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatDependsOn("")
-    );
-    Assert.Throws<ArgumentException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
-                .ThatDependsOn((string)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("")
     );
     Assert.Throws<ArgumentNullException>(
-        () =>
-            ProbabilisticEngineBuilder
-                .ForInputAndOutputAsync<TestInput, TestOutput>()
-                .WithRule("foo").ThatDependsOn((Type)null)
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, TestOutput, Task>)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithAction((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task>)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, TestOutput, Task<double>>)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo")
+          .WithPredicate((Func<IEngineContext, TestInput, TestOutput, CancellationToken, Task<double>>)null)
+    );
+    Assert.Throws<ArgumentException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatProvides(null)
+    );
+    Assert.Throws<ArgumentException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatProvides("")
+    );
+    Assert.Throws<ArgumentException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatDependsOn("")
+    );
+    Assert.Throws<ArgumentException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>().WithRule("foo")
+          .ThatDependsOn((string)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithRule("foo").ThatDependsOn((Type)null)
     );
   }
 
@@ -171,7 +171,7 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public async Task EmptyEngineConstruction()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .Build();
+                                           .Build();
     Assert.NotNull(engine);
     var input = new TestInput();
     var output = new TestOutput();
@@ -184,7 +184,7 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   {
     var logger = new TestLogger();
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>(logger)
-                              .Build();
+                                           .Build();
     Assert.NotNull(engine);
     Assert.Equal(logger, engine.Logger);
     var input = new TestInput();
@@ -198,12 +198,12 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   {
     var logger = new TestLogger();
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>(logger)
-                              .WithPreRule(new TestDefaultPreRule())
-                              .WithRule(new TestDefaultRule())
-                              .WithPostRule(new TestDefaultPostRule())
-                              .WithExceptionHandler(ExceptionHandlers.Ignore)
-                              .AsParallel()
-                              .Build();
+                                           .WithPreRule(new TestDefaultPreRule())
+                                           .WithRule(new TestDefaultRule())
+                                           .WithPostRule(new TestDefaultPostRule())
+                                           .WithExceptionHandler(ExceptionHandlers.Ignore)
+                                           .AsParallel()
+                                           .Build();
     Assert.NotNull(engine);
     Assert.Equal(logger, engine.Logger);
     Assert.Single(engine.PreRules);
@@ -217,19 +217,19 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public async Task LambdaPostRuleConstruction()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPostRule(new TestPostRule(1D))
-                              .WithPostRule("test")
-                              .WithPredicate((_, _) => Task.FromResult(1D))
-                              .WithAction((_, _) => Task.CompletedTask)
-                              .ThatProvides("foo")
-                              .EndRule()
-                              .WithPostRule("test2")
-                              .WithPredicate((_, _, _) => Task.FromResult(1D))
-                              .WithAction((_, _, _) => Task.CompletedTask)
-                              .ThatDependsOn(typeof(TestPostRule))
-                              .ThatDependsOn("test")
-                              .EndRule()
-                              .Build();
+                                           .WithPostRule(new TestPostRule(1D))
+                                           .WithPostRule("test")
+                                           .WithPredicate((_, _) => Task.FromResult(1D))
+                                           .WithAction((_, _) => Task.CompletedTask)
+                                           .ThatProvides("foo")
+                                           .EndRule()
+                                           .WithPostRule("test2")
+                                           .WithPredicate((_, _, _) => Task.FromResult(1D))
+                                           .WithAction((_, _, _) => Task.CompletedTask)
+                                           .ThatDependsOn(typeof(TestPostRule))
+                                           .ThatDependsOn("test")
+                                           .EndRule()
+                                           .Build();
     Assert.Equal(3, engine.PostRules.Count());
     var rule = engine.PostRules.ElementAt(1);
     Assert.Equal("test", rule.Name);
@@ -247,71 +247,71 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public void LambdaPostRuleConstructionThrowsOnNullOrEmpty()
   {
     Assert.Throws<ArgumentException>(() =>
-         ProbabilisticEngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule((string)null)
+                                       ProbabilisticEngineBuilder
+                                         .ForInputAndOutputAsync<TestInput, TestOutput>()
+                                         .WithPostRule((string)null)
     );
     Assert.Throws<ArgumentException>(() =>
-         ProbabilisticEngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>().WithPostRule("")
+                                       ProbabilisticEngineBuilder
+                                         .ForInputAndOutputAsync<TestInput, TestOutput>().WithPostRule("")
     );
     Assert.Throws<ArgumentNullException>(
       () =>
-         ProbabilisticEngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithAction((Func<IEngineContext, TestOutput, Task>)null)
-    );
-    Assert.Throws<ArgumentNullException>(
-        () =>
-          ProbabilisticEngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithAction((Func<IEngineContext, TestOutput, CancellationToken, Task>)null)
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithAction((Func<IEngineContext, TestOutput, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>
-         ProbabilisticEngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithPredicate((Func<IEngineContext, TestOutput, CancellationToken, Task<double>>)null)
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithAction((Func<IEngineContext, TestOutput, CancellationToken, Task>)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>
-         ProbabilisticEngineBuilder
-             .ForInputAndOutputAsync<TestInput, TestOutput>()
-             .WithPostRule("foo")
-             .WithPredicate((Func<IEngineContext, TestOutput, Task<double>>)null)
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithPredicate((Func<IEngineContext, TestOutput, CancellationToken, Task<double>>)null)
+    );
+    Assert.Throws<ArgumentNullException>(
+      () =>
+        ProbabilisticEngineBuilder
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo")
+          .WithPredicate((Func<IEngineContext, TestOutput, Task<double>>)null)
     );
     Assert.Throws<ArgumentException>(
       () =>
         ProbabilisticEngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatProvides(null)
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatProvides(null)
     );
     Assert.Throws<ArgumentException>(
       () =>
         ProbabilisticEngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatProvides("")
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatProvides("")
     );
     Assert.Throws<ArgumentException>(
       () =>
         ProbabilisticEngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatDependsOn("")
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatDependsOn("")
     );
     Assert.Throws<ArgumentException>(
       () =>
         ProbabilisticEngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatDependsOn((string)null)
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatDependsOn((string)null)
     );
     Assert.Throws<ArgumentNullException>(
       () =>
         ProbabilisticEngineBuilder
-            .ForInputAndOutputAsync<TestInput, TestOutput>()
-            .WithPostRule("foo").ThatDependsOn((Type)null)
+          .ForInputAndOutputAsync<TestInput, TestOutput>()
+          .WithPostRule("foo").ThatDependsOn((Type)null)
     );
   }
 
@@ -319,19 +319,19 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public async Task LambdaPreRuleConstruction()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule(new TestPreRule(1D))
-                              .WithPreRule("test")
-                              .WithPredicate((_, _) => Task.FromResult(1D))
-                              .WithAction((_, _) => Task.CompletedTask)
-                              .ThatProvides("foo")
-                              .EndRule()
-                              .WithPreRule("test2")
-                              .WithPredicate((_, _, _) => Task.FromResult(1D))
-                              .WithAction((_, _, _) => Task.CompletedTask)
-                              .ThatDependsOn(typeof(TestPreRule))
-                              .ThatDependsOn("test")
-                              .EndRule()
-                              .Build();
+                                           .WithPreRule(new TestPreRule(1D))
+                                           .WithPreRule("test")
+                                           .WithPredicate((_, _) => Task.FromResult(1D))
+                                           .WithAction((_, _) => Task.CompletedTask)
+                                           .ThatProvides("foo")
+                                           .EndRule()
+                                           .WithPreRule("test2")
+                                           .WithPredicate((_, _, _) => Task.FromResult(1D))
+                                           .WithAction((_, _, _) => Task.CompletedTask)
+                                           .ThatDependsOn(typeof(TestPreRule))
+                                           .ThatDependsOn("test")
+                                           .EndRule()
+                                           .Build();
     Assert.Equal(3, engine.PreRules.Count());
     var rule = engine.PreRules.ElementAt(1);
     Assert.Equal("test", rule.Name);
@@ -349,19 +349,19 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public async Task LambdaRuleConstruction()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithRule(new TestRule(1D))
-                              .WithRule("test")
-                              .WithPredicate((_, _, _) => Task.FromResult(1D))
-                              .WithAction((_, _, _) => Task.CompletedTask)
-                              .ThatProvides("test1")
-                              .EndRule()
-                              .WithRule("test2")
-                              .WithPredicate((_, _, _, _) => Task.FromResult(1D))
-                              .WithAction((_, _, _, _) => Task.CompletedTask)
-                              .ThatDependsOn("test1")
-                              .ThatDependsOn(typeof(TestRule))
-                              .EndRule()
-                              .Build();
+                                           .WithRule(new TestRule(1D))
+                                           .WithRule("test")
+                                           .WithPredicate((_, _, _) => Task.FromResult(1D))
+                                           .WithAction((_, _, _) => Task.CompletedTask)
+                                           .ThatProvides("test1")
+                                           .EndRule()
+                                           .WithRule("test2")
+                                           .WithPredicate((_, _, _, _) => Task.FromResult(1D))
+                                           .WithAction((_, _, _, _) => Task.CompletedTask)
+                                           .ThatDependsOn("test1")
+                                           .ThatDependsOn(typeof(TestRule))
+                                           .EndRule()
+                                           .Build();
     Assert.Equal(3, engine.Rules.Count());
     var rule = engine.Rules.ElementAt(1);
     Assert.Equal("test", rule.Name);
@@ -379,10 +379,10 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public async Task RuleWrapping()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRule(new TestRules.Probabilistic.TestPreRule(1D))
-                              .WithRule(new TestRules.Probabilistic.TestRule(1D))
-                              .WithPostRule(new TestRules.Probabilistic.TestPostRule(1D))
-                              .Build();
+                                           .WithPreRule(new TestRules.Probabilistic.TestPreRule(1D))
+                                           .WithRule(new TestRules.Probabilistic.TestRule(1D))
+                                           .WithPostRule(new TestRules.Probabilistic.TestPostRule(1D))
+                                           .Build();
     Assert.Single(engine.PreRules);
     var preRule = engine.PreRules.ElementAt(0);
     Assert.Equal($"{typeof(TestRules.Probabilistic.TestPreRule)} (wrapped async)", preRule.Name);
@@ -401,10 +401,10 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public async Task RuleWrappingMultiple()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRules(new [] {new TestRules.Probabilistic.TestPreRule(1D)})
-                              .WithRules(new [] {new TestRules.Probabilistic.TestRule(1D)})
-                              .WithPostRules(new [] {new TestRules.Probabilistic.TestPostRule(1D)})
-                              .Build();
+                                           .WithPreRules(new[] { new TestRules.Probabilistic.TestPreRule(1D) })
+                                           .WithRules(new[] { new TestRules.Probabilistic.TestRule(1D) })
+                                           .WithPostRules(new[] { new TestRules.Probabilistic.TestPostRule(1D) })
+                                           .Build();
     Assert.Single(engine.PreRules);
     var preRule = engine.PreRules.ElementAt(0);
     Assert.Equal($"{typeof(TestRules.Probabilistic.TestPreRule)} (wrapped async)", preRule.Name);
@@ -423,10 +423,16 @@ public class ProbabilisticAsyncBuilderOfTInTOutTests
   public void TypeAttributeDependency()
   {
     var engine = ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
-                              .WithPreRules(new [] {new DepTestAttrPreRule(1D), new DepTestAttrPreRule2(1D)})
-                              .WithRules( new [] { new DepTestAttrRule(1D), new DepTestAttrRule2(1D)})
-                              .WithPostRules(new [] { new DepTestAttrPostRule(1D), new DepTestAttrPostRule2(1D)})
-                              .Build();
+                                           .WithPreRules(new[]
+                                           {
+                                             new DepTestAttrPreRule(1D), new DepTestAttrPreRule2(1D)
+                                           })
+                                           .WithRules(new[] { new DepTestAttrRule(1D), new DepTestAttrRule2(1D) })
+                                           .WithPostRules(new[]
+                                           {
+                                             new DepTestAttrPostRule(1D), new DepTestAttrPostRule2(1D)
+                                           })
+                                           .Build();
     Assert.NotNull(engine);
   }
 }

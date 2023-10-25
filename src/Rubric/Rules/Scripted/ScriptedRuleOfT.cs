@@ -39,23 +39,23 @@ public class ScriptedRule<T> : Async.IRule<T>
     CacheBehavior = cacheBehavior;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Dependencies { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Provides { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public string Name { get; }
 
   /// <inheritdoc />
   public PredicateCaching CacheBehavior { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public async Task Apply(IEngineContext context, T input, CancellationToken t)
     => await await _apply(new ScriptedRuleContext<T>(context, input, t), t);
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public async Task<bool> DoesApply(IEngineContext context, T input, CancellationToken t)
     => await await _doesApply(new ScriptedRuleContext<T>(context, input, t), t);
 }

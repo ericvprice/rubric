@@ -64,5 +64,4 @@ public interface IRuleBuilder<T>
   /// </summary>
   /// <returns>A fluent continuation for the parent engine.</returns>
   IEngineBuilder<T> EndRule();
-
 }

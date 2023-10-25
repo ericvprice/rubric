@@ -1,17 +1,17 @@
 using Rubric.Rules.Probabilistic.Async;
-using static System.String;
 
 namespace Rubric.Builder.Probabilistic.Async.Default;
 
 internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private Func<IEngineContext, TOut, CancellationToken, Task> _action;
   private Func<IEngineContext, TOut, CancellationToken, Task<double>> _predicate;
 
-  internal PostRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name) => _parentBuilder = engineBuilder;
+  internal PostRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name)
+    => _parentBuilder = engineBuilder;
 
   /// <inheritdoc />
   public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, Task<double>> predicate)
@@ -23,7 +23,8 @@ internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TI
   }
 
   /// <inheritdoc />
-  public IPostRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TOut, CancellationToken, Task<double>> predicate)
+  public IPostRuleBuilder<TIn, TOut> WithPredicate(
+    Func<IEngineContext, TOut, CancellationToken, Task<double>> predicate)
   {
     _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
@@ -66,7 +67,7 @@ internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TI
     return this;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IPostRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching)
   {
     Caching = caching;

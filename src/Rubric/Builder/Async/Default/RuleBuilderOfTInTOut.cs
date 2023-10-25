@@ -1,17 +1,17 @@
 using Rubric.Rules.Async;
-using static System.String;
 
 namespace Rubric.Builder.Async.Default;
 
 internal class RuleBuilder<TIn, TOut> : RuleBuilderBase, IRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private Func<IEngineContext, TIn, TOut, CancellationToken, Task> _action;
   private Func<IEngineContext, TIn, TOut, CancellationToken, Task<bool>> _predicate;
-  
-  internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name) => _parentBuilder = engineBuilder;
+
+  internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name)
+    => _parentBuilder = engineBuilder;
 
   /// <inheritdoc />
   public IRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, TOut, Task<bool>> predicate)
@@ -66,7 +66,7 @@ internal class RuleBuilder<TIn, TOut> : RuleBuilderBase, IRuleBuilder<TIn, TOut>
     return this;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching)
   {
     Caching = caching;

@@ -33,7 +33,7 @@ public class LambdaRule<T> : IRule<T>
 
   /// <inheritdoc />
   public IEnumerable<string> Provides { get; }
-  
+
   /// <inheritdoc />
   public PredicateCaching CacheBehavior { get; }
 

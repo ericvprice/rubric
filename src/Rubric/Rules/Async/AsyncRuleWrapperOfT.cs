@@ -37,6 +37,4 @@ public class AsyncRuleWrapper<T> : IRule<T>
 
   /// <inheritdoc />
   public IEnumerable<string> Provides => _syncRule.Provides;
-
-
 }

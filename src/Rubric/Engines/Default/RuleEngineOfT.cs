@@ -7,107 +7,109 @@ using Rubric.Rulesets;
 namespace Rubric.Engines.Default;
 
 public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
-    where T : class
+  where T : class
 {
+#region Fields
 
-    #region Fields
+  private readonly IRule<T>[][] _rules;
 
-    private readonly IRule<T>[][] _rules;
+#endregion
 
-    #endregion
+#region Constructors
 
-    #region Constructors
+  public RuleEngine(IRuleset<T> ruleset,
+                    IExceptionHandler uncaughtExceptionHandler = null,
+                    ILogger logger = null)
+    : this(ruleset.Rules, uncaughtExceptionHandler, logger) { }
 
-    public RuleEngine(IRuleset<T> ruleset,
-                      IExceptionHandler uncaughtExceptionHandler = null,
-                      ILogger logger = null)
-        : this(ruleset.Rules, uncaughtExceptionHandler, logger) { }
+  /// <summary>
+  ///   Default public constructor.
+  /// </summary>
+  /// <param name="rules">Collection of synchronous processing rules.</param>
+  /// <param name="exceptionHandler">An optional exception handler.</param>
+  /// <param name="logger">An optional logger.</param>
+  public RuleEngine(
+    IEnumerable<IRule<T>> rules,
+    IExceptionHandler exceptionHandler = null,
+    ILogger logger = null
+  )
+  {
+    rules ??= Enumerable.Empty<IRule<T>>();
+    _rules = rules.ResolveDependencies()
+                  .Select(e => e.ToArray())
+                  .ToArray();
+    Logger = logger ?? NullLogger.Instance;
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
+  }
 
-    /// <summary>
-    ///     Default public constructor.
-    /// </summary>
-    /// <param name="rules">Collection of synchronous processing rules.</param>
-    /// <param name="exceptionHandler">An optional exception handler.</param>
-    /// <param name="logger">An optional logger.</param>
-    public RuleEngine(
-        IEnumerable<IRule<T>> rules,
-        IExceptionHandler exceptionHandler = null,
-        ILogger logger = null
-    )
+#endregion
+
+#region Properties
+
+  public IEnumerable<IRule<T>> Rules
+    => _rules.SelectMany(r => r);
+
+  /// <inheritdoc />
+  public override bool IsAsync => false;
+
+  /// <inheritdoc />
+  public override Type InputType => typeof(T);
+
+  /// <inheritdoc />
+  public override Type OutputType => typeof(T);
+
+#endregion
+
+#region Methods
+
+  /// <inheritdoc />
+  public void Apply(T input, IEngineContext context = null)
+  {
+    var ctx = SetupContext(context);
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
     {
-        rules ??= Enumerable.Empty<IRule<T>>();
-        _rules = rules.ResolveDependencies()
-                        .Select(e => e.ToArray())
-                        .ToArray();
-        Logger = logger ?? NullLogger.Instance;
-        ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
+      try
+      {
+        ApplyItem(input, ctx);
+      }
+      catch (EngineHaltException) { }
     }
+  }
 
-    #endregion
-
-    #region Properties
-
-    public IEnumerable<IRule<T>> Rules
-        => _rules.SelectMany(r => r);
-
-    /// <inheritdoc />
-    public override bool IsAsync => false;
-
-    /// <inheritdoc />
-    public override Type InputType => typeof(T);
-
-    /// <inheritdoc />
-    public override Type OutputType => typeof(T);
-
-    #endregion
-
-    #region Methods
-
-    ///<inheritdoc/>
-    public void Apply(T input, IEngineContext context = null)
+  /// <inheritdoc />
+  public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
+  {
+    var ctx = SetupContext(context);
+    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
     {
-        var ctx = SetupContext(context);
-        using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
-            try
-            {
-                ApplyItem(input, ctx);
-            }
-            catch (EngineHaltException) { }
+      foreach (var input in inputs)
+        try
+        {
+          ApplyItem(input, ctx);
+        }
+        catch (EngineHaltException)
+        {
+          break;
+        }
     }
+  }
 
-    ///<inheritdoc/>
-    public void Apply(IEnumerable<T> inputs, IEngineContext context = null)
+  private void ApplyItem(T input, IEngineContext ctx)
+  {
+    using (Logger.BeginScope("Input", input))
     {
-        var ctx = SetupContext(context);
-        using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
-            foreach (var input in inputs)
-            {
-                try
-                {
-                    ApplyItem(input, ctx);
-                }
-                catch (EngineHaltException)
-                {
-                    break;
-                }
-            }
+      foreach (var set in _rules)
+        foreach (var rule in set)
+          try
+          {
+            this.ApplyPreRule(ctx, rule, input);
+          }
+          catch (ItemHaltException)
+          {
+            return;
+          }
     }
+  }
 
-    private void ApplyItem(T input, IEngineContext ctx)
-    {
-        using (Logger.BeginScope("Input", input))
-            foreach (var set in _rules)
-                foreach (var rule in set)
-                    try
-                    {
-                        this.ApplyPreRule(ctx, rule, input);
-                    }
-                    catch (ItemHaltException)
-                    {
-                        return;
-                    }
-    }
-  
-    #endregion
-
+#endregion
 }

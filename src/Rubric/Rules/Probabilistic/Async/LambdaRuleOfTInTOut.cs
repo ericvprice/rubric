@@ -25,24 +25,24 @@ public class LambdaRule<TIn, TOut> : IRule<TIn, TOut>
   }
 
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public string Name { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Dependencies { get; }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IEnumerable<string> Provides { get; }
-  
+
   /// <inheritdoc />
   public PredicateCaching CacheBehavior { get; }
 
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public Task Apply(IEngineContext context, TIn input, TOut output, CancellationToken token)
     => _body(context, input, output, token);
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public Task<double> DoesApply(IEngineContext context, TIn input, TOut output, CancellationToken token)
     => _predicate(context, input, output, token);
 }

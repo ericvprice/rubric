@@ -41,5 +41,4 @@ public class AsyncRuleWrapper<T> : IRule<T>
 
   /// <inheritdoc />
   public PredicateCaching CacheBehavior => _syncRule.CacheBehavior;
-
 }

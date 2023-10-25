@@ -1,17 +1,17 @@
 using Rubric.Rules.Probabilistic.Async;
-using static System.String;
 
 namespace Rubric.Builder.Probabilistic.Async.Default;
 
 internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private Func<IEngineContext, TIn, CancellationToken, Task> _action;
   private Func<IEngineContext, TIn, CancellationToken, Task<double>> _predicate;
 
-  internal PreRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name) => _parentBuilder = engineBuilder;
+  internal PreRuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name)
+    => _parentBuilder = engineBuilder;
 
   /// <inheritdoc />
   public IPreRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, Task<double>> predicate)
@@ -32,10 +32,7 @@ internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn,
   /// <inheritdoc />
   public IPreRuleBuilder<TIn, TOut> WithAction(Func<IEngineContext, TIn, Task> action)
   {
-    if (action == null)
-    {
-      throw new ArgumentNullException(nameof(action));
-    }
+    if (action == null) throw new ArgumentNullException(nameof(action));
     _action = (ctx, inObj, _) => action(ctx, inObj);
     return this;
   }
@@ -68,7 +65,7 @@ internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn,
     return this;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IPreRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching)
   {
     Caching = caching;

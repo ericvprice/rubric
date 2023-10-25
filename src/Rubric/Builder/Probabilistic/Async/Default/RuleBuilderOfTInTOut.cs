@@ -1,17 +1,17 @@
 using Rubric.Rules.Probabilistic.Async;
-using static System.String;
 
 namespace Rubric.Builder.Probabilistic.Async.Default;
 
 internal class RuleBuilder<TIn, TOut> : RuleBuilderBase, IRuleBuilder<TIn, TOut>
-    where TIn : class
-    where TOut : class
+  where TIn : class
+  where TOut : class
 {
   private readonly EngineBuilder<TIn, TOut> _parentBuilder;
   private Func<IEngineContext, TIn, TOut, CancellationToken, Task> _action;
   private Func<IEngineContext, TIn, TOut, CancellationToken, Task<double>> _predicate;
-  
-  internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name) => _parentBuilder = engineBuilder;
+
+  internal RuleBuilder(EngineBuilder<TIn, TOut> engineBuilder, string name) : base(name)
+    => _parentBuilder = engineBuilder;
 
   /// <inheritdoc />
   public IRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, TOut, Task<double>> predicate)
@@ -23,7 +23,8 @@ internal class RuleBuilder<TIn, TOut> : RuleBuilderBase, IRuleBuilder<TIn, TOut>
   }
 
   /// <inheritdoc />
-  public IRuleBuilder<TIn, TOut> WithPredicate(Func<IEngineContext, TIn, TOut, CancellationToken, Task<double>> predicate)
+  public IRuleBuilder<TIn, TOut> WithPredicate(
+    Func<IEngineContext, TIn, TOut, CancellationToken, Task<double>> predicate)
   {
     _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
     return this;
@@ -48,14 +49,14 @@ internal class RuleBuilder<TIn, TOut> : RuleBuilderBase, IRuleBuilder<TIn, TOut>
   /// <inheritdoc />
   public IRuleBuilder<TIn, TOut> ThatDependsOn(string dep)
   {
-    AddDependency(dep); 
+    AddDependency(dep);
     return this;
   }
 
   /// <inheritdoc />
   public IRuleBuilder<TIn, TOut> ThatDependsOn(Type dep)
   {
-    AddDependency(dep); 
+    AddDependency(dep);
     return this;
   }
 
@@ -66,7 +67,7 @@ internal class RuleBuilder<TIn, TOut> : RuleBuilderBase, IRuleBuilder<TIn, TOut>
     return this;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IRuleBuilder<TIn, TOut> WithCaching(PredicateCaching caching)
   {
     Caching = caching;

@@ -1,16 +1,14 @@
 using Rubric.Rules.Probabilistic.Async;
-using static System.String;
 
 namespace Rubric.Builder.Probabilistic.Async.Default;
 
 internal class RuleBuilder<T> : RuleBuilderBase, IRuleBuilder<T>
-    where T : class
+  where T : class
 {
-
   private readonly EngineBuilder<T> _builder;
   private Func<IEngineContext, T, CancellationToken, Task> _action;
   private Func<IEngineContext, T, CancellationToken, Task<double>> _predicate = (_, _, _) => Task.FromResult(1D);
-  
+
   internal RuleBuilder(EngineBuilder<T> builder, string name) : base(name) => _builder = builder;
 
   /// <inheritdoc />
@@ -64,7 +62,7 @@ internal class RuleBuilder<T> : RuleBuilderBase, IRuleBuilder<T>
     return this;
   }
 
-  /// <inheritdoc/>
+  /// <inheritdoc />
   public IRuleBuilder<T> WithCaching(PredicateCaching caching)
   {
     Caching = caching;
