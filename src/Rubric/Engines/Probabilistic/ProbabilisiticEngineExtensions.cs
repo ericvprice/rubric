@@ -45,7 +45,20 @@ internal static class ProbabilisiticEngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!(e.Random.NextDouble() >= await r.DoesApply(ctx, i, t).ConfigureAwait(false)))
+      var task = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAddAsync(r.CacheBehavior.Key,
+                                                    async _ => e.Random.NextDouble()
+                                                               < await r.DoesApply(ctx, i, t).ConfigureAwait(false)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAddAsync(r.CacheBehavior.Key,
+                                                        async _ => e.Random.NextDouble()
+                                                                   < await r.DoesApply(ctx, i, t).ConfigureAwait(false)),
+        _ => Task.FromResult(e.Random.NextDouble() < await r.DoesApply(ctx, i, t).ConfigureAwait(false))
+      };
+      var result = await task.ConfigureAwait(false);
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);
@@ -82,7 +95,20 @@ internal static class ProbabilisiticEngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (e.Random.NextDouble() >= await r.DoesApply(ctx, o, t).ConfigureAwait(false))
+      var task = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAddAsync(r.CacheBehavior.Key,
+                                                    async _ => e.Random.NextDouble()
+                                                               < await r.DoesApply(ctx, o, t).ConfigureAwait(false)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAddAsync(r.CacheBehavior.Key,
+                                                        async _ => e.Random.NextDouble()
+                                                                   < await r.DoesApply(ctx, o, t).ConfigureAwait(false)),
+        _ => Task.FromResult(e.Random.NextDouble() < await r.DoesApply(ctx, o, t).ConfigureAwait(false))
+      };
+      var result = await task.ConfigureAwait(false);
+      if (result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
         return;
@@ -120,7 +146,20 @@ internal static class ProbabilisiticEngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (e.Random.NextDouble() <= await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
+      var task = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAddAsync(r.CacheBehavior.Key, 
+                                                    async _ => e.Random.NextDouble() 
+                                                               < await r.DoesApply(ctx, i, o, t).ConfigureAwait(false)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAddAsync(r.CacheBehavior.Key, 
+                                                        async _ => e.Random.NextDouble() 
+                                                                   < await r.DoesApply(ctx, i, o, t).ConfigureAwait(false)),
+        _ => Task.FromResult(e.Random.NextDouble() < await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
+      };
+      var result = await task.ConfigureAwait(false);
+      if (result)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
         _appliesLogger(e.Logger, r.Name, null);
@@ -154,7 +193,15 @@ internal static class ProbabilisiticEngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!(e.Random.NextDouble() >= r.DoesApply(ctx, i)))
+      var result = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, i)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, i)),
+        _ => e.Random.NextDouble() < r.DoesApply(ctx, i)
+      };
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);
@@ -189,7 +236,15 @@ internal static class ProbabilisiticEngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!(e.Random.NextDouble() >= r.DoesApply(ctx, i, o)))
+      var result = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, i, o)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, i, o)),
+        _ => e.Random.NextDouble() < r.DoesApply(ctx, i, o)
+      };
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);
@@ -222,7 +277,15 @@ internal static class ProbabilisiticEngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (!(e.Random.NextDouble() >= r.DoesApply(ctx, o)))
+      var result = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, o)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, o)),
+        _ => e.Random.NextDouble() < r.DoesApply(ctx, o)
+      };
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);

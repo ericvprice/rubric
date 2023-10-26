@@ -9,6 +9,7 @@ namespace Rubric.Engines;
 /// </summary>
 internal static class EngineExtensions
 {
+
   private const string DoesNotApply = "Rule {Name} does not apply.";
   private const string Applies = "Rule {Name} does not applies.";
   private const string Applying = "Applying {Name}.";
@@ -45,7 +46,16 @@ internal static class EngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (await r.DoesApply(ctx, i, t).ConfigureAwait(false))
+      var task = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, t)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, t)),
+        _ => r.DoesApply(ctx, i, t),
+      };
+      var result = await task.ConfigureAwait(false);
+      if (result)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
         _appliesLogger(e.Logger, r.Name, null);
@@ -83,7 +93,14 @@ internal static class EngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (await r.DoesApply(ctx, o, t).ConfigureAwait(false))
+      var task = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, o, t)),
+        _ => r.DoesApply(ctx, o, t),
+      };
+      var result = await task.ConfigureAwait(false);
+      if (result)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
         _appliesLogger(e.Logger, r.Name, null);
@@ -123,7 +140,16 @@ internal static class EngineExtensions
     {
       t.ThrowIfCancellationRequested();
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
+      var task = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o, t)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o, t)),
+        _ => r.DoesApply(ctx, i, o, t),
+      };
+      var result = await task.ConfigureAwait(false);
+      if (result)
       {
         using var logCtx = e.Logger.BeginScope(r.Name);
         _appliesLogger(e.Logger, r.Name, null);
@@ -158,7 +184,15 @@ internal static class EngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (r.DoesApply(ctx, i))
+      var result = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i)),
+        _ => r.DoesApply(ctx, i),
+      };
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);
@@ -194,7 +228,15 @@ internal static class EngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (r.DoesApply(ctx, i, o))
+      var result = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+                                     .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o)),
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o)),
+        _ => r.DoesApply(ctx, i, o),
+      };
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);
@@ -228,7 +270,13 @@ internal static class EngineExtensions
     try
     {
       using var scope = e.Logger.BeginScope("Rule", r.Name);
-      if (r.DoesApply(ctx, o))
+      var result = r.CacheBehavior.Behavior switch
+      {
+        CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
+                                         .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, o)),
+        _ => r.DoesApply(ctx, o),
+      };
+      if (result)
       {
         _appliesLogger(e.Logger, r.Name, null);
         _applyingLogger(e.Logger, r.Name, null);

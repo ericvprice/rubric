@@ -35,6 +35,16 @@ public static class EngineContextExtensions
   public const string ItemPredicateCacheKey = "__EX_PRED_CACHE";
 
   /// <summary>
+  ///   Key for retrieving the current execution-wide predicate cache.
+  /// </summary>
+  public const string ProbabilisticExecutionPredicateCacheKey = "__EX_PRED_CACHE";
+
+  /// <summary>
+  ///   Key for retrieving the current per-input predicate cache.
+  /// </summary>
+  public const string ProbabilisticItemPredicateCacheKey = "__EX_PRED_CACHE";
+
+  /// <summary>
   ///   Get the currently execution id.
   /// </summary>
   /// <param name="context">The target engine context.</param>
@@ -152,10 +162,10 @@ public static class EngineContextExtensions
   /// </summary>
   /// <param name="context">The current engine execution context.</param>
   /// <returns>The cache.</returns>
-  public static ConcurrentDictionary<string, bool> GetItemPredicateCache(this IEngineContext context)
+  public static AsyncConcurrentDictionary<string, bool> GetItemPredicateCache(this IEngineContext context)
   {
     if (context == null) throw new ArgumentNullException(nameof(context));
-    return context.GetOrSet<ConcurrentDictionary<string, bool>>(ItemPredicateCacheKey, () => new());
+    return context.GetOrSet<AsyncConcurrentDictionary<string, bool>>(ItemPredicateCacheKey, () => new());
   }
 
   /// <summary>
@@ -163,9 +173,32 @@ public static class EngineContextExtensions
   /// </summary>
   /// <param name="context">The current engine execution context.</param>
   /// <returns>The cache.</returns>
-  public static ConcurrentDictionary<string, bool> GetExecutionPredicateCache(this IEngineContext context)
+  public static AsyncConcurrentDictionary<string, bool> GetExecutionPredicateCache(this IEngineContext context)
   {
     if (context == null) throw new ArgumentNullException(nameof(context));
-    return context.GetOrSet<ConcurrentDictionary<string, bool>>(ExecutionPredicateCacheKey, () => new());
+    return context.GetOrSet<AsyncConcurrentDictionary<string, bool>>(ExecutionPredicateCacheKey, () => new());
   }
+
+  /// <summary>
+  ///   Get the current item predicate cache.
+  /// </summary>
+  /// <param name="context">The current engine execution context.</param>
+  /// <returns>The cache.</returns>
+  public static AsyncConcurrentDictionary<string, double> GetProbabilisticItemPredicateCache(this IEngineContext context)
+  {
+    if (context == null) throw new ArgumentNullException(nameof(context));
+    return context.GetOrSet<AsyncConcurrentDictionary<string, double>>(ProbabilisticItemPredicateCacheKey, () => new());
+  }
+
+  /// <summary>
+  ///   Get the current execution predicate cache.
+  /// </summary>
+  /// <param name="context">The current engine execution context.</param>
+  /// <returns>The cache.</returns>
+  public static AsyncConcurrentDictionary<string, double> GetProbabilisticExecutionPredicateCache(this IEngineContext context)
+  {
+    if (context == null) throw new ArgumentNullException(nameof(context));
+    return context.GetOrSet<AsyncConcurrentDictionary<string, double>>(ProbabilisticExecutionPredicateCacheKey, () => new());
+  }
+
 }
