@@ -402,4 +402,109 @@ public class EngineOfTTests
     Assert.Equal(ExceptionHandlers.Rethrow, engine.ExceptionHandler);
   }
 
+  [Fact]
+  public void PerItemCaching()
+  {
+    var engine =
+      EngineBuilder.ForInput<TestInput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void PerExecutionCaching()
+  {
+    var engine =
+      EngineBuilder.ForInput<TestInput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void CachesClearedOnItemHalt()
+  {
+    var engine =
+      EngineBuilder.ForInput<TestInput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => throw new ItemHaltException())
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void CachesClearedOnEngineHalt()
+  {
+    var engine =
+      EngineBuilder.ForInput<TestInput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((c, i) => ++i.Counter > 0)
+                   .WithAction((c, i) => throw new EngineHaltException())
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
 }

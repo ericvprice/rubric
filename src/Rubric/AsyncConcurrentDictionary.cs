@@ -77,7 +77,7 @@ public class AsyncConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>
   public TValue GetOrAdd(TKey key, Func<TKey, TValue> func)
   {
     if (func == null) throw new ArgumentNullException(nameof(func));
-    return _inner.GetOrAdd(key, func(key));
+    return _inner.GetOrAdd(key, func);
   }
 
   /// <inheritdoc />

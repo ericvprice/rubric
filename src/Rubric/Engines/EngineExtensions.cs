@@ -48,7 +48,7 @@ internal static class EngineExtensions
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       var task = r.CacheBehavior.Behavior switch
       {
-        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+        CacheBehavior.PerInput => ctx.GetInputPredicateCache()
                                      .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, t)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, t)),
@@ -142,7 +142,7 @@ internal static class EngineExtensions
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       var task = r.CacheBehavior.Behavior switch
       {
-        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+        CacheBehavior.PerInput => ctx.GetInputPredicateCache()
                                      .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o, t)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o, t)),
@@ -186,7 +186,7 @@ internal static class EngineExtensions
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       var result = r.CacheBehavior.Behavior switch
       {
-        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+        CacheBehavior.PerInput => ctx.GetInputPredicateCache()
                                      .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i)),
@@ -230,7 +230,7 @@ internal static class EngineExtensions
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       var result = r.CacheBehavior.Behavior switch
       {
-        CacheBehavior.PerInput => ctx.GetItemPredicateCache()
+        CacheBehavior.PerInput => ctx.GetInputPredicateCache()
                                      .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o)),

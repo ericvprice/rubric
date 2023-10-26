@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rubric.Engines;
 
 namespace Rubric;
@@ -12,37 +11,33 @@ public static class EngineContextExtensions
   /// <summary>
   ///   Key for retrieving the current engine executing.
   /// </summary>
-  public const string EngineKey = "__ENGINE";
+  private const string EngineKey = "__ENGINE";
 
   /// <summary>
   ///   Key for retrieving the current execution trace identifier.
   /// </summary>
-  public const string TraceIdKey = "__TRACE_ID";
+  private const string TraceIdKey = "__TRACE_ID";
 
   /// <summary>
   ///   Key fo retrieving the last unhandled exception.
   /// </summary>
-  public const string LastExceptionKey = "__LAST_EXCEPTION";
+  private const string LastExceptionKey = "__LAST_EXCEPTION";
 
   /// <summary>
   ///   Key for retrieving the current execution-wide predicate cache.
   /// </summary>
-  public const string ExecutionPredicateCacheKey = "__EX_PRED_CACHE";
+  private const string ExecutionPredicateCacheKey = "__EX_PRED_CACHE";
 
   /// <summary>
   ///   Key for retrieving the current per-input predicate cache.
   /// </summary>
-  public const string ItemPredicateCacheKey = "__EX_PRED_CACHE";
+  private const string InputPredicateCacheKey = "__INPUT_PRED_CACHE";
 
-  /// <summary>
-  ///   Key for retrieving the current execution-wide predicate cache.
-  /// </summary>
-  public const string ProbabilisticExecutionPredicateCacheKey = "__EX_PRED_CACHE";
-
-  /// <summary>
-  ///   Key for retrieving the current per-input predicate cache.
-  /// </summary>
-  public const string ProbabilisticItemPredicateCacheKey = "__EX_PRED_CACHE";
+  internal static void SetExecutionInfo(this IEngineContext context, IRuleEngine engine, string traceId)
+  {
+    context[EngineKey] = engine;
+    context[TraceIdKey] = traceId;
+  }
 
   /// <summary>
   ///   Get the currently execution id.
@@ -67,6 +62,27 @@ public static class EngineContextExtensions
     return context.ContainsKey(LastExceptionKey)
       ? context.GetAs<EngineException>(LastExceptionKey)
       : null;
+  }
+
+  /// <summary>
+  ///   Set the last engine exception thrown.
+  /// </summary>
+  /// <param name="context">The target engine context.</param>
+  /// <param name="e">The exception to set.</param>
+  public static void SetLastException(this IEngineContext context, Exception e)
+  {
+    if (context == null) throw new ArgumentNullException(nameof(context));
+    context[LastExceptionKey] = e;
+  }
+
+  /// <summary>
+  ///   Clear the last exception thrown.
+  /// </summary>
+  /// <param name="context">The target engine context.</param>
+  public static void ClearLastException(this IEngineContext context)
+  {
+    if (context == null) throw new ArgumentNullException(nameof(context));
+    context.Remove(LastExceptionKey);
   }
 
   /// <summary>
@@ -162,10 +178,10 @@ public static class EngineContextExtensions
   /// </summary>
   /// <param name="context">The current engine execution context.</param>
   /// <returns>The cache.</returns>
-  public static AsyncConcurrentDictionary<string, bool> GetItemPredicateCache(this IEngineContext context)
+  public static AsyncConcurrentDictionary<string, bool> GetInputPredicateCache(this IEngineContext context)
   {
     if (context == null) throw new ArgumentNullException(nameof(context));
-    return context.GetOrSet<AsyncConcurrentDictionary<string, bool>>(ItemPredicateCacheKey, () => new());
+    return context.GetOrSet<AsyncConcurrentDictionary<string, bool>>(InputPredicateCacheKey, () => new());
   }
 
   /// <summary>
@@ -180,25 +196,21 @@ public static class EngineContextExtensions
   }
 
   /// <summary>
-  ///   Get the current item predicate cache.
+  ///   Clear the per-item predicate execution cache.
   /// </summary>
-  /// <param name="context">The current engine execution context.</param>
-  /// <returns>The cache.</returns>
-  public static AsyncConcurrentDictionary<string, double> GetProbabilisticItemPredicateCache(this IEngineContext context)
-  {
-    if (context == null) throw new ArgumentNullException(nameof(context));
-    return context.GetOrSet<AsyncConcurrentDictionary<string, double>>(ProbabilisticItemPredicateCacheKey, () => new());
-  }
+  /// <param name="context"></param>
+  internal static void ClearInputPredicateCache(this IEngineContext context) => context.GetInputPredicateCache().Clear();
 
   /// <summary>
-  ///   Get the current execution predicate cache.
+  ///   Clear the per-execution predicate execution cache.
   /// </summary>
-  /// <param name="context">The current engine execution context.</param>
-  /// <returns>The cache.</returns>
-  public static AsyncConcurrentDictionary<string, double> GetProbabilisticExecutionPredicateCache(this IEngineContext context)
+  /// <param name="context"></param>
+  internal static void ClearExecutionPredicateCache(this IEngineContext context) => context.GetExecutionPredicateCache().Clear();
+
+  internal static void ClearAllCaches(this IEngineContext context)
   {
-    if (context == null) throw new ArgumentNullException(nameof(context));
-    return context.GetOrSet<AsyncConcurrentDictionary<string, double>>(ProbabilisticExecutionPredicateCacheKey, () => new());
+    context.ClearExecutionPredicateCache();
+    context.ClearInputPredicateCache();
   }
 
 }

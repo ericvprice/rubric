@@ -4,6 +4,7 @@ using Rubric.Dependency;
 using Rubric.Engines.Implementation;
 using Rubric.Rules.Async;
 using Rubric.Rulesets.Async;
+using System.Runtime.ExceptionServices;
 
 namespace Rubric.Engines.Async.Implementation;
 
@@ -400,6 +401,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       inputs.Select(
         i => Task.Run(async () =>
@@ -417,7 +419,15 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(c =>
+                             {
+                               cts.Dispose();
+                               if (c.Exception != null)
+                               {
+                                 var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
+                                 info.Throw();
+                               }
+                             },
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
@@ -450,7 +460,12 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(c => { cts.Dispose();
+                                    if (c.Exception != null)
+                                    {
+                                      var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
+                                      info.Throw();
+                                    }},
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
@@ -483,10 +498,17 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         }
       }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
-                            t,
-                            TaskContinuationOptions.HideScheduler,
-                            TaskScheduler.Default);
+               .ContinueWith(c => {
+                               cts.Dispose();
+                               if (c.Exception != null)
+                               {
+                                 var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
+                                 info.Throw();
+                               }
+                             },
+                             t,
+                             TaskContinuationOptions.HideScheduler,
+                             TaskScheduler.Default);
   }
 
   /// <summary>
@@ -516,7 +538,14 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(c => {
+                               cts.Dispose();
+                               if (c.Exception != null)
+                               {
+                                 var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
+                                 info.Throw();
+                               }
+                             },
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);

@@ -332,6 +332,7 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks = inputs.Select(i => Task.Run(async () =>
     {
       t.ThrowIfCancellationRequested();
@@ -340,14 +341,15 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         await ApplyItemAsync(i, o, ctx, t2).ConfigureAwait(false);
       }
       catch (ItemHaltException) { }
-      catch (Exception)
+      catch (Exception e)
       {
+        userException = e;
         cts.Cancel();
         throw;
       }
     }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(), 
+               .ContinueWith(task => ParallelCleanup(task, cts, userException), 
                              t, 
                              TaskContinuationOptions.HideScheduler, 
                              TaskScheduler.Default);
@@ -365,6 +367,7 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(
         r => Task.Run(async () =>
@@ -373,14 +376,15 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
           {
             await this.ApplyAsyncPreRule(ctx, r, i, t2).ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
@@ -399,6 +403,7 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks = rules.Select(
       r => Task.Run(async () =>
       {
@@ -406,14 +411,15 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         {
           await this.ApplyAsyncRule(ctx, r, i, o, t2).ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+          userException = e;
           cts.Cancel();
           throw;
         }
       }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                             t,
                             TaskContinuationOptions.HideScheduler,
                             TaskScheduler.Default);
@@ -431,22 +437,24 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(
         r => Task.Run(async () =>
         {
           try
           {
-            await this.ApplyAsyncPreRule(ctx, r, o, t2).ConfigureAwait(false);
+            await this.ApplyAsyncPostRule(ctx, r, o, t2).ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);

@@ -110,6 +110,10 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         ApplyPostRules(output, context);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearAllCaches();
+      }
     }
   }
 
@@ -117,16 +121,29 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
   {
     if (inputs == null) throw new ArgumentNullException(nameof(inputs));
-    var ctx = SetupContext(context);
-    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
+    context = SetupContext(context);
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
     {
       try
       {
         foreach (var input in inputs)
-          ApplyItem(input, output, ctx);
-        ApplyPostRules(output, ctx);
+        {
+          try
+          {
+            ApplyItem(input, output, context);
+          }
+          finally
+          {
+            context.ClearInputPredicateCache();
+          }
+        }
+        ApplyPostRules(output, context);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearAllCaches();
+      }
     }
   }
 

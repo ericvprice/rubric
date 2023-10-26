@@ -81,6 +81,10 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
         ApplyItem(input, ctx);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        ctx.ClearAllCaches();
+      }
     }
   }
 
@@ -92,6 +96,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
     {
       foreach (var input in inputs)
+      {
         try
         {
           ApplyItem(input, ctx);
@@ -100,7 +105,13 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
         {
           break;
         }
+        finally
+        {
+          ctx.ClearInputPredicateCache();
+        }
+      }
     }
+    ctx.ClearExecutionPredicateCache();
   }
 
   private void ApplyItem(T input, IEngineContext ctx)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Runtime.ExceptionServices;
 
 namespace Rubric.Engines.Implementation;
 
@@ -59,7 +60,7 @@ public abstract class BaseRuleEngine : IRuleEngine
           ee.Input = input;
           ee.Output = output;
           ee.Context = ctx;
-          ctx[EngineContextExtensions.LastExceptionKey] = ee;
+          ctx.SetLastException(ee);
           throw;
         }
       case EngineException ee:
@@ -67,7 +68,7 @@ public abstract class BaseRuleEngine : IRuleEngine
         ee.Input = input;
         ee.Output = output;
         ee.Context = ctx;
-        ctx[EngineContextExtensions.LastExceptionKey] = ee;
+        ctx.SetLastException(ee);
         return false;
       default:
         try
@@ -80,19 +81,36 @@ public abstract class BaseRuleEngine : IRuleEngine
           ee.Input = input;
           ee.Output = output;
           ee.Context = ctx;
-          ctx[EngineContextExtensions.LastExceptionKey] = ee;
+          ctx.SetLastException(ee);
           throw;
         }
     }
   }
 
+  protected static void ParallelCleanup(Task t, CancellationTokenSource cts, Exception userException)
+  {
+    if (t == null) throw new ArgumentNullException(nameof(t));
+    if (cts == null) throw new ArgumentNullException(nameof(cts));
+    cts.Dispose();
+    //Preserve original stack traces and throw.
+    if (t.IsCanceled && userException != null)
+    {
+      var info = ExceptionDispatchInfo.Capture(userException);
+      info.Throw();
+    }
+    if (t.Exception != null)
+    {
+      var info = ExceptionDispatchInfo.Capture(t.Exception.InnerExceptions.Last());
+      info.Throw();
+    }
+  }
+  
   internal IEngineContext SetupContext(IEngineContext ctx)
   {
     ctx ??= new EngineContext();
-    ctx[EngineContextExtensions.EngineKey] = this;
-    ctx[EngineContextExtensions.TraceIdKey] = Guid.NewGuid().ToString();
-    ctx.GetExecutionPredicateCache().Clear();
-    ctx.GetItemPredicateCache().Clear();
+    ctx.SetExecutionInfo(this, Guid.NewGuid().ToString());
+    ctx.ClearAllCaches();
+    ctx.SetLastException(null);
     return ctx;
   }
 }

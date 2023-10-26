@@ -81,12 +81,17 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   /// <inheritdoc />
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
   {
-    context = Reset(context);
+    if (input == null) throw new ArgumentNullException(nameof(input));
+    context = SetupContext(context);
     try
     {
       await ApplyItemAsync(input, context, token).ConfigureAwait(false);
     }
     catch (EngineException) { }
+    finally
+    {
+      context.ClearAllCaches();
+    }
   }
 
   /// <inheritdoc />
@@ -97,7 +102,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     CancellationToken token = default)
   {
     if (inputs == null) throw new ArgumentNullException(nameof(inputs));
-    context = Reset(context);
+    context = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
     {
       try
@@ -108,6 +113,10 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
           await ApplyManySerialAsync(inputs, context, token).ConfigureAwait(false);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearAllCaches();
+      }
     }
   }
 
@@ -117,7 +126,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     IEngineContext context = null,
     CancellationToken token = default)
   {
-    context = Reset(context);
+    context = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
     {
       try
@@ -125,6 +134,10 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
         await ApplyManyAsync(inputStream, context, token).ConfigureAwait(false);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearAllCaches();
+      }
     }
   }
 
@@ -172,6 +185,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(
         r => Task.Run(async () =>
@@ -180,32 +194,33 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
           {
             await this.ApplyAsyncPreRule(ctx, r, i, t2).ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
   }
 
-  private IEngineContext Reset(IEngineContext context)
-  {
-    context ??= new EngineContext();
-    context[EngineContextExtensions.EngineKey] = this;
-    context[EngineContextExtensions.TraceIdKey] = Guid.NewGuid().ToString();
-    context[ProbabilisiticEngineExtensions.RandomKey] = Random;
-    return context;
-  }
-
   private async Task ApplyManyAsync(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
     await foreach (var input in inputs.WithCancellation(t))
-      await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+    {
+      try
+      {
+        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+      }
+      finally
+      {
+        context.ClearInputPredicateCache();
+      }
+    }
   }
 
   private async Task ApplyManySerialAsync(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
@@ -213,7 +228,14 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     foreach (var input in inputs)
     {
       t.ThrowIfCancellationRequested();
-      await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+      try
+      {
+        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+      }
+      finally
+      {
+        context.ClearInputPredicateCache();
+      }
     }
   }
 

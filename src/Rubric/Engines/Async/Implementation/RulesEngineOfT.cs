@@ -1,3 +1,4 @@
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
@@ -123,7 +124,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   /// <inheritdoc />
   public async Task ApplyAsync(T input, IEngineContext context = null, CancellationToken token = default)
   {
-    context = Reset(context);
+    context = SetupContext(context);
     try
     {
       await ApplyItemAsync(input, context, token).ConfigureAwait(false);
@@ -139,7 +140,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     CancellationToken token = default)
   {
     if (inputs == null) throw new ArgumentNullException(nameof(inputs));
-    context = Reset(context);
+    context = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
     {
       try
@@ -160,7 +161,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     CancellationToken token = default)
   {
     if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
-    context = Reset(context);
+    context = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
     {
       try
@@ -215,6 +216,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(
         r => Task.Run(async () =>
@@ -223,25 +225,18 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
           {
             await this.ApplyAsyncPreRule(ctx, r, i, t2).ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(_ => cts.Dispose(),
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
-  }
-
-  private IEngineContext Reset(IEngineContext context)
-  {
-    context ??= new EngineContext();
-    context[EngineContextExtensions.EngineKey] = this;
-    context[EngineContextExtensions.TraceIdKey] = Guid.NewGuid().ToString();
-    return context;
   }
 
   private async Task ApplyManyAsync(IAsyncEnumerable<T> inputs, IEngineContext context, CancellationToken t)
