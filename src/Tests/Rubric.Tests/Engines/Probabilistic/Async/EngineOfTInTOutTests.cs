@@ -10,6 +10,29 @@ namespace Rubric.Tests.Engines.Probabilistic.Async;
 public class EngineOfTInTOutTests
 {
   [Fact]
+  public void EmptyRuleset()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>(null);
+    Assert.Empty(engine.PreRules);
+    Assert.Empty(engine.Rules);
+    Assert.Empty(engine.PostRules);
+  }
+
+  [Fact]
+  public void NullList()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>(null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((IEnumerable<TestInput>)null, new()));
+  }
+
+  [Fact]
+  public void NullInput()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>(null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((TestInput)null, new()));
+  }
+
+  [Fact]
   public void Properties()
   {
     var logger = new TestLogger();
@@ -825,6 +848,190 @@ public class EngineOfTInTOutTests
     Assert.IsType<ItemHaltException>(ex);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public async Task PrePerItemCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                                 .WithPreRule("cacherule1")
+                                 .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                 .WithAction((_, i) =>
+                                 {
+                                   i.Items.Add("");
+                                   return Task.CompletedTask;
+                                 })
+                                 .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                 .EndRule()
+                                 .WithPreRule("cacherule2")
+                                 .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                 .WithAction((_, i) =>
+                                 {
+                                   i.Items.Add("");
+                                   return Task.CompletedTask;
+                                 })
+                                 .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                 .EndRule()
+                                 .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PrePerExecutionCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                                .WithPreRule("cacherule1")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithPreRule("cacherule2")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PerItemCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i, _) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i, _) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PerExecutionCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i, _) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i, _) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PostPerExecutionCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                                .WithPostRule("cacherule1")
+                                .WithPredicate((_, o) => Task.FromResult(++o.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, o) =>
+                                {
+                                  o.Outputs.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithPostRule("cacherule2")
+                                .WithPredicate((_, o) => Task.FromResult(++o.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, o) =>
+                                {
+                                  o.Outputs.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    var output = new TestOutput();
+    await engine.ApplyAsync(items, output, context);
+    Assert.Equal(1, output.Counter);
+    Assert.Equal(2, output.Outputs.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
   }
 
   private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)

@@ -8,6 +8,21 @@ namespace Rubric.Tests.Engines;
 
 public class EngineOfTInTOutTests
 {
+  [Fact]
+  public void EmptyRuleset()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>(null);
+    Assert.Empty(engine.PreRules);
+    Assert.Empty(engine.Rules);
+    Assert.Empty(engine.PostRules);
+  }
+
+  [Fact]
+  public void NullList()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>(null);
+    Assert.Throws<ArgumentNullException>(() => engine.Apply((IEnumerable<TestInput>)null, new()));
+  }
 
   [Fact]
   public void Applies()
@@ -638,13 +653,13 @@ public class EngineOfTInTOutTests
     var engine =
       EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                    .WithPreRule("cacherule1")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerInput, "testkey"))
                    .EndRule()
                    .WithPreRule("cacherule2")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerInput, "testkey"))
                    .EndRule()
                    .Build();
@@ -667,13 +682,13 @@ public class EngineOfTInTOutTests
     var engine =
       EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                    .WithPreRule("cacherule1")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .WithPreRule("cacherule2")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .Build();
@@ -696,13 +711,13 @@ public class EngineOfTInTOutTests
     var engine =
       EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                    .WithRule("cacherule1")
-                   .WithPredicate((c, i, o) => ++i.Counter > 0)
-                   .WithAction((c, i, o) => i.Items.Add(""))
+                   .WithPredicate((_, i, _) => ++i.Counter > 0)
+                   .WithAction((_, i, _) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerInput, "testkey"))
                    .EndRule()
                    .WithRule("cacherule2")
-                   .WithPredicate((c, i, o) => ++i.Counter > 0)
-                   .WithAction((c, i, o) => i.Items.Add(""))
+                   .WithPredicate((_, i, _) => ++i.Counter > 0)
+                   .WithAction((_, i, _) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerInput, "testkey"))
                    .EndRule()
                    .Build();
@@ -725,13 +740,13 @@ public class EngineOfTInTOutTests
     var engine =
       EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                    .WithRule("cacherule1")
-                   .WithPredicate((c, i, o) => ++i.Counter > 0)
-                   .WithAction((c, i, o) => i.Items.Add(""))
+                   .WithPredicate((_, i, _) => ++i.Counter > 0)
+                   .WithAction((_, i, _) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .WithRule("cacherule2")
-                   .WithPredicate((c, i,o) => ++i.Counter > 0)
-                   .WithAction((c, i, o) => i.Items.Add(""))
+                   .WithPredicate((_, i,_) => ++i.Counter > 0)
+                   .WithAction((_, i, _) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .Build();
@@ -754,13 +769,13 @@ public class EngineOfTInTOutTests
     var engine =
       EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
                    .WithPostRule("cacherule1")
-                   .WithPredicate((c, o) => ++o.Counter > 0)
-                   .WithAction((c, o) => o.Outputs.Add(""))
+                   .WithPredicate((_, o) => ++o.Counter > 0)
+                   .WithAction((_, o) => o.Outputs.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .WithPostRule("cacherule2")
-                   .WithPredicate((c, o) => ++o.Counter > 0)
-                   .WithAction((c, o) => o.Outputs.Add(""))
+                   .WithPredicate((_, o) => ++o.Counter > 0)
+                   .WithAction((_, o) => o.Outputs.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .Build();

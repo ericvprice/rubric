@@ -4,6 +4,14 @@ namespace Rubric.Tests.Core;
 
 public class DependencyTests
 {
+  [Fact]
+  public void AttributeConstuction()
+  {
+    Assert.Throws<ArgumentNullException>(() => new DependsOnAttribute((Type)null));
+    var attr = new DependsOnAttribute(typeof(DependencyTests));
+    Assert.Equal(typeof(DependencyTests).FullName, attr.Name);
+    Assert.Equal(typeof(DependencyTests), attr.Type);
+  }
 
   [Fact]
   public void ConstructorThrowsOnEmpty()

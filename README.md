@@ -1,9 +1,9 @@
-![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%25-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![C#10](https://img.shields.io/badge/c%23-10-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%25-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![C#10](https://img.shields.io/badge/c%23-11-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 
 # Rubric
 
-Rubric is a .NET library providing synchronous and asynchronous rule engines.
+Rubric is a .NET library providing various rule engines.
 
 Features include:
 * parallel rule and item processing (for asynchronous engines)
@@ -12,6 +12,7 @@ Features include:
 * convenient dependency injection options and a fluent builder interface
 * short-circuiting exceptions to halt the processing of an item or the entire engine
 * user-injected exception handling
+* asynchronous and probabilistic engines
 
 ## Motivation
 
@@ -21,15 +22,15 @@ A rule engine is essentially a version of the [strategy pattern](https://en.wiki
 
 ### Engines
 
-Engines are created from rules and apply them to one or several input objects and potentially an output object.  Synchronous engines run their rules sequentially as determined by their dependency ordering.  Asynchronous engines can execute in parallel, automatically determining what rules can be run in parallel given their dependencies, and process items in parallel as well, and allow for asynchronous rule operations.
+Engines are created from rules and apply them to one or several input objects and potentially an output object.  Synchronous engines run their rules sequentially as determined by their dependency ordering.  Asynchronous engines can execute in parallel, automatically determining what rules can be run in parallel given their dependencies, and can process items in parallel as well, while allowing for asynchronous rule operations.  Probabilistic engines execute their rules based on a probability returned by the rule instead of a hard binary choice.
 
 ### Engine Contexts
 
-Engine contexts act as a holder of convenient properties about the engine current executing and as a per-execution temporary object stash where rules can loosely communicate with each other.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing with the context.
+Engine contexts act as a holder of convenient properties about the engine current executing and as a per-execution temporary object stash for caching and loose communicate among rules.  When using parallelized processing in asynchronous engines, the rule execution order is not guaranteed unless dependency relationships specify them: be aware of possible race conditions when dealing with the context.
 
 ### Rules
 
-Rules come in three type, in both synchronous and asynchronous varieties.  Engines will execute the rules in this order, and all rules of one type are executed before the next type is run:
+Rules come in potentially three types, for all engine types.  Engines will execute the rules in this order, and all rules of one type are executed before the next type is run:
 
 1) Preprocessing rules are conditionally applied to an input object.
 2) Processing rules conditionally apply an input object to the output object.
@@ -41,7 +42,7 @@ All rules are constructed from two implemented (or fluently provided) methods:
 * `DoesApply` is the predicate function that dynamically determines whether the rule runs.
 * `Apply` is the processing method that applies the rule.
 
-Rules can be either implemented as classes with declarative dependencies, or built via fluent builders with explicit dependencies.  Engine constructors are also provided for convenient usage with dependency injection libraries, and are highly recommended for most scenarios.  A [companion library](/src/Rubric.Extensions/README.md) is provided for integration with the [`Microsoft.Extensions.DependencyInjection`](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) library.
+Rules can be either implemented as classes with declarative dependencies or built via fluent builders with explicit dependencies.  Engine constructors are also provided for convenient usage with dependency injection libraries, and are highly recommended for most scenarios.  A [companion library](/src/Rubric.Extensions/README.md) is provided for integration with the [`Microsoft.Extensions.DependencyInjection`](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) library.
 
 ## Usage
 ---
@@ -156,7 +157,7 @@ public MyOutputType ProcessInputsWithFluentConstruction(IEnumerable<MyInputType>
 }
  ```
 
-Asynchronous engine composition follows analogously.
+Asynchronous and probabilistic engine compositions follow analogously.
 
 ## Exceptions and Exception Handling
 
@@ -172,9 +173,19 @@ In asynchronous engines, all the above statements apply, except that if one is e
 
 `TaskCancelledException`s caused by user-cancellation of the provided token will not be processed by the exception handling mechanism.  The user should handle this exception appropriately.  Uncaught `TaskCancellationException`s not arising from the same token provided by the user will be processed as any other normal exception.
 
+
+## Predicate Caching
+
+For predicates that may take a long time to execute (or we only desire to execute once for another reason) predicate caching is available to reduce computation.
+
+* For class-based rules, use a base rule class, and decorate it with a `PredicateCacingAttribute`.  All subclasses will use the results of a single execution.
+* For fluently-built or dynamic rules, specify the predicate caching behavior and the shared key dynamcially.
+* Predicate caching can be scoped to either the input being processed or the the engine execution as a whole
+
 ## Logging
 
 The engines accept an optional `Microsoft.Extensions.Logging.Abstractions.ILogger` instance and will output trace statements as they execute user code.  Engines will set context information in the logger about the execution status, including information about executions, rules, and objects being processed.  This logger can be accessed via the context in rule implementations.
+
 
 ## License
 

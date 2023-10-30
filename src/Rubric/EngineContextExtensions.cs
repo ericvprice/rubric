@@ -35,6 +35,7 @@ public static class EngineContextExtensions
 
   internal static void SetExecutionInfo(this IEngineContext context, IRuleEngine engine, string traceId)
   {
+    if (context == null) throw new ArgumentNullException(nameof(context));
     context[EngineKey] = engine;
     context[TraceIdKey] = traceId;
   }

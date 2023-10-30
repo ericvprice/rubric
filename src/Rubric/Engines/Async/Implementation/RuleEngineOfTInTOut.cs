@@ -4,7 +4,6 @@ using Rubric.Dependency;
 using Rubric.Engines.Implementation;
 using Rubric.Rules.Async;
 using Rubric.Rulesets.Async;
-using System.Runtime.ExceptionServices;
 
 namespace Rubric.Engines.Async.Implementation;
 
@@ -192,6 +191,10 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         }
       }
       catch (EngineException) { }
+	  finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -215,6 +218,10 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         }
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -222,7 +229,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public async Task ApplyParallelAsync(
     IEnumerable<TIn> inputs,
     TOut output,
-    IEngineContext context,
+    IEngineContext context = null,
     CancellationToken token = default)
   {
     context = SetupContext(context);
@@ -233,6 +240,10 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         await ApplyManyAsyncParallel(inputs, output, context, token).ConfigureAwait(false);
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -240,7 +251,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   public async Task ApplyAsync(
     IAsyncEnumerable<TIn> inputStream,
     TOut output,
-    IEngineContext context,
+    IEngineContext context = null,
     CancellationToken token = default)
   {
     context = SetupContext(context);
@@ -253,6 +264,10 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         await ApplyPostAsync(output, context, token).ConfigureAwait(false);
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -286,19 +301,27 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <returns>An awaitable task.</returns>
   private async Task ApplyItemSerial(IEngineContext ctx, TIn i, TOut o, CancellationToken t)
   {
-    foreach (var set in _preRules)
-      foreach (var rule in set)
-      {
-        t.ThrowIfCancellationRequested();
-        await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
-      }
+    try
+    {
+      foreach (var set in _preRules)
+        foreach (var rule in set)
+        {
+          t.ThrowIfCancellationRequested();
+          await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+        }
 
-    foreach (var set in _rules)
-      foreach (var rule in set)
-      {
-        t.ThrowIfCancellationRequested();
-        await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
-      }
+      foreach (var set in _rules)
+        foreach (var rule in set)
+        {
+          t.ThrowIfCancellationRequested();
+          await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
+        }
+    }
+    catch (ItemHaltException) { }
+    finally
+    {
+      ctx.ClearInputPredicateCache();
+    }
   }
 
   /// <summary>
@@ -412,22 +435,15 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
             await ApplyItemAsync(i, o, ctx, t2).ConfigureAwait(false);
           }
           catch (ItemHaltException) { }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(c =>
-                             {
-                               cts.Dispose();
-                               if (c.Exception != null)
-                               {
-                                 var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
-                                 info.Throw();
-                               }
-                             },
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
@@ -445,6 +461,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(
         r => Task.Run(async () =>
@@ -453,19 +470,15 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
           {
             await this.ApplyAsyncPreRule(ctx, r, i, t2).ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(c => { cts.Dispose();
-                                    if (c.Exception != null)
-                                    {
-                                      var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
-                                      info.Throw();
-                                    }},
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
@@ -484,6 +497,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(r => Task.Run(async () =>
       {
@@ -491,21 +505,15 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
         {
           await this.ApplyAsyncRule(ctx, r, i, o, t2).ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+          userException = e;
           cts.Cancel();
           throw;
         }
       }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(c => {
-                               cts.Dispose();
-                               if (c.Exception != null)
-                               {
-                                 var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
-                                 info.Throw();
-                               }
-                             },
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);
@@ -523,29 +531,24 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   {
     var cts = CancellationTokenSource.CreateLinkedTokenSource(t);
     var t2 = cts.Token;
+    Exception userException = null;
     var tasks =
       rules.Select(
         r => Task.Run(async () =>
         {
           try
           {
-            await this.ApplyAsyncPreRule(ctx, r, o, t2).ConfigureAwait(false);
+            await this.ApplyAsyncPostRule(ctx, r, o, t2).ConfigureAwait(false);
           }
-          catch (Exception)
+          catch (Exception e)
           {
+            userException = e;
             cts.Cancel();
             throw;
           }
         }, t2));
     return Task.WhenAll(tasks)
-               .ContinueWith(c => {
-                               cts.Dispose();
-                               if (c.Exception != null)
-                               {
-                                 var info = ExceptionDispatchInfo.Capture(c.Exception.InnerExceptions.Last());
-                                 info.Throw();
-                               }
-                             },
+               .ContinueWith(task => ParallelCleanup(task, cts, userException),
                              t,
                              TaskContinuationOptions.HideScheduler,
                              TaskScheduler.Default);

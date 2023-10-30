@@ -33,10 +33,11 @@ public class AsyncConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     try
     {
       // double check after lock
-      if (_inner.TryGetValue(key, out value))
-        return value;
-      value = await factory(key).ConfigureAwait(false);
-      _inner.TryAdd(key, value);
+      if (!_inner.TryGetValue(key, out value))
+      {
+        value = await factory(key).ConfigureAwait(false);
+        _inner.TryAdd(key, value);
+      }
     }
     finally
     {

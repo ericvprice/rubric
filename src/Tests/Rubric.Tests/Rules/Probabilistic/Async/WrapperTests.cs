@@ -8,7 +8,7 @@ public class WrapperTests
   [Fact]
   public async void WrapperOfT()
   {
-    var sync = new TestRules.Probabilistic.TestPreRule(1);
+    var sync = new TestRules.Probabilistic.TestPreRule(1, true, new (CacheBehavior.PerExecution, "test"));
     var async = sync.WrapAsync();
     Assert.Contains(nameof(TestPreRule), async.Name);
     Assert.Contains("wrapped", async.Name);
@@ -19,12 +19,14 @@ public class WrapperTests
     Assert.Equal(sync.DoesApply(null, testInput), await async.DoesApply(null, testInput, default));
     await async.Apply(null, testInput, default);
     Assert.True(testInput.InputFlag);
+    Assert.Equal(CacheBehavior.PerExecution, async.CacheBehavior.Behavior);
+    Assert.Equal("test", async.CacheBehavior.Key);
   }
 
   [Fact]
   public async void WrapperOfTInTOut()
   {
-    var sync = new TestRules.Probabilistic.TestRule(1);
+    var sync = new TestRules.Probabilistic.TestRule(1, true, new(CacheBehavior.PerExecution, "test"));
     var async = sync.WrapAsync();
     Assert.Contains("TestRule", async.Name);
     Assert.Contains("wrapped", async.Name);
@@ -38,5 +40,7 @@ public class WrapperTests
     await async.Apply(null, testInput, testOutput, default);
     Assert.True(testOutput.TestFlag);
     Assert.True(testInput.InputFlag);
+    Assert.Equal(CacheBehavior.PerExecution, async.CacheBehavior.Behavior);
+    Assert.Equal("test", async.CacheBehavior.Key);
   }
 }

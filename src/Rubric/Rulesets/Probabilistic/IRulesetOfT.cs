@@ -3,7 +3,7 @@ using Rubric.Rules.Probabilistic;
 namespace Rubric.Rulesets.Probabilistic;
 
 /// <summary>
-///   A set of rules for a rule engine.
+///   A set of rules for a probabilistic rule engine.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRuleset<T>

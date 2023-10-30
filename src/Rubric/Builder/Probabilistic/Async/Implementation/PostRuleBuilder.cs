@@ -1,7 +1,8 @@
 using Rubric.Rules.Probabilistic.Async;
 
 namespace Rubric.Builder.Probabilistic.Async.Implementation;
-
+ 
+/// <inheritdoc cref="IPostRuleBuilder{TIn,TOut}"/>
 internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class
@@ -78,7 +79,7 @@ internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TI
   public IEngineBuilder<TIn, TOut> EndRule()
   {
     _parentBuilder.AsyncRuleset.AddPostRule(
-      new LambdaRule<TOut>(Name, _predicate, _action, Dependencies, Provides));
+      new LambdaRule<TOut>(Name, _predicate, _action, Dependencies, Provides, Caching));
     return _parentBuilder;
   }
 }

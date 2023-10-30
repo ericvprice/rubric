@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Rubric;
@@ -6,6 +7,7 @@ namespace Rubric;
 ///   Base engine exception class.
 /// </summary>
 [Serializable]
+[ExcludeFromCodeCoverage]
 public class EngineException : Exception
 {
   /// <summary>

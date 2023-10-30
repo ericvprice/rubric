@@ -2,6 +2,7 @@ using Rubric.Rules.Probabilistic;
 
 namespace Rubric.Builder.Probabilistic.Implementation;
 
+/// <inheritdoc cref="IPostRuleBuilder{TIn,TOut}"/>
 internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

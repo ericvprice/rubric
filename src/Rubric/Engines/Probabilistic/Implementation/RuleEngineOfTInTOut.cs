@@ -6,11 +6,7 @@ using Rubric.Rulesets.Probabilistic;
 
 namespace Rubric.Engines.Probabilistic.Implementation;
 
-/// <summary>
-///   Default implementation of a rule engine.
-/// </summary>
-/// <typeparam name="TIn">The input type.</typeparam>
-/// <typeparam name="TOut">The output type.</typeparam>
+/// <inheritdoc cref="IRuleEngine{TIn,TOut}"/>
 public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TIn, TOut>
   where TIn : class
   where TOut : class
@@ -114,6 +110,10 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         ApplyPostRules(output, context);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -121,16 +121,20 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
   public void Apply(IEnumerable<TIn> inputs, TOut output, IEngineContext context = null)
   {
     if (inputs == null) throw new ArgumentNullException(nameof(inputs));
-    var ctx = SetupContext(context);
-    using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
+    context = SetupContext(context);
+    using (Logger.BeginScope("ExecutionId", context.GetTraceId()))
     {
       try
       {
         foreach (var input in inputs)
-          ApplyItem(input, output, ctx);
-        ApplyPostRules(output, ctx);
+          ApplyItem(input, output, context);
+        ApplyPostRules(output, context);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -152,6 +156,10 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
             this.ApplyRule(ctx, rule, input, output);
       }
       catch (ItemHaltException) { }
+      finally
+      {
+        ctx.ClearInputPredicateCache();
+      }
     }
   }
 

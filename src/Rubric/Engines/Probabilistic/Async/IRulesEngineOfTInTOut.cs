@@ -3,7 +3,7 @@ using Rubric.Rules.Probabilistic.Async;
 namespace Rubric.Engines.Probabilistic.Async;
 
 /// <summary>
-///   A rule engine.
+///   An asynchronous probabilistic rule engine.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>

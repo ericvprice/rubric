@@ -31,7 +31,7 @@ public readonly struct PredicateCaching : IEquatable<PredicateCaching>
     => obj is PredicateCaching caching && Equals(caching);
 
   /// <inheritdoc />
-  public override int GetHashCode() => Key.GetHashCode(StringComparison.Ordinal) * 33 + Behavior.GetHashCode();
+  public override int GetHashCode() => (Key?.GetHashCode(StringComparison.Ordinal) ?? 1) * 33 + Behavior.GetHashCode();
 
   /// <summary>
   ///   Equality comparison

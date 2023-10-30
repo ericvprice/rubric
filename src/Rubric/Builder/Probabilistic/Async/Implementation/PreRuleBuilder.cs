@@ -2,6 +2,7 @@ using Rubric.Rules.Probabilistic.Async;
 
 namespace Rubric.Builder.Probabilistic.Async.Implementation;
 
+/// <inheritdoc cref="IPreRuleBuilder{TIn,TOut}"/>
 internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class
@@ -76,7 +77,7 @@ internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn,
   public IEngineBuilder<TIn, TOut> EndRule()
   {
     _parentBuilder.AsyncRuleset.AddPreRule(
-      new LambdaRule<TIn>(Name, _predicate, _action, Dependencies, Provides));
+      new LambdaRule<TIn>(Name, _predicate, _action, Dependencies, Provides, Caching));
     return _parentBuilder;
   }
 }

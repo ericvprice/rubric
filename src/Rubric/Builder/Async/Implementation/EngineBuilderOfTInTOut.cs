@@ -7,6 +7,7 @@ using Rubric.Rulesets.Async;
 
 namespace Rubric.Builder.Async.Implementation;
 
+/// <inheritdoc />
 internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

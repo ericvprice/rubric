@@ -3,7 +3,7 @@ using Rubric.Rules.Probabilistic;
 namespace Rubric.Engines.Probabilistic;
 
 /// <summary>
-///   A rule engine the processes one or many inputs.
+///   A probabilistic rule engine the processes one or many inputs.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IRuleEngine<in T> : IRuleEngine

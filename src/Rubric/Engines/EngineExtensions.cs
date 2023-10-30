@@ -52,21 +52,19 @@ internal static class EngineExtensions
                                      .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, t)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, t)),
-        _ => r.DoesApply(ctx, i, t),
+        _ => r.DoesApply(ctx, i, t)
       };
       var result = await task.ConfigureAwait(false);
-      if (result)
-      {
-        using var logCtx = e.Logger.BeginScope(r.Name);
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        await r.Apply(ctx, i, t).ConfigureAwait(false);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      using var logCtx = e.Logger.BeginScope(r.Name);
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      await r.Apply(ctx, i, t).ConfigureAwait(false);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {
@@ -97,21 +95,19 @@ internal static class EngineExtensions
       {
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, o, t)),
-        _ => r.DoesApply(ctx, o, t),
+        _ => r.DoesApply(ctx, o, t)
       };
       var result = await task.ConfigureAwait(false);
-      if (result)
-      {
-        using var logCtx = e.Logger.BeginScope(r.Name);
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        await r.Apply(ctx, o, t).ConfigureAwait(false);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      using var logCtx = e.Logger.BeginScope(r.Name);
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      await r.Apply(ctx, o, t).ConfigureAwait(false);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {
@@ -146,21 +142,19 @@ internal static class EngineExtensions
                                      .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o, t)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAddAsync(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o, t)),
-        _ => r.DoesApply(ctx, i, o, t),
+        _ => r.DoesApply(ctx, i, o, t)
       };
       var result = await task.ConfigureAwait(false);
-      if (result)
-      {
-        using var logCtx = e.Logger.BeginScope(r.Name);
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        await r.Apply(ctx, i, o, t).ConfigureAwait(false);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      using var logCtx = e.Logger.BeginScope(r.Name);
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      await r.Apply(ctx, i, o, t).ConfigureAwait(false);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {
@@ -190,19 +184,17 @@ internal static class EngineExtensions
                                      .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i)),
-        _ => r.DoesApply(ctx, i),
+        _ => r.DoesApply(ctx, i)
       };
-      if (result)
-      {
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        r.Apply(ctx, i);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      r.Apply(ctx, i);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {
@@ -234,19 +226,18 @@ internal static class EngineExtensions
                                      .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, i, o)),
-        _ => r.DoesApply(ctx, i, o),
+        _ => r.DoesApply(ctx, i, o)
       };
-      if (result)
-      {
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        r.Apply(ctx, i, o);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      r.Apply(ctx, i, o);
+      _doneLogger(e.Logger, r.Name, null);
+
     }
     catch (Exception ex)
     {
@@ -274,19 +265,18 @@ internal static class EngineExtensions
       {
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAdd(r.CacheBehavior.Key, _ => r.DoesApply(ctx, o)),
-        _ => r.DoesApply(ctx, o),
+        _ => r.DoesApply(ctx, o)
       };
-      if (result)
-      {
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        r.Apply(ctx, o);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      r.Apply(ctx, o);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {

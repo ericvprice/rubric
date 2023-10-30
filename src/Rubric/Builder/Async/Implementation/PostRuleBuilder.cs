@@ -2,6 +2,7 @@ using Rubric.Rules.Async;
 
 namespace Rubric.Builder.Async.Implementation;
 
+/// <inheritdoc cref="IPreRuleBuilder{TIn,TOut}"/>
 internal class PostRuleBuilder<TIn, TOut> : RuleBuilderBase, IPostRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

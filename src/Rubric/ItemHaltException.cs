@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Rubric;
@@ -10,6 +11,7 @@ namespace Rubric;
 ///   3) If processing multiple items, further items will be processed.
 ///   4) For asynchronous engines, the engine will exit with a TaskCancelledException (with )
 /// </summary>
+[ExcludeFromCodeCoverage]
 [Serializable]
 public class ItemHaltException : EngineException
 {

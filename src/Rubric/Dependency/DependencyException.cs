@@ -1,8 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Rubric.Dependency;
 
 /// <summary>
 ///   Exception thrown when errors are encountered resolving dependencies.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class DependencyException : Exception
 {
   /// <summary>

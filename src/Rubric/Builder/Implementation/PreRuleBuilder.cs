@@ -2,6 +2,7 @@ using Rubric.Rules;
 
 namespace Rubric.Builder.Implementation;
 
+/// <inheritdoc cref="IPreRuleBuilder{TIn,TOut}"/>/>
 internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

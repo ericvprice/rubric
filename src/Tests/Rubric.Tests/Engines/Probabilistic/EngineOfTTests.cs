@@ -10,6 +10,27 @@ namespace Rubric.Tests.Engines.Probabilistic;
 public class EngineOfTTests
 {
   [Fact]
+  public void EmptyRuleset()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Empty(engine.Rules);
+  }
+
+  [Fact]
+  public void NullList()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Throws<ArgumentNullException>(() => engine.Apply((IEnumerable<TestInput>)null));
+  }
+
+  [Fact]
+  public void NullItem()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Throws<ArgumentNullException>(() => engine.Apply((TestInput)null));
+  }
+
+  [Fact]
   public void Applies()
   {
     var rule = new TestDefaultPreRule();
@@ -404,4 +425,119 @@ public class EngineOfTTests
     Assert.Equal(ExceptionHandlers.Rethrow, engine.ExceptionHandler);
   }
 
+  [Fact]
+  public void ExceptionHandlingException()
+  {
+    var logger = new TestLogger();
+    var ruleSet = new Ruleset<TestInput>();
+    var engine = new RuleEngine<TestInput>(ruleSet, ExceptionHandlers.Rethrow, logger);
+    Assert.Throws<ArgumentNullException>(() => Rubric.Engines.Implementation.BaseRuleEngine.HandleException(new(), null, new EngineContext(), null, null, null));
+    Assert.Throws<ArgumentNullException>(() => Rubric.Engines.Implementation.BaseRuleEngine.HandleException(new(), engine, null, null, null, null));
+  }
+
+  [Fact]
+  public void PerItemCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInput<TestInput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                                .WithAction((_, i) => i.Items.Add(""))
+                                .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                                .WithAction((_, i) => i.Items.Add(""))
+                                .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void PerExecutionCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInput<TestInput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                   .WithAction((_, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                   .WithAction((_, i) => i.Items.Add(""))
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void CachesClearedOnItemHalt()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInput<TestInput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                                .WithAction((_, i) => i.Items.Add(""))
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                                .WithAction((_, _) => throw new ItemHaltException())
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void CachesClearedOnEngineHalt()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInput<TestInput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                                .WithAction((_, i) => i.Items.Add(""))
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i) => ++i.Counter > 0 ? 1 : 0)
+                                .WithAction((_, _) => throw new EngineHaltException())
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    engine.Apply(items, context);
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
 }

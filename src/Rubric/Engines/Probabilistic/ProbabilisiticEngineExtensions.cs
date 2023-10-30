@@ -5,10 +5,8 @@ using Rubric.Rules.Probabilistic.Async;
 
 namespace Rubric.Engines.Probabilistic;
 
-internal static class ProbabilisiticEngineExtensions
+internal static class ProbabilisticEngineExtensions
 {
-  public const string RandomKey = "__RANDOM";
-
   private const string DoesNotApply = "Rule {Name} does not apply.";
   private const string Applies = "Rule {Name} does not applies.";
   private const string Applying = "Applying {Name}.";
@@ -193,17 +191,15 @@ internal static class ProbabilisiticEngineExtensions
                                          .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, i)),
         _ => e.Random.NextDouble() < r.DoesApply(ctx, i)
       };
-      if (result)
-      {
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        r.Apply(ctx, i);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      r.Apply(ctx, i);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {
@@ -236,17 +232,15 @@ internal static class ProbabilisiticEngineExtensions
                                          .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, i, o)),
         _ => e.Random.NextDouble() < r.DoesApply(ctx, i, o)
       };
-      if (result)
-      {
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        r.Apply(ctx, i, o);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      r.Apply(ctx, i, o);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {
@@ -271,23 +265,19 @@ internal static class ProbabilisiticEngineExtensions
       using var scope = e.Logger.BeginScope("Rule", r.Name);
       var result = r.CacheBehavior.Behavior switch
       {
-        CacheBehavior.PerInput => ctx.GetInputPredicateCache()
-                                     .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, o)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
                                          .GetOrAdd(r.CacheBehavior.Key, _ => e.Random.NextDouble() < r.DoesApply(ctx, o)),
         _ => e.Random.NextDouble() < r.DoesApply(ctx, o)
       };
-      if (result)
-      {
-        _appliesLogger(e.Logger, r.Name, null);
-        _applyingLogger(e.Logger, r.Name, null);
-        r.Apply(ctx, o);
-        _doneLogger(e.Logger, r.Name, null);
-      }
-      else
+      if (!result)
       {
         _doesNotApplyLogger(e.Logger, r.Name, null);
+        return;
       }
+      _appliesLogger(e.Logger, r.Name, null);
+      _applyingLogger(e.Logger, r.Name, null);
+      r.Apply(ctx, o);
+      _doneLogger(e.Logger, r.Name, null);
     }
     catch (Exception ex)
     {

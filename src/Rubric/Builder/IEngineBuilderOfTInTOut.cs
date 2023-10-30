@@ -87,7 +87,7 @@ public interface IEngineBuilder<TIn, TOut>
   IEngineBuilder<TIn, TOut> WithPostRules(IEnumerable<IRule<TOut>> rules);
 
   /// <summary>
-  ///   Set the exception handler for this method.
+  ///   Set the exception handler for this engine.
   /// </summary>
   /// <param name="handler">The handler.</param>
   /// <returns>A fluent continuation.</returns>

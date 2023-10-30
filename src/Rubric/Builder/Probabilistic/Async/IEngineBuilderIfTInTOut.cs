@@ -5,7 +5,7 @@ using Rubric.Rules.Probabilistic;
 namespace Rubric.Builder.Probabilistic.Async;
 
 /// <summary>
-///   A fluent interface for building a rule engine.
+///   A fluent interface for building an asynchronous probabilistic rule engine.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>
@@ -143,7 +143,7 @@ public interface IEngineBuilder<TIn, TOut>
   /// <summary>
   ///   Set the exception handler for this engine.
   /// </summary>
-  /// <param name="handler"></param>
+  /// <param name="handler">The exception handler.</param>
   /// <returns>A fluent continuation.</returns>
   IEngineBuilder<TIn, TOut> WithExceptionHandler(IExceptionHandler handler);
 

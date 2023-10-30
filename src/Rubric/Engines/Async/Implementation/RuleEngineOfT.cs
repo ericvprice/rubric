@@ -1,4 +1,3 @@
-using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
@@ -151,6 +150,10 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
           await ApplyManySerialAsync(inputs, context, token).ConfigureAwait(false);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -169,6 +172,10 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
         await ApplyManyAsync(inputStream, context, token).ConfigureAwait(false);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -188,27 +195,41 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
 
   private async Task ApplySerial(IEngineContext ctx, T i, CancellationToken t)
   {
-    foreach (var set in _rules)
-      foreach (var rule in set)
-      {
-        t.ThrowIfCancellationRequested();
-        try
+    try
+    {
+      foreach (var set in _rules)
+        foreach (var rule in set)
         {
-          await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+          t.ThrowIfCancellationRequested();
+          try
+          {
+            await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+          }
+          catch (ItemHaltException)
+          {
+            break;
+          }
         }
-        catch (ItemHaltException)
-        {
-          return;
-        }
-      }
+    }
+    finally
+    {
+      ctx.ClearInputPredicateCache();
+    }
   }
 
   private async Task ApplyParallel(IEngineContext ctx, T i, CancellationToken t)
   {
-    foreach (var set in _rules)
+    try
     {
-      t.ThrowIfCancellationRequested();
-      await Parallelize(ctx, set, i, t).ConfigureAwait(false);
+      foreach (var set in _rules)
+      {
+        t.ThrowIfCancellationRequested();
+        await Parallelize(ctx, set, i, t).ConfigureAwait(false);
+      }
+    }
+    finally
+    {
+      ctx.ClearInputPredicateCache();
     }
   }
 
@@ -251,6 +272,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     {
       t.ThrowIfCancellationRequested();
       await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+      context.ClearInputPredicateCache();
     }
   }
 

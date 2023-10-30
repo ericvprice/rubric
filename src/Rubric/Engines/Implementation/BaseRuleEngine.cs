@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using System.Runtime.ExceptionServices;
 
 namespace Rubric.Engines.Implementation;
@@ -25,6 +26,12 @@ public abstract class BaseRuleEngine : IRuleEngine
 
   /// <summary>
   ///   Handle an otherwise unhandled exception during an engine run.
+  ///   For TaskCanceledExceptions, if it's related the the root token of the engine run, we return false and let the exception bubble up as expected.
+  ///   All other TaskCanceledExceptions, they are related to parallel control flow and "belong" to the engine.  These are handled as a 
+  ///   For EngineExceptions, we return false so the engine logic will properly handle it.  The exception is not bubbled.
+  ///   In both cases above, the LastException property is set to the exception, regardless of whether the exception is bubbled.
+  ///   If not otherwise explicitly handled, run the user-provided exception handler and return it's return value.  These exception handlers may themselves throw EngineExceptions,
+  ///   which are handled identically as if they were caught directly.
   /// </summary>
   /// <param name="ex">The exception.</param>
   /// <param name="e">The currently executing engine.</param>
@@ -34,7 +41,7 @@ public abstract class BaseRuleEngine : IRuleEngine
   /// <param name="rule">The rule that generated the exception.</param>
   /// <param name="t">The current cancellation token.</param>
   /// <returns>Whether the exception should be considered handled.</returns>
-  protected internal static bool HandleException(
+  internal static bool HandleException(
     Exception ex,
     IRuleEngine e,
     IEngineContext ctx,
@@ -87,30 +94,31 @@ public abstract class BaseRuleEngine : IRuleEngine
     }
   }
 
-  protected static void ParallelCleanup(Task t, CancellationTokenSource cts, Exception userException)
+  internal static void ParallelCleanup(Task t, CancellationTokenSource cts, Exception userException)
   {
     if (t == null) throw new ArgumentNullException(nameof(t));
     if (cts == null) throw new ArgumentNullException(nameof(cts));
     cts.Dispose();
+    ExceptionDispatchInfo info = null;
     //Preserve original stack traces and throw.
     if (t.IsCanceled && userException != null)
     {
-      var info = ExceptionDispatchInfo.Capture(userException);
-      info.Throw();
+      info = ExceptionDispatchInfo.Capture(userException);
     }
     if (t.Exception != null)
     {
-      var info = ExceptionDispatchInfo.Capture(t.Exception.InnerExceptions.Last());
-      info.Throw();
+      info = ExceptionDispatchInfo.Capture(t.Exception.InnerExceptions.Last());
     }
+    info?.Throw();
+    Debug.WriteLine("foo");
   }
-  
+
   internal IEngineContext SetupContext(IEngineContext ctx)
   {
     ctx ??= new EngineContext();
     ctx.SetExecutionInfo(this, Guid.NewGuid().ToString());
     ctx.ClearAllCaches();
-    ctx.SetLastException(null);
+    ctx.ClearLastException();
     return ctx;
   }
 }

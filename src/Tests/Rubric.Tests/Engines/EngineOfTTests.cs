@@ -9,6 +9,27 @@ namespace Rubric.Tests.Engines;
 public class EngineOfTTests
 {
   [Fact]
+  public void EmptyRuleset()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Empty(engine.Rules);
+    }
+
+  [Fact]
+  public void NullList()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Throws<ArgumentNullException>(() => engine.Apply((IEnumerable<TestInput>)null));
+  }
+
+  [Fact]
+  public void NullItem()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Throws<ArgumentNullException>(() => engine.Apply((TestInput)null));
+  }
+
+  [Fact]
   public void Applies()
   {
     var rule = new TestDefaultPreRule();
@@ -408,13 +429,13 @@ public class EngineOfTTests
     var engine =
       EngineBuilder.ForInput<TestInput>()
                    .WithRule("cacherule1")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerInput, "testkey"))
                    .EndRule()
                    .WithRule("cacherule2")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerInput, "testkey"))
                    .EndRule()
                    .Build();
@@ -437,13 +458,13 @@ public class EngineOfTTests
     var engine =
       EngineBuilder.ForInput<TestInput>()
                    .WithRule("cacherule1")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .WithRule("cacherule2")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .Build();
@@ -466,13 +487,13 @@ public class EngineOfTTests
     var engine =
       EngineBuilder.ForInput<TestInput>()
                    .WithRule("cacherule1")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .WithRule("cacherule2")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => throw new ItemHaltException())
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, _) => throw new ItemHaltException())
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .Build();
@@ -490,13 +511,13 @@ public class EngineOfTTests
     var engine =
       EngineBuilder.ForInput<TestInput>()
                    .WithRule("cacherule1")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => i.Items.Add(""))
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, i) => i.Items.Add(""))
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .WithRule("cacherule2")
-                   .WithPredicate((c, i) => ++i.Counter > 0)
-                   .WithAction((c, i) => throw new EngineHaltException())
+                   .WithPredicate((_, i) => ++i.Counter > 0)
+                   .WithAction((_, _) => throw new EngineHaltException())
                    .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
                    .EndRule()
                    .Build();
@@ -506,5 +527,12 @@ public class EngineOfTTests
     engine.Apply(items, context);
     Assert.Empty(context.GetInputPredicateCache());
     Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public void ParallelCleanupExceptions()
+  {
+    Assert.Throws<ArgumentNullException>(() => BaseRuleEngine.ParallelCleanup(null, new(), null));
+    Assert.Throws<ArgumentNullException>(() => BaseRuleEngine.ParallelCleanup(Task.CompletedTask, null, null));
   }
 }

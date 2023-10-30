@@ -3,7 +3,7 @@ using Rubric.Rules.Probabilistic;
 namespace Rubric.Engines.Probabilistic;
 
 /// <summary>
-///   A rule engine.
+///   A probabilistic rule engine.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>

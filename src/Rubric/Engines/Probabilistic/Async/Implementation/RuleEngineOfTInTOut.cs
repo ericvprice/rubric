@@ -123,6 +123,10 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         }
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -146,6 +150,10 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         }
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -164,6 +172,10 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         await ApplyManyAsyncParallel(inputs, output, context, token).ConfigureAwait(false);
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -184,6 +196,10 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
         await ApplyPostAsync(output, context, token).ConfigureAwait(false);
       }
       catch (EngineException) { }
+      finally
+      {
+        context.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -217,19 +233,27 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
   /// <returns>An awaitable task.</returns>
   private async Task ApplyItemSerial(IEngineContext ctx, TIn i, TOut o, CancellationToken t)
   {
-    foreach (var set in _preRules)
-      foreach (var rule in set)
-      {
-        t.ThrowIfCancellationRequested();
-        await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
-      }
+    try
+    {
+      foreach (var set in _preRules)
+        foreach (var rule in set)
+        {
+          t.ThrowIfCancellationRequested();
+          await this.ApplyAsyncPreRule(ctx, rule, i, t).ConfigureAwait(false);
+        }
 
-    foreach (var set in _rules)
-      foreach (var rule in set)
-      {
-        t.ThrowIfCancellationRequested();
-        await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
-      }
+      foreach (var set in _rules)
+        foreach (var rule in set)
+        {
+          t.ThrowIfCancellationRequested();
+          await this.ApplyAsyncRule(ctx, rule, i, o, t).ConfigureAwait(false);
+        }
+    }
+    catch (ItemHaltException) { }
+    finally
+    {
+      ctx.ClearInputPredicateCache();
+    }
   }
 
   /// <summary>
@@ -340,7 +364,9 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
       {
         await ApplyItemAsync(i, o, ctx, t2).ConfigureAwait(false);
       }
-      catch (ItemHaltException) { }
+      catch (ItemHaltException)
+      {
+      }
       catch (Exception e)
       {
         userException = e;

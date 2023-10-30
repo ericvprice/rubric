@@ -10,8 +10,8 @@ namespace Rubric.Rules.Scripted;
 /// <typeparam name="T">The rule type.</typeparam>
 public class ScriptedRule<T> : Async.IRule<T>
 {
-  private const string DOES_APPLY_TRAILER = "return DoesApply(Context, Input, Token);";
-  private const string APPLY_TRAILER = "return Apply(Context, Input, Token);";
+  private const string DoesApplyTrailer = "return DoesApply(Context, Input, Token);";
+  private const string ApplyTrailer = "return Apply(Context, Input, Token);";
   private static readonly Type _contextType = typeof(ScriptedRuleContext<T>);
   private readonly ScriptRunner<Task> _apply;
   private readonly ScriptRunner<Task<bool>> _doesApply;
@@ -41,9 +41,9 @@ public class ScriptedRule<T> : Async.IRule<T>
     var baseCode = Create<bool>(script.FilterScript(),
                                 options,
                                 _contextType);
-    _doesApply = baseCode.ContinueWith<Task<bool>>(DOES_APPLY_TRAILER)
+    _doesApply = baseCode.ContinueWith<Task<bool>>(DoesApplyTrailer)
                          .CreateDelegate();
-    _apply = baseCode.ContinueWith<Task>(APPLY_TRAILER)
+    _apply = baseCode.ContinueWith<Task>(ApplyTrailer)
                      .CreateDelegate();
     CacheBehavior = cacheBehavior;
   }

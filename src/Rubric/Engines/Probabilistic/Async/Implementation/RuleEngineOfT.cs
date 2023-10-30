@@ -225,17 +225,24 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
 
   private async Task ApplyManySerialAsync(IEnumerable<T> inputs, IEngineContext context, CancellationToken t)
   {
-    foreach (var input in inputs)
+    try
     {
-      t.ThrowIfCancellationRequested();
-      try
+      foreach (var input in inputs)
       {
-        await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+        t.ThrowIfCancellationRequested();
+        try
+        {
+          await ApplyItemAsync(input, context, t).ConfigureAwait(false);
+        }
+        finally
+        {
+          context.ClearInputPredicateCache();
+        }
       }
-      finally
-      {
-        context.ClearInputPredicateCache();
-      }
+    }
+    finally
+    {
+      context.ClearExecutionPredicateCache();
     }
   }
 

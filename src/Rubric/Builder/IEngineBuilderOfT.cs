@@ -43,7 +43,7 @@ public interface IEngineBuilder<T>
   IEngineBuilder<T> WithRules(IEnumerable<IRule<T>> rules);
 
   /// <summary>
-  ///   Set the exception handler for this method.
+  ///   Set the exception handler for this engine.
   /// </summary>
   /// <param name="handler">The handler.</param>
   /// <returns>A fluent continuation.</returns>

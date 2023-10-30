@@ -1,7 +1,8 @@
 using Rubric.Rules.Probabilistic;
 
 namespace Rubric.Builder.Probabilistic.Implementation;
-
+ 
+/// <inheritdoc cref="IPreRuleBuilder{TIn,TOut}"/>
 internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class

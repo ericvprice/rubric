@@ -73,6 +73,7 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   /// <inheritdoc />
   public void Apply(T input, IEngineContext context = null)
   {
+    if(input == null) throw new ArgumentNullException(nameof(input));
     var ctx = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
     {
@@ -81,6 +82,10 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
         ApplyItem(input, ctx);
       }
       catch (EngineHaltException) { }
+      finally
+      {
+        ctx.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -91,15 +96,18 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     var ctx = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
     {
-      foreach (var input in inputs)
-        try
+      try
+      {
+        foreach (var input in inputs)
         {
           ApplyItem(input, ctx);
         }
-        catch (EngineHaltException)
-        {
-          break;
-        }
+      }
+      catch (EngineHaltException) { }
+      finally
+      {
+        ctx.ClearExecutionPredicateCache();
+      }
     }
   }
 
@@ -107,16 +115,23 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
   {
     using (Logger.BeginScope("Input", input))
     {
-      foreach (var set in _rules)
-        foreach (var rule in set)
-          try
-          {
-            this.ApplyPreRule(ctx, rule, input);
-          }
-          catch (ItemHaltException)
-          {
-            return;
-          }
+      try
+      {
+        foreach (var set in _rules)
+          foreach (var rule in set)
+            try
+            {
+              this.ApplyPreRule(ctx, rule, input);
+            }
+            catch (ItemHaltException)
+            {
+              break;
+            }
+      }
+      finally
+      {
+        ctx.ClearInputPredicateCache();
+      }
     }
   }
 

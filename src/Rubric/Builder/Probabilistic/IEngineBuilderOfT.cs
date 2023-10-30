@@ -5,7 +5,7 @@ using Rubric.Rules.Probabilistic;
 namespace Rubric.Builder.Probabilistic;
 
 /// <summary>
-///   A fluent interface for building a rule engine.
+///   A fluent interface for building a probabilistic rule engine.
 /// </summary>
 /// <typeparam name="T">The input type.</typeparam>
 public interface IEngineBuilder<T>

@@ -12,15 +12,15 @@ internal static class CacheBehaviorExtensions
       t =>
       {
         var attr = t.GetCustomAttributes(false)
-                    .OfType<CacheBehaviorAttribute>().ToArray();
+                    .OfType<PredicateCachingAttribute>().ToArray();
         if (!attr.Any())
         {
           return t.BaseType?.GetPredicateCaching()
                  ?? default;
         }
-        var last = attr.LastOrDefault();
-        var behavior = last?.CacheBehavior ?? CacheBehavior.None;
-        var key = last?.Key ?? t.FullName;
+        var last = attr.Last();
+        var behavior = last.CacheBehavior;
+        var key = last.Key ?? t.FullName;
         return new(behavior, key);
       });
 }

@@ -24,7 +24,8 @@
           <CodeCoverage>
             <ModulePaths>
               <Exclude>
-                <ModulePath>Rubric.Tests.dll</ModulePath>
+                <!--
+                <ModulePath>Rubric.Tests.dll</ModulePath>-->
                 <ModulePath>xunit.*.dll</ModulePath>
                 <ModulePath>system.*.dll</ModulePath>
               </Exclude>

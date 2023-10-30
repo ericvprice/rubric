@@ -2,21 +2,45 @@ using Rubric.Engines.Async;
 using Rubric.Engines.Async.Implementation;
 using Rubric.Rulesets.Async;
 using Rubric.Rules.Async;
-using TestDefaultPostRule = Rubric.Tests.TestRules.Async.TestDefaultPostRule;
-using TestDefaultPreRule = Rubric.Tests.TestRules.Async.TestDefaultPreRule;
-using TestDefaultRule = Rubric.Tests.TestRules.Async.TestDefaultRule;
-using TestExceptionPostRule = Rubric.Tests.TestRules.Async.TestExceptionPostRule;
-using TestExceptionPreRule = Rubric.Tests.TestRules.Async.TestExceptionPreRule;
-using TestExceptionRule = Rubric.Tests.TestRules.Async.TestExceptionRule;
-using TestPostRule = Rubric.Tests.TestRules.Async.TestPostRule;
-using TestPreRule = Rubric.Tests.TestRules.Async.TestPreRule;
-using TestRule = Rubric.Tests.TestRules.Async.TestRule;
+using Rubric.Tests.TestRules.Async;
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace Rubric.Tests.Engines.Async;
 
-public class AsyncEngineOfTInTOutTests
+public class EngineOfTInTOutTests
 {
+
+  [Fact]
+  public void EmptyRuleset()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>((IRuleset<TestInput, TestOutput>)null);
+    Assert.Empty(engine.PreRules);
+    Assert.Empty(engine.Rules);
+    Assert.Empty(engine.PostRules);
+  }
+
+  [Fact]
+  public void EmptySyncRulset()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>((Rulesets.IRuleset<TestInput, TestOutput>)null);
+    Assert.Empty(engine.PreRules);
+    Assert.Empty(engine.Rules);
+    Assert.Empty(engine.PostRules);
+  }
+
+  [Fact]
+  public void NullList()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>((IRuleset<TestInput, TestOutput>)null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((IEnumerable<TestInput>)null, new()));
+  }
+
+  [Fact]
+  public void NullList2()
+  {
+    var engine = new RuleEngine<TestInput, TestOutput>((IRuleset<TestInput, TestOutput>)null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((IAsyncEnumerable<TestInput>)null, new()));
+  }
 
   [Fact]
   public async Task Applies()
@@ -831,6 +855,190 @@ public class AsyncEngineOfTInTOutTests
     Assert.IsType<ItemHaltException>(ex);
     Assert.Equal(4, testInput.Items.Count);
     Assert.Equal(2, testOutput.Outputs.Count);
+  }
+
+  [Fact]
+  public async Task PrePerItemCaching()
+  {
+    var engine =
+      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                   .WithPreRule("cacherule1")
+                   .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                   .EndRule()
+                   .WithPreRule("cacherule2")
+                   .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PrePerExecutionCaching()
+  {
+    var engine =
+      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                   .WithPreRule("cacherule1")
+                   .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithPreRule("cacherule2")
+                   .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PerItemCaching()
+  {
+    var engine =
+      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i, _) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i, _) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PerExecutionCaching()
+  {
+    var engine =
+      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                   .WithRule("cacherule1")
+                   .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i, _) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithRule("cacherule2")
+                   .WithPredicate((_, i, _) => Task.FromResult(++i.Counter > 0))
+                   .WithAction((_, i, _) =>
+                   {
+                     i.Items.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, new(), context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task PostPerExecutionCaching()
+  {
+    var engine =
+      EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                   .WithPostRule("cacherule1")
+                   .WithPredicate((_, o) => Task.FromResult(++o.Counter > 0))
+                   .WithAction((_, o) =>
+                   {
+                     o.Outputs.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .WithPostRule("cacherule2")
+                   .WithPredicate((_, o) => Task.FromResult(++o.Counter > 0))
+                   .WithAction((_, o) =>
+                   {
+                     o.Outputs.Add("");
+                     return Task.CompletedTask;
+                   })
+                   .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                   .EndRule()
+                   .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    var output = new TestOutput();
+    await engine.ApplyAsync(items, output, context);
+    Assert.Equal(1, output.Counter);
+    Assert.Equal(2, output.Outputs.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
   }
 
   private static IRuleEngine<TestInput, TestOutput> GetExceptionEngine<T>(IExceptionHandler handler, bool parallelizeRules)

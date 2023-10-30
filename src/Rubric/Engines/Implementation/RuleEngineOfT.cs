@@ -73,6 +73,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
   /// <inheritdoc />
   public void Apply(T input, IEngineContext context = null)
   {
+    if (input == null) throw new ArgumentNullException(nameof(input));
     var ctx = SetupContext(context);
     using (Logger.BeginScope("ExecutionId", ctx.GetTraceId()))
     {
@@ -113,6 +114,10 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     }
     ctx.ClearExecutionPredicateCache();
   }
+
+  #endregion
+
+  #region Private methods
 
   private void ApplyItem(T input, IEngineContext ctx)
   {

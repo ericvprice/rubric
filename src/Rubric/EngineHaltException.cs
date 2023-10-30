@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Rubric;
@@ -11,6 +12,7 @@ namespace Rubric;
 ///   4) For asynchronous engines, the engine will exit with a TaskCancelledException.
 /// </summary>
 [Serializable]
+[ExcludeFromCodeCoverage]
 public class EngineHaltException : EngineException
 {
   /// <summary>

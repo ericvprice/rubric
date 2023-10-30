@@ -3,7 +3,7 @@ using Rubric.Rules.Async;
 namespace Rubric.Rulesets.Async;
 
 /// <summary>
-///   A set of rules for a rule engine.
+///   A set of rules for an asynchronous rule engine.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>

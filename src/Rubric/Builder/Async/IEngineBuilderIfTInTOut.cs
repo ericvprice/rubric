@@ -5,7 +5,7 @@ using Rubric.Rules;
 namespace Rubric.Builder.Async;
 
 /// <summary>
-///   A fluent interface for building a rule engine.
+///   A fluent interface for building an asynchronous rule engine.
 /// </summary>
 /// <typeparam name="TIn">The input type.</typeparam>
 /// <typeparam name="TOut">The output type.</typeparam>

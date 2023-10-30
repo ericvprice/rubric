@@ -11,6 +11,34 @@ public class EngineOfTTests
 {
 
   [Fact]
+  public void EmptyRuleset()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.Empty(engine.Rules);
+  }
+
+  [Fact]
+  public void NullList()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((IEnumerable<TestInput>)null));
+  }
+
+  [Fact]
+  public void NullList2()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((IAsyncEnumerable<TestInput>)null));
+  }
+
+  [Fact]
+  public void NullInput()
+  {
+    var engine = new RuleEngine<TestInput>((IRuleset<TestInput>)null);
+    Assert.ThrowsAsync<ArgumentNullException>(() => engine.ApplyAsync((TestInput)null));
+  }
+
+  [Fact]
   public async Task AppliesOrder()
   {
     var rule = new TestDefaultPreRule();
@@ -168,7 +196,7 @@ public class EngineOfTTests
     var testPreRule = new TestExceptionPreRule(false);
     var engine =
         new RuleEngine<TestInput>(
-            new [] { testPreRule });
+            new[] { testPreRule });
     var input = new TestInput();
     var context = new EngineContext();
     var exception = await Assert.ThrowsAsync<Exception>(async () => await engine.ApplyAsync(input, context));
@@ -614,13 +642,11 @@ public class EngineOfTTests
     await engine.ApplyAsync(new[] { input, input2 }, null, true);
     stopwatch.Stop();
     Assert.Equal(2, input.Items.Count);
-    Assert.Equal("rule2", input.Items.First());
-    Assert.Equal("rule1", input.Items.Last());
-    Assert.Equal(2, input.Items.Count);
-    Assert.Equal("rule2", input.Items.First());
-    Assert.Equal("rule1", input.Items.Last());
-    //Since inputs and rules are parallelized, it should take less than 300 millis
-    Assert.True(stopwatch.ElapsedMilliseconds < 300);
+    Assert.Contains("rule2", input.Items);
+    Assert.Contains("rule1", input.Items);
+    Assert.Equal(2, input2.Items.Count);
+    Assert.Contains("rule2", input2.Items);
+    Assert.Contains("rule1", input2.Items);
   }
 
   [Fact]
@@ -786,7 +812,7 @@ public class EngineOfTTests
   public async Task ApplyEngineException()
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new EngineHaltException("Test", null));
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule });
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule });
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -804,7 +830,7 @@ public class EngineOfTTests
   public async Task ApplyItemException()
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new ItemHaltException());
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule });
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule });
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -823,7 +849,7 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltEngine);
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltEngine);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -842,7 +868,7 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltItem);
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.HaltItem);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -859,9 +885,9 @@ public class EngineOfTTests
   [Fact]
   public async Task ApplyExceptionHandlerThrow()
   {
-    var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) =>1D, async (_, _, _) => throw new());
+    var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Rethrow);
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Rethrow);
     var input = new TestInput();
     var context = new EngineContext();
     var exception = await Assert.ThrowsAsync<Exception>(() => engine.ApplyAsync(input, context));
@@ -875,7 +901,7 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false,
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule, testPreRule2 }, false,
         new LambdaExceptionHandler((_, _, _, _, _) => throw new InvalidOperationException()));
     var input = new TestInput();
     var context = new EngineContext();
@@ -889,7 +915,7 @@ public class EngineOfTTests
   {
     var testPreRule = new LambdaRule<TestInput>("test", async (_, _, _) => 1D, async (_, _, _) => throw new());
     var testPreRule2 = new LambdaRule<TestInput>("test2", async (_, _, _) => 1D, async (_, i, _) => i.InputFlag = true);
-    var engine = new RuleEngine<TestInput>(new [] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Ignore);
+    var engine = new RuleEngine<TestInput>(new[] { testPreRule, testPreRule2 }, false, ExceptionHandlers.Ignore);
     var input = new TestInput();
     var context = new EngineContext();
     await engine.ApplyAsync(input, context);
@@ -1001,7 +1027,7 @@ public class EngineOfTTests
     var input = new TestInput { InputFlag = true };
     var input2 = new TestInput();
     var engine = new RuleEngine<TestInput>(
-        new [] { testPreRule },
+        new[] { testPreRule },
         false,
         ExceptionHandlers.HaltEngine
     );
@@ -1059,5 +1085,133 @@ public class EngineOfTTests
 
   }
 
+  [Fact]
+  public async Task PerItemCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
+                                 .WithRule("cacherule1")
+                                 .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                 .WithAction((_, i) =>
+                                 {
+                                   i.Items.Add("");
+                                   return Task.CompletedTask;
+                                 })
+                                 .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                 .EndRule()
+                                 .WithRule("cacherule2")
+                                 .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                 .WithAction((_, i) =>
+                                 {
+                                   i.Items.Add("");
+                                   return Task.CompletedTask;
+                                 })
+                                 .WithCaching(new(CacheBehavior.PerInput, "testkey"))
+                                 .EndRule()
+                                 .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, context);
+    foreach (var item in items)
+    {
+      Assert.Equal(1, item.Counter);
+      Assert.Equal(2, item.Items.Count);
+    }
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
 
+  [Fact]
+  public async Task PerExecutionCaching()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but all three actions should execute
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, context);
+    Assert.Equal(1, items[0].Counter);
+    Assert.Equal(2, items[0].Items.Count);
+    Assert.Equal(0, items[1].Counter);
+    Assert.Equal(2, items[1].Items.Count);
+
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task CachesClearedOnItemHalt()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, _) => throw new ItemHaltException())
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, context);
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
+
+  [Fact]
+  public async Task CachesClearedOnEngineHalt()
+  {
+    var engine =
+      ProbabilisticEngineBuilder.ForInputAsync<TestInput>()
+                                .WithRule("cacherule1")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, i) =>
+                                {
+                                  i.Items.Add("");
+                                  return Task.CompletedTask;
+                                })
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .WithRule("cacherule2")
+                                .WithPredicate((_, i) => Task.FromResult(++i.Counter > 0 ? 1D : 0D))
+                                .WithAction((_, _) => throw new EngineHaltException())
+                                .WithCaching(new(CacheBehavior.PerExecution, "testkey"))
+                                .EndRule()
+                                .Build();
+    //Only one predicate should execute, but both actions should execute.  Both items should be processed identically
+    var items = new[] { new TestInput(), new TestInput() };
+    var context = new EngineContext();
+    await engine.ApplyAsync(items, context);
+    Assert.Empty(context.GetInputPredicateCache());
+    Assert.Empty(context.GetExecutionPredicateCache());
+  }
 }

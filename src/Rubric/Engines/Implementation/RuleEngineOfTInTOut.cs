@@ -151,6 +151,12 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
 
 #region Nonpublic Methods
 
+  /// <summary>
+  ///   Apply prerules and rules for an input.  Catch any item halt exceptions.
+  /// </summary>
+  /// <param name="input">The input being processed.</param>
+  /// <param name="output">The output.</param>
+  /// <param name="ctx">The current execution context.</param>
   private void ApplyItem(TIn input, TOut output, IEngineContext ctx)
   {
     using (Logger.BeginScope("Input", input))
@@ -168,6 +174,11 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
   }
 
+  /// <summary>
+  ///   Apply post rules to the output object.  Catch any item halt exceptions.
+  /// </summary>
+  /// <param name="output">The output.</param>
+  /// <param name="ctx">The current execution context.</param>
   private void ApplyPostRules(TOut output, IEngineContext ctx)
   {
     using (Logger.BeginScope("Output", output))

@@ -7,6 +7,7 @@ using Rubric.Rulesets;
 
 namespace Rubric.Builder.Implementation;
 
+/// <inheritdoc />
 internal class EngineBuilder<T> : IEngineBuilder<T>
   where T : class
 {

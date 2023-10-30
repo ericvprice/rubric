@@ -44,4 +44,14 @@ public class ContextTests
     Assert.Equal(typeof(TestInput), ctx.GetInputType());
     Assert.Equal(typeof(TestOutput), ctx.GetOutputType());
   }
+
+  //[Fact]
+  //public void Exceptions()
+  //{
+  //  var logger = new TestLogger();
+  //  var engine = new RuleEngine<TestInput, TestOutput>(null, null, null, null, logger);
+  //  Assert.Throws<ArgumentNullException>(() => EngineContextExtensions.SetExecutionInfo(new EngineContext(), null, null));
+  //  Assert.Throws<ArgumentNullException>(() => EngineContextExtensions.SetExecutionInfo(null, engine, null));
+  //}
 }
+
