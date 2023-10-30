@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{64F8FA9B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubric.Tests.TestAssembly3", "Tests\Rubric.Tests.TestAssembly3\Rubric.Tests.TestAssembly3.csproj", "{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rubric.Builder", "Rubric.Builder\Rubric.Builder.csproj", "{A5A113E8-A486-4880-83CB-35FD5AA3B027}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,18 @@ Global
 		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x64.Build.0 = Release|Any CPU
 		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x86.ActiveCfg = Release|Any CPU
 		{A783952C-3FF2-4C6C-AA0F-FE3AC65959C3}.Release|x86.Build.0 = Release|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Debug|x86.Build.0 = Debug|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Release|x64.Build.0 = Release|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Release|x86.ActiveCfg = Release|Any CPU
+		{A5A113E8-A486-4880-83CB-35FD5AA3B027}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

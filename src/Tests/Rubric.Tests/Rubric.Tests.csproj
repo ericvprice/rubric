@@ -34,6 +34,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Rubric.Builder\Rubric.Builder.csproj" />
     <ProjectReference Include="..\Rubric.Tests.TestAssembly\Rubric.Tests.TestAssembly.csproj" />
     <ProjectReference Include="..\Rubric.Tests.TestAssembly2\Rubric.Tests.TestAssembly2.csproj" />
     <ProjectReference Include="..\..\Rubric\Rubric.csproj" />
