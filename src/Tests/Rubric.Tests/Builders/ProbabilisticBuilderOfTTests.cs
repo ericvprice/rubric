@@ -1,3 +1,4 @@
+using Rubric.Builder;
 using Rubric.Tests.TestRules.Probabilistic;
 
 namespace Rubric.Tests.Builders;

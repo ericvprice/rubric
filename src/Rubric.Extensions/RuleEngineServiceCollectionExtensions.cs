@@ -3,13 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Rubric.Builder.Async;
+using Rubric.Builder;
 using Rubric.Engines.Async;
 using Rubric.Extensions.Serialization;
 using Rubric.Rules.Scripted;
 
 namespace Rubric.Extensions;
 
+/// <summary>
+///   Extension methods for service collection for setting up engines in a DI-compatible fashion for .NET hosting.
+/// </summary>
 public static class RuleEngineServiceCollectionExtensions
 {
   private static ScriptOptions GetDefaultOptions<T>()
@@ -25,6 +28,15 @@ public static class RuleEngineServiceCollectionExtensions
   private static ScriptOptions GetDefaultOptions<TIn, TOut>()
     => GetDefaultOptions<TIn>().WithReferences(typeof(TOut).Assembly);
 
+  /// <summary>
+  ///   Add dynamically scripted rules.
+  /// </summary>
+  /// <typeparam name="T">The rule type.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="configuration">The current configuration.</param>
+  /// <param name="section">The configuration section to read from.</param>
+  /// <param name="setupAction">A callback to configure the script actions.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddScriptedRules<T>(
       this IServiceCollection services,
       IConfiguration configuration,
@@ -42,6 +54,16 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add dynamically scripted rules.
+  /// </summary>
+  /// <typeparam name="TIn">The rule input type.</typeparam>
+  /// <typeparam name="TOut">The rule output type.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="configuration">The current configuration.</param>
+  /// <param name="section">The configuration section to read from.</param>
+  /// <param name="setupAction">A callback to configure the script actions.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddScriptedRules<TIn, TOut>(
       this IServiceCollection services,
       IConfiguration configuration,
@@ -63,6 +85,15 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add rules from a given assembly.
+  /// </summary>
+  /// <typeparam name="T">The rule type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="assembly">The assembly.</param>
+  /// <param name="includes">A list of types to include.</param>
+  /// <param name="excludes">A list of types to exclude.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddRules<T>(
       this IServiceCollection services,
       Assembly assembly = null,
@@ -75,6 +106,16 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add rules from a given assembly.
+  /// </summary>
+  /// <typeparam name="TIn">The rule input type to add.</typeparam>
+  /// <typeparam name="TOut">The rule output type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="assembly">The assembly.</param>
+  /// <param name="includes">A list of types to include.</param>
+  /// <param name="excludes">A list of types to exclude.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddRules<TIn, TOut>(
     this IServiceCollection services,
     Assembly assembly = null,
@@ -97,6 +138,15 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add asynchronous rules from a given assembly.
+  /// </summary>
+  /// <typeparam name="T">The rule input type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="assembly">The assembly.</param>
+  /// <param name="includes">A list of types to include.</param>
+  /// <param name="excludes">A list of types to exclude.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddAsyncRules<T>(
        this IServiceCollection services,
        Assembly assembly = null,
@@ -109,6 +159,16 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add asynchronous rules from a given assembly.
+  /// </summary>
+  /// <typeparam name="TIn">The rule input type to add.</typeparam>
+  /// <typeparam name="TOut">The rule output type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="assembly">The assembly.</param>
+  /// <param name="includes">A list of types to include.</param>
+  /// <param name="excludes">A list of types to exclude.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddAsyncRules<TIn, TOut>(
     this IServiceCollection services,
     Assembly assembly = null,
@@ -131,9 +191,16 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add a rule engine, with the ability to configure it using a builder.
+  /// </summary>
+  /// <typeparam name="T">The rule input type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="action">The action to configure the engine using an engine builder.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddRuleEngine<T>(
     this IServiceCollection services,
-    Action<Rubric.Builder.IEngineBuilder<T>> action = null)
+    Action<Builder.IEngineBuilder<T>> action = null)
       where T : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
@@ -144,6 +211,14 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
+  /// <summary>
+  ///   Add a rule engine, with the ability to configure it using a builder.
+  /// </summary>
+  /// <typeparam name="TIn">The rule input type to add.</typeparam>
+  /// <typeparam name="TOut">The rule output type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="action">The action to configure the engine using an engine builder.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddRuleEngine<TIn, TOut>(
     this IServiceCollection services,
     Action<Rubric.Builder.IEngineBuilder<TIn, TOut>> action = null)
@@ -158,26 +233,40 @@ public static class RuleEngineServiceCollectionExtensions
     return services;
   }
 
-  public static IServiceCollection AddAsyncRuleEngine<T>(this IServiceCollection services, Action<IEngineBuilder<T>> action = null)
+  /// <summary>
+  ///   Add a rule engine, with the ability to configure it using a builder.
+  /// </summary>
+  /// <typeparam name="T">The rule input type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="action">The action to configure the engine using an engine builder.</param>
+  /// <returns>The service collection.</returns>
+  public static IServiceCollection AddAsyncRuleEngine<T>(this IServiceCollection services, Action<Builder.Async.IEngineBuilder<T>> action = null)
       where T : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
     var builder = EngineBuilder.ForInputAsync<T>();
     action?.Invoke(builder);
-    return services.AddSingleton(typeof(IEngineBuilder<T>), builder)
+    return services.AddSingleton(typeof(Builder.Async.IEngineBuilder<T>), builder)
                    .AddSingleton<IRuleEngine<T>, DefaultAsyncRuleEngine<T>>();
   }
-
+  /// <summary>
+  ///   Add a rule engine, with the ability to configure it using a builder.
+  /// </summary>
+  /// <typeparam name="TIn">The rule input type to add.</typeparam>
+  /// <typeparam name="TOut">The rule output type to add.</typeparam>
+  /// <param name="services">The service collection.</param>
+  /// <param name="action">The action to configure the engine using an engine builder.</param>
+  /// <returns>The service collection.</returns>
   public static IServiceCollection AddAsyncRuleEngine<TIn, TOut>(
     this IServiceCollection services,
-    Action<IEngineBuilder<TIn, TOut>> action = null)
+    Action<Builder.Async.IEngineBuilder<TIn, TOut>> action = null)
       where TIn : class
       where TOut : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
     var builder = EngineBuilder.ForInputAndOutputAsync<TIn, TOut>();
     action?.Invoke(builder);
-    return services.AddSingleton(typeof(IEngineBuilder<TIn, TOut>), builder)
+    return services.AddSingleton(typeof(Builder.Async.IEngineBuilder<TIn, TOut>), builder)
                    .AddSingleton<IRuleEngine<TIn, TOut>, DefaultAsyncRuleEngine<TIn, TOut>>();
   }
 

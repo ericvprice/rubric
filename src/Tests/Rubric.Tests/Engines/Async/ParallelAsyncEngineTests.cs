@@ -1,3 +1,4 @@
+using Rubric.Builder;
 using Rubric.Engines.Async;
 using Rubric.Engines.Async.Implementation;
 using Rubric.Rules.Async;

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Rubric.Builder;
 using Rubric.Engines.Probabilistic.Async.Implementation;
 using Rubric.Rulesets.Probabilistic.Async;
 using Rubric.Rules.Probabilistic.Async;

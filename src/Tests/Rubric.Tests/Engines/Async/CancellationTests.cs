@@ -1,5 +1,7 @@
 ﻿// ReSharper disable MethodSupportsCancellation
 
+using Rubric.Builder;
+
 namespace Rubric.Tests.Engines.Async;
 
 public class CancellationTests

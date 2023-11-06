@@ -12,6 +12,9 @@ namespace Rubric.Extensions.Serialization;
 public class AsyncRulesetModel<T>
 {
 
+  /// <summary>
+  ///   The ruleset output type.
+  /// </summary>
   public Type InputType => typeof(T);
 
   /// <summary>

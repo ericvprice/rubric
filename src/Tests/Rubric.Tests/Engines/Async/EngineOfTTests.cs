@@ -1,5 +1,6 @@
 ﻿using Rubric.Tests.TestRules.Async;
 using System.Diagnostics;
+using Rubric.Builder;
 using Rubric.Engines.Async.Implementation;
 using Rubric.Rulesets.Async;
 using Rubric.Rules.Async;

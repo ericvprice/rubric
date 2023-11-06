@@ -13,6 +13,8 @@ internal class EngineBuilder<T> : IEngineBuilder<T>
 {
   internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;
 
+  internal EngineBuilder(ILogger logger, bool isParallel) : this(logger) => IsParallel = isParallel;
+
   internal IRuleset<T> AsyncRuleset { get; } = new Ruleset<T>();
 
   public ILogger Logger { get; }

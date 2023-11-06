@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
+using Rubric.Builder;
 using Rubric.Engines.Implementation;
 using Rubric.Rules;
 using Rubric.Rulesets;

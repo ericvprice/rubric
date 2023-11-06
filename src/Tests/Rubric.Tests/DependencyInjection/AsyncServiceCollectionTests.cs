@@ -100,6 +100,6 @@ public class AsyncServiceCollectionTests {
     Assert.Throws<ArgumentNullException>(() => RuleEngineServiceCollectionExtensions.AddRuleEngine<TestInput, TestOutput>(null));
     Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput>(null));
     Assert.Throws<ArgumentNullException>(() => new JsonRuleSet<TestInput, TestOutput>(null, null));
-    Assert.Throws<ArgumentNullException>(() => AssemblyHelper.GetTypes<TestInput>(null));
+    Assert.Throws<ArgumentNullException>(() => AssemblyExtensions.GetTypes<TestInput>(null));
   }
 }

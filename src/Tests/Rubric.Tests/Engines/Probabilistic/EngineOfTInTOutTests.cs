@@ -1,3 +1,4 @@
+using Rubric.Builder;
 using Rubric.Engines.Probabilistic;
 using Rubric.Engines.Probabilistic.Implementation;
 using Rubric.Rules.Probabilistic;

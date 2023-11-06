@@ -2,12 +2,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Rubric.Extensions.Serialization;
 
+/// <inheritdoc/>
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class AsyncRulesetModel<TIn, TOut> : AsyncRulesetModel<TIn>
 {
 
+  /// <summary>
+  ///   The ruleset output type.
+  /// </summary>
   public Type OutputType => typeof(TOut);
   
   /// <summary>

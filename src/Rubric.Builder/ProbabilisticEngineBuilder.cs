@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rubric.Builder.Probabilistic;
 using Rubric.Builder.Probabilistic.Implementation;
 
-namespace Rubric;
+namespace Rubric.Builder;
 
 /// <summary>
 ///   Starter static class for fluent engine building.
@@ -15,7 +14,7 @@ public static class ProbabilisticEngineBuilder
   /// <typeparam name="T">The input type.</typeparam>
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
-  public static IEngineBuilder<T> ForInput<T>(ILogger logger = null)
+  public static Probabilistic.IEngineBuilder<T> ForInput<T>(ILogger logger = null)
     where T : class
     => new EngineBuilder<T>(logger);
 
@@ -26,7 +25,7 @@ public static class ProbabilisticEngineBuilder
   /// <typeparam name="TOut">The output type.</typeparam>
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
-  public static IEngineBuilder<TIn, TOut> ForInputAndOutput<TIn, TOut>(ILogger logger = null)
+  public static Probabilistic.IEngineBuilder<TIn, TOut> ForInputAndOutput<TIn, TOut>(ILogger logger = null)
     where TIn : class
     where TOut : class
     => new EngineBuilder<TIn, TOut>(logger);
