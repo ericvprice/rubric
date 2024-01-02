@@ -13,7 +13,7 @@ internal static class CacheBehaviorExtensions
       {
         var attr = t.GetCustomAttributes(false)
                     .OfType<PredicateCachingAttribute>().ToArray();
-        if (!attr.Any())
+        if (attr.Length == 0)
         {
           return t.BaseType?.GetPredicateCaching()
                  ?? default;

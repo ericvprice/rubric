@@ -22,7 +22,7 @@ internal static class EngineExtensions
     = LoggerMessage.Define<string>(LogLevel.Trace, new(2, "Rule applies"), Applies);
 
   private static readonly Action<ILogger, string, Exception> _applyingLogger
-    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Appling rule"), Applying);
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Applying rule"), Applying);
 
   private static readonly Action<ILogger, string, Exception> _doneLogger
     = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Rule applied"), Done);

@@ -11,7 +11,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   where TIn : class
   where TOut : class
 {
-#region Fields
+  #region Fields
 
   private readonly IRule<TOut>[][] _postprocessingRules;
 
@@ -19,9 +19,9 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
 
   private readonly IRule<TIn, TOut>[][] _rules;
 
-#endregion
+  #endregion
 
-#region Constructors
+  #region Constructors
 
   /// <summary>
   ///   Construct a rule engine from a ruleset.
@@ -69,9 +69,9 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     Logger = logger ?? NullLogger.Instance;
   }
 
-#endregion
+  #endregion
 
-#region Properties
+  #region Properties
 
   /// <inheritdoc />
   public IEnumerable<IRule<TIn>> PreRules
@@ -94,9 +94,9 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   /// <inheritdoc />
   public override Type OutputType => typeof(TOut);
 
-#endregion
+  #endregion
 
-#region Public Methods
+  #region Public Methods
 
   /// <inheritdoc />
   public void Apply(TIn input, TOut output, IEngineContext context = null)
@@ -147,12 +147,12 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
   }
 
-#endregion
+  #endregion
 
-#region Nonpublic Methods
+  #region Nonpublic Methods
 
   /// <summary>
-  ///   Apply prerules and rules for an input.  Catch any item halt exceptions.
+  ///   Apply preprocessing rules and rules for an input.  Catch any item halt exceptions.
   /// </summary>
   /// <param name="input">The input being processed.</param>
   /// <param name="output">The output.</param>
@@ -175,7 +175,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
   }
 
   /// <summary>
-  ///   Apply post rules to the output object.  Catch any item halt exceptions.
+  ///   Apply postprocessing rules to the output object.  Catch any item halt exceptions.
   /// </summary>
   /// <param name="output">The output.</param>
   /// <param name="ctx">The current execution context.</param>
@@ -193,5 +193,5 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     }
   }
 
-#endregion
+  #endregion
 }

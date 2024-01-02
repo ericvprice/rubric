@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Runtime.ExceptionServices;
 
 namespace Rubric.Engines.Implementation;
@@ -110,7 +109,6 @@ public abstract class BaseRuleEngine : IRuleEngine
       info = ExceptionDispatchInfo.Capture(t.Exception.InnerExceptions.Last());
     }
     info?.Throw();
-    Debug.WriteLine("foo");
   }
 
   internal IEngineContext SetupContext(IEngineContext ctx)

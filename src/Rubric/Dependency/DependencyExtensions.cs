@@ -58,7 +58,7 @@ public static class DependencyExtensions
   {
     if (dependencies == null) throw new ArgumentNullException(nameof(dependencies));
     var depList = dependencies.ToList();
-    if (!depList.Any()) return Array.Empty<T[]>();
+    if (depList.Count == 0) return Array.Empty<T[]>();
 
     //Setup local lists and dictionary lookups
     var resolvedObjects = new List<T>();
@@ -75,14 +75,14 @@ public static class DependencyExtensions
     CheckForMissing(depList, providerMap);
 
     //Find root dependencies
-    var roots = depMap.Where(d => !d.Value.Any())
+    var roots = depMap.Where(d => d.Value.Length == 0)
                       .Select(d => d.Key)
                       .ToList();
-    if (!roots.Any()) throw new DependencyException("No roots found.");
+    if (roots.Count == 0) throw new DependencyException("No roots found.");
     UpdateResolved(roots);
 
 
-    while (depList.Any())
+    while (depList.Count > 0)
     {
       var newlyResolvedDependencies =
         depList.Where(d => depMap[d].All(d1 => resolvedDependencies.Contains(d1)))
@@ -90,7 +90,7 @@ public static class DependencyExtensions
       //Uh oh, we hit a brick wall.
       //We know we have a closed set of dependencies from above, so
       //the only way this happens is if we have a circular dependency somewhere in the dependencies left.
-      if (!newlyResolvedDependencies.Any())
+      if (newlyResolvedDependencies.Count == 0)
         throw new DependencyException("Circular dependencies found.")
         {
           Details = new List<string> { FindCycle(depList) }
@@ -115,13 +115,14 @@ public static class DependencyExtensions
   }
 
   private static void CheckForMissing<T>(IReadOnlyCollection<T> depList,
-                                         IReadOnlyDictionary<string, List<T>> providerMap) where T : class, IDependency
+                                         Dictionary<string, List<T>> providerMap) where T : class, IDependency
   {
     //Check that all dependencies have at least one provider.
     var depNotFound = depList.SelectMany(d => d.Dependencies)
                              .Distinct()
-                             .Where(d => !providerMap.ContainsKey(d)).ToArray();
-    if (!depNotFound.Any()) return;
+                             .Where(d => !providerMap.ContainsKey(d))
+                             .ToArray();
+    if (depNotFound.Length == 0) return;
     var e = new DependencyException("Missing dependencies.");
     var errorList = new List<string>();
     foreach (var dep in depNotFound)
@@ -129,7 +130,6 @@ public static class DependencyExtensions
       var oList = depList.Where(d => d.Dependencies.Contains(dep)).Select(d => d.Name).ToArray();
       errorList.Add($"{string.Join(", ", oList)} depend(s) on missing dependency {dep}.");
     }
-
     e.Details = errorList;
     throw e;
   }

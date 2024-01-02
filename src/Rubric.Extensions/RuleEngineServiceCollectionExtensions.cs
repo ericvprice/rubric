@@ -200,13 +200,13 @@ public static class RuleEngineServiceCollectionExtensions
   /// <returns>The service collection.</returns>
   public static IServiceCollection AddRuleEngine<T>(
     this IServiceCollection services,
-    Action<Builder.IEngineBuilder<T>> action = null)
+    Action<IEngineBuilder<T>> action = null)
       where T : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
     var builder = EngineBuilder.ForInput<T>();
     action?.Invoke(builder);
-    services.AddSingleton(typeof(Rubric.Builder.IEngineBuilder<T>), builder);
+    services.AddSingleton(typeof(IEngineBuilder<T>), builder);
     services.AddSingleton<Rubric.Engines.IRuleEngine<T>, DefaultRuleEngine<T>>();
     return services;
   }
@@ -221,15 +221,15 @@ public static class RuleEngineServiceCollectionExtensions
   /// <returns>The service collection.</returns>
   public static IServiceCollection AddRuleEngine<TIn, TOut>(
     this IServiceCollection services,
-    Action<Rubric.Builder.IEngineBuilder<TIn, TOut>> action = null)
+    Action<IEngineBuilder<TIn, TOut>> action = null)
     where TIn : class
     where TOut : class
   {
     if (services is null) throw new ArgumentNullException(nameof(services));
     var builder = EngineBuilder.ForInputAndOutput<TIn, TOut>();
     action?.Invoke(builder);
-    services.AddSingleton(typeof(Rubric.Builder.IEngineBuilder<TIn, TOut>), builder);
-    services.AddSingleton<Rubric.Engines.IRuleEngine<TIn, TOut>, DefaultRuleEngine<TIn, TOut>>();
+    services.AddSingleton(typeof(IEngineBuilder<TIn, TOut>), builder);
+    services.AddSingleton<Engines.IRuleEngine<TIn, TOut>, DefaultRuleEngine<TIn, TOut>>();
     return services;
   }
 

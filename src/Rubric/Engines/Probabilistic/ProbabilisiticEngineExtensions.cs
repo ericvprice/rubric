@@ -19,7 +19,7 @@ internal static class ProbabilisticEngineExtensions
     = LoggerMessage.Define<string>(LogLevel.Trace, new(2, "Rule applies"), Applies);
 
   private static readonly Action<ILogger, string, Exception> _applyingLogger
-    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Appling rule"), Applying);
+    = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Applying rule"), Applying);
 
   private static readonly Action<ILogger, string, Exception> _doneLogger
     = LoggerMessage.Define<string>(LogLevel.Trace, new(1, "Rule applied"), Done);
@@ -140,12 +140,12 @@ internal static class ProbabilisticEngineExtensions
       var task = r.CacheBehavior.Behavior switch
       {
         CacheBehavior.PerInput => ctx.GetInputPredicateCache()
-                                     .GetOrAddAsync(r.CacheBehavior.Key, 
-                                                    async _ => e.Random.NextDouble() 
+                                     .GetOrAddAsync(r.CacheBehavior.Key,
+                                                    async _ => e.Random.NextDouble()
                                                                < await r.DoesApply(ctx, i, o, t).ConfigureAwait(false)),
         CacheBehavior.PerExecution => ctx.GetExecutionPredicateCache()
-                                         .GetOrAddAsync(r.CacheBehavior.Key, 
-                                                        async _ => e.Random.NextDouble() 
+                                         .GetOrAddAsync(r.CacheBehavior.Key,
+                                                        async _ => e.Random.NextDouble()
                                                                    < await r.DoesApply(ctx, i, o, t).ConfigureAwait(false)),
         _ => Task.FromResult(e.Random.NextDouble() < await r.DoesApply(ctx, i, o, t).ConfigureAwait(false))
       };
@@ -160,7 +160,7 @@ internal static class ProbabilisticEngineExtensions
       _applyingLogger(e.Logger, r.Name, null);
       await r.Apply(ctx, i, o, t).ConfigureAwait(false);
       _doneLogger(e.Logger, r.Name, null);
-    
+
     }
     catch (Exception ex)
     {

@@ -11,6 +11,8 @@ namespace Rubric.Extensions.Serialization;
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 public class RuleModel
 {
+  private CacheBehavior _cachingBehavior = CacheBehavior.None;
+
   /// <summary>
   ///   A collection of dependencies provided by this rule (in addition to it's name).
   /// </summary>
@@ -22,6 +24,21 @@ public class RuleModel
   /// </summary>
   /// <returns>A collection of dependency names.</returns>
   public string[] DependsOn { get; set; } = Array.Empty<string>();
+
+  /// <summary>
+  ///   The predicate caching behavior for this rule.
+  /// </summary>
+  /// <value></value>
+  public string CachingBehavior
+  {
+    get => _cachingBehavior.ToString();
+    set
+    {
+      var valid = Enum.TryParse<CacheBehavior>(value, true, out var result);
+      if (!valid) throw new ArgumentException($"{value} is not a valid caching behavior");
+      _cachingBehavior = result;
+    }
+  }
 
   /// <summary>
   ///   Relative filepath of script to parse.

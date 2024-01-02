@@ -29,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rubric.Builder\Rubric.Builder.csproj" />
-    <ProjectReference Include="..\Rubric\Rubric.csproj" />
+    <!-- <ProjectReference Include="..\Rubric\Rubric.csproj" /> -->
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />

@@ -2,7 +2,7 @@
 # Rubric
 
 Rubric.Extensions is a .NET library providing dependency injection extensions
-for Rubic comapatible with the Microsoft.Extensions.DependencyInjection framework.
+for Rubric compatible with the Microsoft.Extensions.DependencyInjection framework.
 
 ## Usage
 
@@ -13,9 +13,9 @@ for Rubic comapatible with the Microsoft.Extensions.DependencyInjection framewor
 ## Scripted Rules
 
 Rules can be loaded from CSX files.  Assembly loading is ignored when processing the script,
-and references to Rubic and the assemblies of the type arguments are automatically added to the script
-compilation context.  The options for compilation can be customized when uou add it to the ServiceCollection.
-Paths in the configuration files are relative to the app's ContentPath (i.e. theire root directory is the same as the root directory for your config file paths).
+and references to Rubric and the assemblies of the type arguments are automatically added to the script
+compilation context.  The options for compilation can be customized when you add it to the ServiceCollection.
+Paths in the configuration files are relative to the app's ContentPath (i.e. their root directory is the same as the root directory for your config file paths).
 
 Example JSON configuration:
 ```json
@@ -25,8 +25,10 @@ Example JSON configuration:
       "script": "Data/rule3.csx",
       //Since script files aren't classes, and can't take our custom attributes,
       //we have to specify them in this ruleset configuration.
-      "provides": ["somedep"],
-      "dependsOn": []
+      "provides": ["dependencyName"],
+      "dependsOn": [],
+      //Similarly, caching behavior can be set in the JSON configuration
+      "cacheBehavior": "[PerExecution|PerInput|None]"
     }
   },
   "rules": {
