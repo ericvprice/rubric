@@ -18,7 +18,9 @@ internal static class RuleLoader
         File.ReadAllText(Path.Combine(basePath, model.Script)),
         options,
         model.DependsOn,
-        model.Provides
+        model.Provides,
+        new (model.PredicateCaching.Behavior,
+             model.PredicateCaching.Key ?? model.Name)
       );
 
   internal static IRule<TIn, TOut> LoadFromModel<TIn, TOut>(RuleModel model, string basePath, ScriptOptions options)
@@ -27,6 +29,8 @@ internal static class RuleLoader
           File.ReadAllText(Path.Combine(basePath, model.Script)),
           options,
           model.DependsOn,
-          model.Provides);
+          model.Provides,
+          new (model.PredicateCaching.Behavior,
+               model.PredicateCaching.Key ?? model.Name));
 
 }

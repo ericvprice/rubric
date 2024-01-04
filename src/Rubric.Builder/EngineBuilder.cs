@@ -36,9 +36,9 @@ public static class EngineBuilder
   /// <typeparam name="T">The input type.</typeparam>
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
-  public static Builder.Async.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
+  public static Async.IEngineBuilder<T> ForInputAsync<T>(ILogger logger = null)
     where T : class
-    => new Builder.Async.Implementation.EngineBuilder<T>(logger);
+    => new Async.Implementation.EngineBuilder<T>(logger);
 
   /// <summary>
   ///   Start building an asynchronous engine for input and output types.
@@ -47,10 +47,10 @@ public static class EngineBuilder
   /// <typeparam name="TOut">The output type.</typeparam>
   /// <param name="logger">An optional logger.</param>
   /// <returns>A fluent engine builder.</returns>
-  public static Builder.Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
+  public static Async.IEngineBuilder<TIn, TOut> ForInputAndOutputAsync<TIn, TOut>(ILogger logger = null)
     where TIn : class
     where TOut : class
-    => new Builder.Async.Implementation.EngineBuilder<TIn, TOut>(logger);
+    => new Async.Implementation.EngineBuilder<TIn, TOut>(logger);
 
   /// <summary>
   ///   Return a builder using an existing rule engine as a base.
@@ -86,8 +86,8 @@ public static class EngineBuilder
   /// <typeparam name="T">The engine input type.</typeparam>
   /// <param name="baseEngine">The engine used to initialize the builder.</param>
   /// <returns>A builder based on the existing engine.</returns>
-  public static Builder.Async.IEngineBuilder<T> FromEngine<T>(Engines.Async.IRuleEngine<T> baseEngine) where T : class
-    => new Builder.Async.Implementation.EngineBuilder<T>(baseEngine.Logger, baseEngine.IsParallel)
+  public static Async.IEngineBuilder<T> FromEngine<T>(Engines.Async.IRuleEngine<T> baseEngine) where T : class
+    => new Async.Implementation.EngineBuilder<T>(baseEngine.Logger, baseEngine.IsParallel)
        .WithRules(baseEngine.Rules)
        .WithExceptionHandler(baseEngine.ExceptionHandler);
 
@@ -99,9 +99,9 @@ public static class EngineBuilder
   /// <typeparam name="TOut">The engine output type.</typeparam>
   /// <param name="baseEngine">The engine used to initialize the builder.</param>
   /// <returns>A builder based on the existing engine.</returns>
-  public static Builder.Async.IEngineBuilder<TIn, TOut> FromEngine<TIn, TOut>(Engines.Async.IRuleEngine<TIn, TOut> baseEngine)
+  public static Async.IEngineBuilder<TIn, TOut> FromEngine<TIn, TOut>(Engines.Async.IRuleEngine<TIn, TOut> baseEngine)
     where TIn : class where TOut : class
-    => new Builder.Async.Implementation.EngineBuilder<TIn, TOut>(baseEngine.Logger, baseEngine.IsParallel)
+    => new Async.Implementation.EngineBuilder<TIn, TOut>(baseEngine.Logger, baseEngine.IsParallel)
        .WithPreRules(baseEngine.PreRules)
        .WithRules(baseEngine.Rules)
        .WithPostRules(baseEngine.PostRules)

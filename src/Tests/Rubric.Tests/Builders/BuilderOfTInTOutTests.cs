@@ -84,6 +84,35 @@ public class BuilderOfTInTOutTests
     Assert.True(rule.DoesApply(null, null));
   }
 
+  [Fact]
+  public void EngineCopying()
+  {
+    var engine = EngineBuilder.ForInputAndOutput<TestInput, TestOutput>()
+                              .WithPostRule(new TestPostRule(true))
+                              .WithPostRule("test")
+                              .WithPredicate((_, _) => true)
+                              .WithAction((_, _) => { })
+                              .ThatProvides("test1")
+                              .EndRule()
+                              .WithPostRule("test2")
+                              .WithPredicate((_, _) => true)
+                              .WithAction((_, _) => { })
+                              .ThatDependsOn("test")
+                              .ThatDependsOn(typeof(TestPostRule))
+                              .EndRule()
+                              .Build();
+    var engine2 = EngineBuilder.FromEngine(engine).Build();
+    Assert.Equal(3, engine2.PostRules.Count());
+    var rule = engine2.PostRules.ElementAt(1);
+    Assert.Equal("test", rule.Name);
+    Assert.Contains("test", rule.Provides);
+    Assert.Contains("test1", rule.Provides);
+    rule = engine2.PostRules.ElementAt(2);
+    Assert.Contains("test", rule.Dependencies);
+    Assert.Contains(typeof(TestPostRule).FullName, rule.Dependencies);
+    Assert.True(rule.DoesApply(null, null));
+  }
+
 
   [Fact]
   public void LambdaPostRuleConstructionThrowsOnNullOrEmpty()

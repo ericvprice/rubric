@@ -77,6 +77,34 @@ public class BuilderOfTTests
     Assert.True(rule.DoesApply(null, null));
   }
 
+  [Fact]
+  public void FromEngineCopying()
+  {
+    var engine = EngineBuilder.ForInput<TestInput>()
+                              .WithRule(new TestPreRule(true))
+                              .WithRule("test")
+                              .WithAction((_, _) => { })
+                              .ThatProvides("test1")
+                              .EndRule()
+                              .WithRule("test2")
+                              .WithPredicate((_, _) => true)
+                              .WithAction((_, _) => { })
+                              .ThatDependsOn(typeof(TestPreRule))
+                              .ThatDependsOn("test1")
+                              .EndRule()
+                              .Build();
+    var engine2 = EngineBuilder.FromEngine(engine).Build();
+    Assert.Equal(3, engine2.Rules.Count());
+    var rule = engine2.Rules.ElementAt(1);
+    Assert.Equal("test", rule.Name);
+    Assert.Contains("test1", rule.Provides);
+    Assert.True(rule.DoesApply(null, null));
+    rule = engine2.Rules.ElementAt(2);
+    Assert.Contains(typeof(TestPreRule).FullName, rule.Dependencies);
+    Assert.Contains("test1", rule.Dependencies);
+    Assert.True(rule.DoesApply(null, null));
+  }
+
 
   [Fact]
   public void LambdaRuleConstructionThrowsOnNullOrEmpty()

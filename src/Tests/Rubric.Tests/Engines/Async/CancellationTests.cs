@@ -178,7 +178,7 @@ public class CancellationTests
                               .WithRule("2")
                                 .WithAction(async (_, i, o, t) =>
                                 {
-                                  await Task.Delay(200, t);
+                                  await Task.Delay(400, t);
                                   i.Counter++;
                                   o.Counter++;
                                 })
@@ -186,7 +186,7 @@ public class CancellationTests
                               .WithRule("3")
                                 .WithAction(async (_, i, o, t) =>
                                 {
-                                  await Task.Delay(300, t);
+                                  await Task.Delay(400, t);
                                   i.Counter++;
                                   o.Counter++;
                                 })

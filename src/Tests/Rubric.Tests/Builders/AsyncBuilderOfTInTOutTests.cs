@@ -378,6 +378,35 @@ public class AsyncBuilderOfTInTOutTests
 
 
   [Fact]
+  public async Task EngineCopying()
+  {
+    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()
+                              .WithRule(new TestRule(true))
+                              .WithRule("test")
+                              .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _) => Task.CompletedTask)
+                              .ThatProvides("test1")
+                              .EndRule()
+                              .WithRule("test2")
+                              .WithPredicate((_, _, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _, _) => Task.CompletedTask)
+                              .ThatDependsOn("test1")
+                              .ThatDependsOn(typeof(TestRule))
+                              .EndRule()
+                              .Build();
+    var engine2 = EngineBuilder.FromEngine(engine).Build();
+    Assert.Equal(3, engine2.Rules.Count());
+    var rule = engine2.Rules.ElementAt(1);
+    Assert.Equal("test", rule.Name);
+    Assert.Contains("test1", rule.Provides);
+    Assert.True(await rule.DoesApply(null, null, null, default));
+    rule = engine2.Rules.ElementAt(2);
+    Assert.Contains(typeof(TestRule).FullName, rule.Dependencies);
+    Assert.Contains("test1", rule.Dependencies);
+    Assert.True(await rule.DoesApply(null, null, null, default));
+    await engine2.ApplyAsync(new TestInput(), new());
+  }
+  [Fact]
   public async Task RuleWrapping()
   {
     var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, TestOutput>()

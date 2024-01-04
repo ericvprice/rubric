@@ -29,8 +29,13 @@ public class ServiceCollectionScriptedRulesTests
     var provider = services.BuildServiceProvider();
     var result = provider.GetService<IRuleEngine<TestInput>>();
     Assert.NotNull(result);
-    Assert.Equal(2, result.Rules.Count());
+    var rules = result.Rules.ToArray();
+    Assert.Equal(2, rules.Length);
     Assert.True(result.IsAsync);
+    Assert.Equal(CacheBehavior.PerInput, rules[0].CacheBehavior.Behavior);
+    Assert.Equal("testKey", rules[0].CacheBehavior.Key);
+    Assert.Equal(CacheBehavior.None, rules[1].CacheBehavior.Behavior);
+    Assert.Equal("rule2", rules[1].CacheBehavior.Key);
   }
 
   [Fact]

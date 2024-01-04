@@ -179,4 +179,20 @@ public class DependencyTests
     var result = Array.Empty<TestDependency>().ResolveDependencies();
     Assert.Empty(result);
   }
+
+  [Fact]
+  public void DependencyExceptionDefaultConstructor()
+  {
+    var ex = new DependencyException();
+    Assert.Null(ex.InnerException);
+    Assert.NotEmpty(ex.Message);
+  }
+
+  [Fact]
+  public void DependencyExceptionInnerException()
+  {
+    var ex = new DependencyException("test", new ());
+    Assert.NotNull(ex.InnerException);
+    Assert.Equal("test", ex.Message);
+  }
 }

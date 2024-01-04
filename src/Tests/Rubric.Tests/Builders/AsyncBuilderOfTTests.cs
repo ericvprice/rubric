@@ -188,6 +188,37 @@ public class AsyncBuilderOfTTests
   }
 
   [Fact]
+  public async Task Copying()
+  {
+    var engine = EngineBuilder.ForInputAsync<TestInput>()
+                              .WithRule(new TestPreRule(true))
+                              .WithRule("test")
+                              .WithPredicate((_, _) => Task.FromResult(true))
+                              .WithAction((_, _) => Task.CompletedTask)
+                              .ThatProvides("foo")
+                              .EndRule()
+                              .WithRule("test2")
+                              .WithPredicate((_, _, _) => Task.FromResult(true))
+                              .WithAction((_, _, _) => Task.CompletedTask)
+                              .ThatDependsOn(typeof(TestPreRule))
+                              .ThatDependsOn("test")
+                              .EndRule()
+                              .Build();
+    var engine2 = EngineBuilder.FromEngine(engine).Build();
+    Assert.Equal(3, engine2.Rules.Count());
+    var rule = engine2.Rules.ElementAt(1);
+    Assert.Equal("test", rule.Name);
+    Assert.Contains("foo", rule.Provides);
+    Assert.Contains("test", rule.Provides);
+    Assert.True(await rule.DoesApply(null, null, default));
+    rule = engine2.Rules.ElementAt(2);
+    Assert.Contains("test", rule.Dependencies);
+    Assert.Contains(typeof(TestPreRule).FullName, rule.Dependencies);
+    Assert.True(await rule.DoesApply(null, null, default));
+    await engine2.ApplyAsync(new TestInput());
+  }
+
+  [Fact]
   public async Task RuleWrapping()
   {
     var engine = EngineBuilder.ForInputAsync<TestInput>()
