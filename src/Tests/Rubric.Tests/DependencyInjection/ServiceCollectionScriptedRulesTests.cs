@@ -35,7 +35,7 @@ public class ServiceCollectionScriptedRulesTests
     Assert.Equal(CacheBehavior.PerInput, rules[0].CacheBehavior.Behavior);
     Assert.Equal("testKey", rules[0].CacheBehavior.Key);
     Assert.Equal(CacheBehavior.None, rules[1].CacheBehavior.Behavior);
-    Assert.Equal("rule2", rules[1].CacheBehavior.Key);
+    Assert.Equal("", rules[1].CacheBehavior.Key);
   }
 
   [Fact]

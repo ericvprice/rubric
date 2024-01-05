@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Rules;
 using Rubric.Rulesets;
@@ -48,7 +47,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     IEnumerable<IRule<TOut>> postprocessingRules,
     IExceptionHandler exceptionHandler = null,
     ILogger logger = null
-  )
+  ) : base(exceptionHandler, logger)
   {
     preprocessingRules ??= Enumerable.Empty<IRule<TIn>>();
     _preprocessingRules =
@@ -65,8 +64,6 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
       = rules.ResolveDependencies()
              .Select(e => e.ToArray())
              .ToArray();
-    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
-    Logger = logger ?? NullLogger.Instance;
   }
 
   #endregion

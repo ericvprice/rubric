@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Engines.Probabilistic.Implementation;
 using Rubric.Rules.Probabilistic.Async;
@@ -44,15 +43,13 @@ public class RuleEngine<T> : BaseProbabilisticRuleEngine, IRuleEngine<T>
     bool isParallel = false,
     IExceptionHandler exceptionHandler = null,
     ILogger logger = null
-  )
+  ) : base(exceptionHandler, logger)
   {
     rules ??= Enumerable.Empty<IRule<T>>();
     _rules = rules.ResolveDependencies()
                   .Select(e => e.ToArray())
                   .ToArray();
     IsParallel = isParallel;
-    Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
   }
 
 #endregion

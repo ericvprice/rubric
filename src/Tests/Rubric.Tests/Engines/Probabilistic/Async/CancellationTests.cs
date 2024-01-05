@@ -22,14 +22,14 @@ public class CancellationTests
                   .WithRule("2")
                     .WithAction(async (_, i, t) =>
                     {
-                      await Task.Delay(200, t);
+                      await Task.Delay(400, t);
                       i.Counter++;
                     })
                   .EndRule()
                   .WithRule("3")
                     .WithAction(async (_, i, t) =>
                     {
-                      await Task.Delay(300, t);
+                      await Task.Delay(500, t);
                       i.Counter++;
                     })
                   .EndRule()

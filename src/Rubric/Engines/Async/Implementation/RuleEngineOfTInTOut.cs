@@ -115,7 +115,7 @@ public class RuleEngine<TIn, TOut> : BaseRuleEngine, IRuleEngine<TIn, TOut>
     bool isParallel = false,
     IExceptionHandler exceptionHandler = null,
     ILogger logger = null
-  )
+  ) : base(exceptionHandler, logger)
   {
     IsParallel = isParallel;
     preRulesFull ??= Enumerable.Empty<Rules.IRule<TIn>>();

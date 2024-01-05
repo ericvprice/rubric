@@ -1,4 +1,4 @@
-![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%25-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![C#10](https://img.shields.io/badge/c%23-11-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Build](https://github.com/ericvprice/rubric/actions/workflows/build.yaml/badge.svg?branch=develop)   ![100% code coverage](https://img.shields.io/badge/Code%20Coverage-100%25-brightgreen.svg)    ![.Net Standard: 2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)    ![.NET 8](https://img.shields.io/badge/.NET-8-blue.svg)   ![C#12](https://img.shields.io/badge/c%23-12-blue.svg)   ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 
 # Rubric
@@ -13,6 +13,8 @@ Features include:
 * short-circuiting exceptions to halt the processing of an item or the entire engine
 * user-injected exception handling
 * asynchronous and probabilistic engines
+* engine chaining and cloning
+* dynamic loading of scripted rules
 
 ## Motivation
 
@@ -42,7 +44,7 @@ All rules are constructed from two implemented (or fluently provided) methods:
 * `DoesApply` is the predicate function that dynamically determines whether the rule runs.
 * `Apply` is the processing method that applies the rule.
 
-Rules can be either implemented as classes with declarative dependencies or built via fluent builders with explicit dependencies.  Engine constructors are also provided for convenient usage with dependency injection libraries, and are highly recommended for most scenarios.  A [companion library](/src/Rubric.Extensions/README.md) is provided for integration with the [`Microsoft.Extensions.DependencyInjection`](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) library.
+Rules can be either implemented as classes with declarative dependencies or built via fluent builders with explicit dependencies.  Engine constructors are also provided for convenient usage with dependency injection libraries, and are highly recommended for most scenarios.  A [companion library](/src/Rubric.Extensions/README.md) is provided for integration with the [`Microsoft.Extensions.DependencyInjection`](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) library.  This library also allows loading of rules from C# scripts.
 
 ## Usage
 ---
@@ -161,8 +163,7 @@ Asynchronous and probabilistic engine compositions follow analogously.
 
 ## Exceptions and Exception Handling
 
-The library provides two special exceptions: `ItemHaltException` and `EngineHaltException`.  When thrown from any rule, the engine will handle the exception by either halting further rule execution on the current item,
-or halting the engine's execution entirely.  The exception will be decorated and placed in the engine context's `LastEngineException` property before the next item is executed, or the engine exits.
+The library provides two special exceptions: `ItemHaltException` and `EngineHaltException`.  When thrown from any rule, the engine will handle the exception by either halting further rule execution on the current item, or halting the engine's execution entirely.  The exception will be decorated and placed in the engine context's `LastEngineException` property before the next item is executed, or the engine exits.
 
 When an non-engine exception is thrown during execution, the exception is wrapped and passed to an optionally provided exception handler.  Users may throw one of the engine exceptions above and they will be handled appropriately.  If not handled, the exception will escape the engine to be handled by the user.
 
@@ -178,9 +179,9 @@ In asynchronous engines, all the above statements apply, except that if one is e
 
 For predicates that may take a long time to execute (or we only desire to execute once for another reason) predicate caching is available to reduce computation.
 
-* For class-based rules, use a base rule class, and decorate it with a `PredicateCacingAttribute`.  All subclasses will use the results of a single execution.
+* For class-based rules decorate with a `PredicateCacingAttribute`.  If no key is specified, the class name of the rule is used.
 * For fluently-built or dynamic rules, specify the predicate caching behavior and the shared key dynamcially.
-* Predicate caching can be scoped to either the input being processed or the the engine execution as a whole
+* Predicate caching can be scoped to either the input being processed or the the engine execution as a whole.
 
 ## Logging
 

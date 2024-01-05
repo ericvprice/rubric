@@ -29,7 +29,7 @@ public class RuleModel
   /// </summary>
   /// <value></value>
   public PredicateCachingJson PredicateCaching { get; set; }
-    = new() { Behavior = CacheBehavior.None };
+    = new() { Behavior = CacheBehavior.None, Key = string.Empty };
 
   /// <summary>
   ///   Relative filepath of script to parse.

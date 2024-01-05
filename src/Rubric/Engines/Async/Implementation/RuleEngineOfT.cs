@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Engines.Implementation;
 using Rubric.Rules.Async;
@@ -82,7 +81,7 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
     bool isParallel = false,
     IExceptionHandler handler = null,
     ILogger logger = null
-  )
+  ) : base(handler, logger)
   {
     IsParallel = isParallel;
     _rules =
@@ -93,8 +92,6 @@ public class RuleEngine<T> : BaseRuleEngine, IRuleEngine<T>
       .ResolveDependencies()
       .Select(e => e.ToArray())
       .ToArray();
-    Logger = logger ?? NullLogger.Instance;
-    ExceptionHandler = handler ?? ExceptionHandlers.Rethrow;
   }
 
 #endregion

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Rubric.Dependency;
 using Rubric.Rules.Probabilistic;
 using Rubric.Rulesets.Probabilistic;
@@ -48,7 +47,7 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
     IEnumerable<IRule<TOut>> postprocessingRules,
     IExceptionHandler exceptionHandler = null,
     ILogger logger = null
-  )
+  ) : base(exceptionHandler, logger)
   {
     preprocessingRules ??= Enumerable.Empty<IRule<TIn>>();
     _preprocessingRules =
@@ -65,8 +64,6 @@ public class RuleEngine<TIn, TOut> : BaseProbabilisticRuleEngine, IRuleEngine<TI
       = rules.ResolveDependencies()
              .Select(e => e.ToArray())
              .ToArray();
-    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
-    Logger = logger ?? NullLogger.Instance;
   }
 
 #endregion

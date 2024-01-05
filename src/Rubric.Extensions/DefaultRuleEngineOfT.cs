@@ -7,18 +7,16 @@ using System.Diagnostics.CodeAnalysis;
 namespace Rubric.Extensions;
 
 /// <inheritdoc />
+/// <summary>
+///   DI constructor.
+/// </summary>
+/// <param name="builder">The builder.</param>
+/// <param name="rules">The rules.</param>
 [ExcludeFromCodeCoverage]
-internal class DefaultRuleEngine<T> : IRuleEngine<T> where T : class
+internal class DefaultRuleEngine<T>(IEngineBuilder<T> builder, IEnumerable<IRule<T>> rules) 
+  : IRuleEngine<T> where T : class
 {
-  private readonly IRuleEngine<T> _instance;
-
-  /// <summary>
-  ///   DI constructor.
-  /// </summary>
-  /// <param name="builder">The builder.</param>
-  /// <param name="rules">The rules.</param>
-  public DefaultRuleEngine(IEngineBuilder<T> builder, IEnumerable<IRule<T>> rules)
-    => _instance = builder.WithRules(rules).Build();
+  private readonly IRuleEngine<T> _instance = builder.WithRules(rules).Build();
 
   /// <inheritdoc />
   public IEnumerable<IRule<T>> Rules => _instance.Rules;

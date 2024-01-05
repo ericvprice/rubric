@@ -1,4 +1,5 @@
 using Rubric.Builder;
+using Rubric.Engines.Async.Implementation;
 using Rubric.Rules.Async;
 using Rubric.Tests.TestRules.Async;
 
@@ -213,6 +214,46 @@ public class AsyncBuilderOfTInTOutTests
     Assert.Single(engine.PostRules);
     Assert.Equal(ExceptionHandlers.Ignore, engine.ExceptionHandler);
     Assert.True(engine.IsParallel);
+  }
+
+  [Fact]
+  public async Task EngineChaining()
+  {
+    var engine = EngineBuilder.ForInputAndOutputAsync<TestInput, List<string>>()
+                              .WithRule("first")
+                              .WithAction((_, _, s) =>
+                              {
+                                s.Add("test");
+                                return Task.CompletedTask;
+                              })
+                              .EndRule()
+                              .Build();
+    var engine2 = EngineBuilder.ForInputAndOutputAsync<List<string>, TestOutput>()
+                               .WithRule("first")
+                               .WithAction((_, i, o) =>
+                               {
+                                 o.Outputs.Add(i.First());
+                                 return Task.CompletedTask;
+                               })
+                               .EndRule()
+                               .Build();
+    var chained = engine.Chain(() => new(), engine2);
+    Assert.IsType<ChainedEngine<TestInput, List<string>, TestOutput>>(chained);
+    var typed = (ChainedEngine<TestInput, List<string>, TestOutput>)chained;
+    Assert.Equal(engine, typed.First);
+    Assert.Equal(engine2, typed.Second);
+    Assert.Throws<NotImplementedException>(() => chained.Logger);
+    Assert.Throws<NotImplementedException>(() => chained.ExceptionHandler);
+    Assert.Equal(typeof(TestInput), chained.InputType);
+    Assert.Equal(typeof(TestOutput), chained.OutputType);
+    Assert.Equal(engine.PreRules, chained.PreRules);
+    Assert.Equal(engine2.PostRules, chained.PostRules);
+    Assert.Throws<NotImplementedException>(() => chained.Rules);
+    Assert.True(chained.IsAsync);
+    var output = new TestOutput();
+    var input = new TestInput();
+    await chained.ApplyAsync(input, output);
+    Assert.Contains("test", output.Outputs);
   }
 
   [Fact]

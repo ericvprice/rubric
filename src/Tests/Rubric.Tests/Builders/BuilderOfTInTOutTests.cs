@@ -1,4 +1,5 @@
 using Rubric.Builder;
+using Rubric.Engines.Implementation;
 using Rubric.Tests.TestRules;
 
 namespace Rubric.Tests.Builders;
@@ -54,6 +55,38 @@ public class BuilderOfTInTOutTests
     Assert.Single(engine.PreRules);
     Assert.Single(engine.Rules);
     Assert.Single(engine.PostRules);
+  }
+
+  [Fact]
+  public void EngineChaining()
+  {
+    var engine = EngineBuilder.ForInputAndOutput<TestInput, List<string>>()
+                              .WithRule("first")
+                              .WithAction((_, _, s) => s.Add("test"))
+                              .EndRule()
+                              .Build();
+    var engine2 = EngineBuilder.ForInputAndOutput<List<string>, TestOutput>()
+                               .WithRule("second")
+                               .WithAction((_, i, o) => o.Outputs.Add(i.First()))
+                               .EndRule()
+                               .Build();
+    var chained = engine.Chain(() => new(), engine2);
+    Assert.IsType<ChainedEngine<TestInput, List<string>, TestOutput>>(chained);
+    var typed = (ChainedEngine<TestInput, List<string>, TestOutput>)chained;
+    Assert.Equal(engine, typed.First);
+    Assert.Equal(engine2, typed.Second);
+    Assert.Throws<NotImplementedException>(() => chained.Logger);
+    Assert.Throws<NotImplementedException>(() => chained.ExceptionHandler);
+    Assert.Equal(typeof(TestInput), chained.InputType);
+    Assert.Equal(typeof(TestOutput), chained.OutputType);
+    Assert.Equal(engine.PreRules, chained.PreRules);
+    Assert.Equal(engine2.PostRules, chained.PostRules);
+    Assert.Throws<NotImplementedException>(() => chained.Rules);
+    Assert.False(chained.IsAsync);
+    var output = new TestOutput();
+    var input = new TestInput();
+    chained.Apply(input, output);
+    Assert.Contains("test", output.Outputs);
   }
 
   [Fact]

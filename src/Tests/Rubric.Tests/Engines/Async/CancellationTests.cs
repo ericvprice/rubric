@@ -21,14 +21,14 @@ public class CancellationTests
                               .WithRule("2")
                                 .WithAction(async (_, i, t) =>
                                 {
-                                  await Task.Delay(200, t);
+                                  await Task.Delay(400, t);
                                   i.Counter++;
                                 })
                               .EndRule()
                               .WithRule("3")
                                 .WithAction(async (_, i, t) =>
                                 {
-                                  await Task.Delay(300, t);
+                                  await Task.Delay(400, t);
                                   i.Counter++;
                                 })
                               .EndRule()
@@ -60,14 +60,14 @@ public class CancellationTests
                               .WithRule("2")
                                 .WithAction(async (_, i, t) =>
                                 {
-                                  await Task.Delay(200, t);
+                                  await Task.Delay(400, t);
                                   i.Counter++;
                                 })
                               .EndRule()
                               .WithRule("3")
                                 .WithAction(async (_, i, t) =>
                                 {
-                                  await Task.Delay(300, t);
+                                  await Task.Delay(500, t);
                                   i.Counter++;
                                 })
                               .EndRule()
@@ -76,7 +76,7 @@ public class CancellationTests
     var input = new TestInput();
     var context = new EngineContext();
     var task = engine.ApplyAsync(input, context, cts.Token);
-    await Task.Delay(150);
+    await Task.Delay(250);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
     await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
@@ -98,14 +98,14 @@ public class CancellationTests
                               .WithPreRule("2")
                                 .WithAction(async (_, i, t) =>
                                 {
-                                  await Task.Delay(200, t);
+                                  await Task.Delay(400, t);
                                   i.Counter++;
                                 })
                               .EndRule()
                               .WithPreRule("3")
                                 .WithAction(async (_, i, t) =>
                                 {
-                                  await Task.Delay(300, t);
+                                  await Task.Delay(500, t);
                                   i.Counter++;
                                 })
                               .EndRule()
@@ -116,7 +116,7 @@ public class CancellationTests
     var output = new TestOutput();
     var context = new EngineContext();
     var task = engine.ApplyAsync(input, output, context, cts.Token);
-    await Task.Delay(150);
+    await Task.Delay(250);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
     await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
@@ -264,14 +264,14 @@ public class CancellationTests
                               .WithPostRule("2")
                                 .WithAction(async (_, o, t) =>
                                 {
-                                  await Task.Delay(200, t);
+                                  await Task.Delay(400, t);
                                   o.Counter++;
                                 })
                               .EndRule()
                               .WithPostRule("3")
                                 .WithAction(async (_, o, t) =>
                                 {
-                                  await Task.Delay(300, t);
+                                  await Task.Delay(500, t);
                                   o.Counter++;
                                 })
                               .EndRule()
@@ -282,7 +282,7 @@ public class CancellationTests
     var output = new TestOutput();
     var context = new EngineContext();
     var task = engine.ApplyAsync(input, output, context, cts.Token);
-    await Task.Delay(150);
+    await Task.Delay(250);
     cts.Cancel();
     //We should get an OperationCancelledException bubble up.
     await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);

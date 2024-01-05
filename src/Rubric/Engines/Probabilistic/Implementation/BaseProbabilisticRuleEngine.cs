@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Rubric.Engines.Implementation;
 
 namespace Rubric.Engines.Probabilistic.Implementation;
@@ -11,4 +12,7 @@ public abstract class BaseProbabilisticRuleEngine : BaseRuleEngine
   ///   Random number source.
   /// </summary>
   public Random Random { get; } = new((int)DateTime.Now.Ticks);
+
+  /// <inheritdoc />
+  protected BaseProbabilisticRuleEngine(IExceptionHandler exceptionHandler, ILogger logger) : base(exceptionHandler, logger) { }
 }

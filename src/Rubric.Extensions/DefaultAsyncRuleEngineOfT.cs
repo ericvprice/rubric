@@ -7,18 +7,16 @@ using Rubric.Builder.Async;
 namespace Rubric.Extensions;
 
 /// <inheritdoc />
+/// <summary>
+///   DI constructor taking an engine builder and a set of rules.
+/// </summary>
+/// <param name="builder">The engine builder.</param>
+/// <param name="rules">The rules.</param>
 [ExcludeFromCodeCoverage]
-internal class DefaultAsyncRuleEngine<T> : IRuleEngine<T> where T : class
+internal class DefaultAsyncRuleEngine<T>(IEngineBuilder<T> builder, IEnumerable<IRule<T>> rules)
+  : IRuleEngine<T> where T : class
 {
-  private readonly IRuleEngine<T> _instance;
-
-  /// <summary>
-  ///   DI constructor taking an engine builder and a set of rules.
-  /// </summary>
-  /// <param name="builder">The engine builder.</param>
-  /// <param name="rules">The rules.</param>
-  public DefaultAsyncRuleEngine(IEngineBuilder<T> builder, IEnumerable<IRule<T>> rules)
-    => _instance = builder.WithRules(rules).Build();
+  private readonly IRuleEngine<T> _instance = builder.WithRules(rules).Build();
 
   /// <inheritdoc />
   public IEnumerable<IRule<T>> Rules => _instance.Rules;

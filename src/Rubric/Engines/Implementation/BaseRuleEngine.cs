@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Runtime.ExceptionServices;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Rubric.Engines.Implementation;
 
@@ -8,6 +9,18 @@ namespace Rubric.Engines.Implementation;
 /// </summary>
 public abstract class BaseRuleEngine : IRuleEngine
 {
+
+  /// <summary>
+  ///   Default constructor
+  /// </summary>
+  /// <param name="exceptionHandler">The exception handler.</param>
+  /// <param name="logger">The logger.</param>
+  protected BaseRuleEngine(IExceptionHandler exceptionHandler, ILogger logger)
+  {
+    ExceptionHandler = exceptionHandler ?? ExceptionHandlers.Rethrow;
+    Logger = logger ?? NullLogger.Instance;
+  }
+
   /// <inheritdoc />
   public ILogger Logger { get; protected set; }
 
