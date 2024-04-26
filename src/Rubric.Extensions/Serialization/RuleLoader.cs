@@ -28,8 +28,8 @@ internal static class RuleLoader
           model.Name,
           File.ReadAllText(Path.Combine(basePath, model.Script)),
           options,
-          model.DependsOn,
-          model.Provides,
+          model.DependsOn.ToArray(),
+          model.Provides.ToArray(),
           new (model.PredicateCaching.Behavior,
                model.PredicateCaching.Key ?? model.Name));
 

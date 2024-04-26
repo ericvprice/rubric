@@ -3,7 +3,7 @@ using Rubric.Rules.Async;
 namespace Rubric.Builder.Async.Implementation;
 
 /// <inheritdoc cref="IRuleBuilder{TIn}"/>
-internal class RuleBuilder<T> : RuleBuilderBase, IRuleBuilder<T>
+internal sealed class RuleBuilder<T> : RuleBuilderBase, IRuleBuilder<T>
   where T : class
 {
   private readonly EngineBuilder<T> _builder;

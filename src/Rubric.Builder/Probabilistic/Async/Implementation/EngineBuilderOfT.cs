@@ -8,7 +8,7 @@ using Rubric.Rulesets.Probabilistic.Async;
 namespace Rubric.Builder.Probabilistic.Async.Implementation;
 
 /// <inheritdoc />
-internal class EngineBuilder<T> : IEngineBuilder<T>
+internal sealed class EngineBuilder<T> : IEngineBuilder<T>
   where T : class
 {
   internal EngineBuilder(ILogger logger = null) => Logger = logger ?? NullLogger.Instance;

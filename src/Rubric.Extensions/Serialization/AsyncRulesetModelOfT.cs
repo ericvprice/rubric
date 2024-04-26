@@ -27,6 +27,6 @@ public class AsyncRulesetModel<T>
   ///   A mapping of names => rule definitions.
   /// </summary>
   /// <value>The configured rule information.</value>
-  public Dictionary<string, RuleModel> Rules { get; set; }
+  public Dictionary<string, RuleModel> Rules { get; } = [];
 
 }

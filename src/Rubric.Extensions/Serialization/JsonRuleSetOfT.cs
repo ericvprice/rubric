@@ -8,8 +8,7 @@ internal class JsonRuleSet<T> : Ruleset<T>
 {
   public JsonRuleSet(AsyncRulesetModel<T> model, ScriptOptions options = null)
   {
-    if (model == null)
-      throw new ArgumentNullException($"'{nameof(model)}' cannot be null.", nameof(model));
+    if (model == null) throw new ArgumentNullException(nameof(model));
     AddAsyncRules(model.Rules
                        .Select(r =>
                           {

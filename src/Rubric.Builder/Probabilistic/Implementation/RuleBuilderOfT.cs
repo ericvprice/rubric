@@ -3,7 +3,7 @@ using Rubric.Rules.Probabilistic;
 namespace Rubric.Builder.Probabilistic.Implementation;
 
 /// <inheritdoc cref="IRuleBuilder{T}"/>
-internal class RuleBuilder<T> : RuleBuilderBase, IRuleBuilder<T>
+internal sealed class RuleBuilder<T> : RuleBuilderBase, IRuleBuilder<T>
   where T : class
 {
   private readonly EngineBuilder<T> _parentBuilder;

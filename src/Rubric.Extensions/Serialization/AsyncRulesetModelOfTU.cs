@@ -18,12 +18,12 @@ public class AsyncRulesetModel<TIn, TOut> : AsyncRulesetModel<TIn>
   ///   A mapping of names => preprocessing rule definitions.
   /// </summary>
   /// <value>The configured rule information.</value>
-  public Dictionary<string, RuleModel> PreRules { get; set; } = new();
+  public Dictionary<string, RuleModel> PreRules { get;} = [];
 
   /// <summary>
   ///   A mapping of names => postprocessing rule definitions.
   /// </summary>
   /// <value>The configured rule information.</value>
-  public Dictionary<string, RuleModel> PostRules { get; set; } = new();
+  public Dictionary<string, RuleModel> PostRules { get;} = [];
 
 }

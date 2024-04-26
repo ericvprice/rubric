@@ -16,13 +16,13 @@ public class RuleModel
   ///   A collection of dependencies provided by this rule (in addition to it's name).
   /// </summary>
   /// <returns>A collection of dependency names.</returns>
-  public string[] Provides { get; set; } = Array.Empty<string>();
+  public IEnumerable<string> Provides { get; set; } = [];
 
   /// <summary>
   ///   A collection of dependencies required by this rule (in addition to it's name).
   /// </summary>
   /// <returns>A collection of dependency names.</returns>
-  public string[] DependsOn { get; set; } = Array.Empty<string>();
+  public IEnumerable<string> DependsOn { get; set; } = [];
 
   /// <summary>
   ///   The predicate caching behavior for this rule.
@@ -35,7 +35,7 @@ public class RuleModel
   ///   Relative filepath of script to parse.
   /// </summary>
   /// <returns>A relative filepath.</returns>
-  public string Script { get; set; } = null;
+  public string Script { get; set; }
 
   /// <summary>
   ///   The name of this rule.

@@ -10,7 +10,7 @@
     <Authors>Eric Price</Authors>
     <Product>Rubric</Product>
     <Description>A simple rules engine implementation for .NET.</Description>
-    <Copyright>Copyright © 2023</Copyright>
+    <Copyright>Copyright © 2024</Copyright>
     <RepositoryUrl>https://github.com/ericvprice/rubric</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

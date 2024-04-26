@@ -3,7 +3,7 @@ using Rubric.Rules.Probabilistic.Async;
 namespace Rubric.Builder.Probabilistic.Async.Implementation;
 
 /// <inheritdoc cref="IPreRuleBuilder{TIn,TOut}"/>
-internal class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn, TOut>
+internal sealed class PreRuleBuilder<TIn, TOut> : RuleBuilderBase, IPreRuleBuilder<TIn, TOut>
   where TIn : class
   where TOut : class
 {

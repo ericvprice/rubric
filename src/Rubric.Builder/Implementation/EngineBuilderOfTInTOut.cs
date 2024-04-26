@@ -8,7 +8,7 @@ using Rubric.Rulesets;
 namespace Rubric.Builder.Implementation;
 
 /// <inheritdoc />
-internal class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
+internal sealed class EngineBuilder<TIn, TOut> : IEngineBuilder<TIn, TOut>
   where TIn : class
   where TOut : class
 {

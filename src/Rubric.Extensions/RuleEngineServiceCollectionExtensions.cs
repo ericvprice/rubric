@@ -123,8 +123,8 @@ public static class RuleEngineServiceCollectionExtensions
     string[] excludes = null)
   {
     assembly ??= typeof(TIn).Assembly;
-    includes ??= new string[] { };
-    excludes ??= new string[] { };
+    includes ??= [];
+    excludes ??= [];
     foreach (var type in assembly.GetTypes<Rules.IRule<TIn, TOut>>(includes, excludes))
       services.AddSingleton(typeof(Rules.IRule<TIn, TOut>), type);
     services.AddRules<TIn>(assembly, includes, excludes)
@@ -176,8 +176,8 @@ public static class RuleEngineServiceCollectionExtensions
     string[] excludes = null)
   {
     assembly ??= typeof(TIn).Assembly;
-    includes ??= new string[] { };
-    excludes ??= new string[] { };
+    includes ??= [];
+    excludes ??= [];
     foreach (var type in assembly.GetTypes<Rules.Async.IRule<TIn, TOut>>(includes, excludes))
       services.AddSingleton(typeof(Rules.Async.IRule<TIn, TOut>), type);
     services.AddAsyncRules<TIn>(assembly, includes, excludes)
